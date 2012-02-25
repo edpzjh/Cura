@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+<Spinner 
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/HeadTailSpinner"/>
+<Spinner 
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/LogFileSpinner"/>
+<LinearLayout
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content" 
+    android:orientation="horizontal"
+    android:layout_gravity="center_horizontal">
+    
+  <EditText
+    android:layout_width="50dip"
+    android:layout_height="wrap_content"
+    android:id="@+id/LinesNumber"
+    android:numeric="integer"
+    android:maxLength="2"
+    android:layout_gravity="center"/>
+  
+  <CheckBox 
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/EnableLineNumber"
+  	android:text="@string/checkBoxSysLogs"
+  	android:layout_gravity="center" />
+</LinearLayout>
+<Button 
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/sysLogButton"
+    android:text="@string/sysLogButtonText"/>
+</LinearLayout>

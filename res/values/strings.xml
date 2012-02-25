@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Cura</string>
+    <string name="TerminalLabel">Terminal</string>
+    <string name="SysLogLabel">SysLog</string>
+    <string name="SysMonitorLabel">SysMonitor</string>
+    <string name="NessusLabel">Nessus</string>
+    <string name="NMapLabel">NMap</string>
+    <string name="SysConnectLabel">SysConnect</string>
+    <string name="executeButton">Execute</string>
+    <string name="favoritesButton">Favorites</string>
+    <string name="hintTerminalMessage">Enter your commands here, or press the Menu button to add a new command to your list of favorites</string>
+    <string name="no_users">Add new user</string>
+    <string name="usernameLabel">Username</string>
+    <string name="domainLabel">Domain</string>
+    <string name="portLabel">Port</string>
+    <string name="domainTextFieldHint">ex: local.domain.com</string>
+    <string name="portTextField">Port number</string>
+    <string name="DialogTitle">Enter the following credentials</string>
+    <string name="DialogAddNewUserButton">Add new user</string>
+    <string name="DialogCancelButton">Cancel</string>
+    <string name="LoginScreenName">Welcome to Cura</string>
+    <string name="ModifyUserInfo">Modify User Info</string>
+    <string name="DeleteUser">Delete User</string>
+    <string name="msgProgressDialog">Please wait while the connection is being established...</string>
+    <string name="addNewFavoriteCommand">Add new command</string>
+    <string name="modifyFavoriteCommand">Modify command</string>
+    <string name="deleteFavoriteCommand">Delete</string>
+    <string name="enterCommandPopupMessage">Enter your command</string>
+    <string name="firstTimeUseMessageTitle">This is the first time you install Cura!</string>
+    <string name="firstTimeUseMessage">Welcome to Cura, an application designed to better help you administer your systems. To begin, dismiss this dialog and press the Menu button to start adding new users!</string>
+    <string name="firstTimeUseOKButton">OK</string>
+    <string name="firstTimeUseCancelButton">Cancel</string>
+    <string name="logout">Logout</string>
+    <string name="logoutConfirmationDialog">Do you want to logout from this account ?</string>
+    <string name="sysLogButtonText">Get Logs</string>
+    <string name="checkBoxSysLogs">Enable Line Numbers</string>
+
+</resources>
