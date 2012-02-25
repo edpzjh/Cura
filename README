@@ -1,0 +1,16 @@
+Cura is a mobile phone application based on the Android platform.
+It is a bundle of remote systems administration tools targeted mainly at sysadmins.
+
+When in the hands of a sysadmin, Cura will provide:
+ Personal terminal emulator with full Bash (bourne-again
+shell) capabilities. Along with ready-made commands a
+button away (ssh, top, uname, uptime, cat /proc/cpuinfo,
+dmidecode, etc..)
+
+ Access to the most powerful port/vulnerability-scanning
+and penetration-testing tools (Nessus, Nmap, Wireshark).
+
+ Machine log-monitoring featuring Geo-location and log-to-
+SMS subscription capabilities.
+
+ Personal communication/sharing space between colleagues.
