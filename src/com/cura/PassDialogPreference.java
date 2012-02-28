@@ -41,7 +41,7 @@ public class PassDialogPreference extends DialogPreference {
 		super(context, attrs);
 		this.context = context;
 		setDialogLayoutResource(R.layout.prefpassdialog);
-		//
+		//set the password dialog from the 
 		prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		oldPassword = prefs.getString("myPass", "");
 	}
@@ -60,29 +60,34 @@ public class PassDialogPreference extends DialogPreference {
 		super.onDialogClosed(positiveResult);
 		persistBoolean(positiveResult);
 		if (positiveResult) {
-			//if the fields are set
+			// if the fields are set
 			if ((oldPassED.getText().toString()).compareTo(oldPassword) == 0)
-				//and if the old password that was typed in matches the old password
+				// and if the old password that was typed in matches the actual
+				// oldPassword value
 				if ((newPassED.getText().toString()).compareTo(confPassED
 						.getText().toString()) == 0
+				// if the new password is equal to the password in confirm
+				// Password text
 						&& (newPassED.getText().toString()).compareTo("") != 0
+						// if the new password editText is not empty
 						&& (confPassED.getText().toString()).compareTo("") != 0) {
+					// if the confirm password editText is not empty
 					SharedPreferences.Editor editor = prefs.edit();
+					// open preferences
 					editor.putString("myPass", newPassED.getText().toString());
-					//save the new password
+					// save the new password
 					editor.commit();
+					// commit the changes
 					Toast.makeText(context, R.string.passwordChanged,
 							Toast.LENGTH_SHORT).show();
-					//show the password changed successfully dialog
+					// show the password changed successfully dialog
 				} else
 					Toast.makeText(context, R.string.wrongConfPass,
 							Toast.LENGTH_SHORT).show();
-				//else show the wrong password dialog
 			else
 				Toast.makeText(context, R.string.wrongPassword,
 						Toast.LENGTH_SHORT).show();
+			// else show the wrong password dialog
 		}
-
 	}
-
 }
