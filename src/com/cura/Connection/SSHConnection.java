@@ -18,16 +18,7 @@
  */
 package com.cura.Connection;
 
-import java.io.IOException;
-
-import android.app.Activity;
-import android.app.IntentService;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentSender.SendIntentException;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.util.Log;
 
 import com.cura.User;
