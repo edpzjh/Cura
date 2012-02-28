@@ -18,33 +18,22 @@
  */
 package com.cura;
 
-import java.io.IOException;
-
-import com.cura.Connection.SSHConnection;
-import com.jcraft.jsch.JSchException;
-
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.ListActivity;
-import android.content.ContentValues;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
-import android.view.View.OnClickListener;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
-import android.widget.AdapterView.AdapterContextMenuInfo;
+
+import com.cura.Connection.SSHConnection;
 
 public class FavoriteCommands extends ListActivity {
 
@@ -65,7 +54,7 @@ public class FavoriteCommands extends ListActivity {
 		if (extras != null) {
 			userTemp = extras.getParcelable("user");
 		}
-		this.setTitle("Welcome to your favorites, " + userTemp.getUsername());
+		this.setTitle(R.string.favoritesWelcome + userTemp.getUsername());
 
 		dbHelper = new DbHelper(this);
 		db = dbHelper.getReadableDatabase();
