@@ -1,16 +1,18 @@
-Cura is a mobile phone application based on the Android platform.
+Cura is a mobile phone application for the Android platform (Gingerbread 2.3.3 and above).
 It is a bundle of remote systems administration tools targeted mainly at sysadmins.
 
 When in the hands of a sysadmin, Cura will provide:
- Personal terminal emulator with full Bash (bourne-again
-shell) capabilities. Along with ready-made commands a
-button away (ssh, top, uname, uptime, cat /proc/cpuinfo,
-dmidecode, etc..)
+ Personal terminal emulator with full Bash (bourne-again
+shell) capabilities. The Terminal also allows adding commands to a Favorites list (ssh, top, uname, uptime, cat /proc/cpuinfo, dmidecode, etc..)
 
- Access to the most powerful port/vulnerability-scanning
-and penetration-testing tools (Nessus, Nmap, Wireshark).
+ The SysLog module will allow a user to view usual syslog dumps (kern.log, boot.log, errors.log, etc...) directly from their machine's /var/log/ directory.
+The logfile can be either displayed in Head (first 10 lines) or in Tail (last 10 lines). It can also be Head or Tailed for a user-defined number of lines.
 
- Machine log-monitoring featuring Geo-location and log-to-
-SMS subscription capabilities.
 
- Personal communication/sharing space between colleagues.
+ The SysMonitor module displays a graph that is always monitoring CPU and Memory usage.
+
+ Access to the most powerful port/vulnerability-scanning and penetration-testing tools (Nessus, Nmap, Wireshark). (Not until 2.0)
+
+ Also, a security measure/feature has been implemented and it allows users to have Cura's database completely wiped upon them sending the compromised phone a secret pattern of their choosing. (ex: send an SMS message containing "L is dead." to your Android phone and Cura's database will be wiped.)
+
+ Cura is multi-lingual and for now, it supports English, Arabic, German and Greek.
