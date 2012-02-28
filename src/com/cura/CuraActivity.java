@@ -18,15 +18,6 @@
  */
 package com.cura;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.cura.Connection.CommunicationInterface;
-import com.cura.Connection.ConnectionService;
-import com.cura.Terminal.TerminalActivity;
-import com.cura.syslog.SysLogActivity;
-import com.cura.sysmonitor.SysMonitorActivity;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -34,7 +25,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -43,10 +33,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 import android.widget.TableRow;
 import android.widget.Toast;
+
+import com.cura.Connection.CommunicationInterface;
+import com.cura.Connection.ConnectionService;
+import com.cura.Terminal.TerminalActivity;
+import com.cura.security.SMSService;
+import com.cura.syslog.SysLogActivity;
+import com.cura.sysmonitor.SysMonitorActivity;
 
 public class CuraActivity extends Activity implements OnClickListener {
 
