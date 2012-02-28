@@ -23,7 +23,7 @@
     <string name="LoginScreenName">Welcome to Cura</string>
     <string name="ModifyUserInfo">Modify User Info</string>
     <string name="DeleteUser">Delete User</string>
-    <string name="msgProgressDialog">Please wait while the connection is being established...</string>
+    <string name="msgProgressDialog">Please wait while the connection is being established&#8230;</string>
     <string name="addNewFavoriteCommand">Add new command</string>
     <string name="modifyFavoriteCommand">Modify command</string>
     <string name="deleteFavoriteCommand">Delete</string>
@@ -36,5 +36,32 @@
     <string name="logoutConfirmationDialog">Do you want to logout from this account ?</string>
     <string name="sysLogButtonText">Get Logs</string>
     <string name="checkBoxSysLogs">Enable Line Numbers</string>
-
+    <string name="favoritesWelcome">Welcome to your favorites </string>
+    <string name="credentialsWrong">Wrong username/password combination, please try again!</string>
+    <string name="LoginScreenPasswordPrompt">Please enter your password</string>
+    <string name="SysLogLineNumberprompt">Please enter the number of lines</string>
+    <string name="SysLogNoLogsFoundprompt">No logs to be displayed here\n(There was either a permissions issue, or the logfile does not exist on your server)</string>
+    <string name="addNewCommandToFavoritesprompt">Enter your command</string>
+	<string name="preferenceSettings">Settings</string>
+    <string name="languageCategory">Language</string>
+    <string name="securityCategory">Security</string>
+    <string name="language">Language</string>
+    <string name="languagePrefsSummary">Choose your language</string>
+    <string name="security">Enable SMS security</string>
+    <string name="securityPattern">Pattern</string>
+    <string name="refresh">Refresh</string>
+    <string name="curaPassword">Cura Password</string>
+    <string name="setCuraPass">Set Cura Password</string>
+    <string name="oldPassTextView">Old Password</string>
+    <string name="newPassTextView">New Password</string>
+    <string name="confirmPassTextView">Re-type New Password</string>
+    <string name="saveFirstPassText">Save Password</string>
+    <string name="setFirstPassDialogTitle">Set Cura Password</string>
+    <string name="settingsPassDialogTitle">Enter Cura Password</string>
+    <string name="settignsScreenPasswordPrompt">Please enter your Cura password</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="wrongPassword">The password you entered is incorrect</string>
+    <string name="passwordChanged">Password changed successfully</string>
+    <string name="wrongConfPass">Passwords do not match</string>
 </resources>
