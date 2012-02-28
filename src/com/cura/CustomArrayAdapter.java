@@ -27,6 +27,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+@SuppressWarnings("rawtypes")
 public class CustomArrayAdapter extends ArrayAdapter {
 	Context context;
 	User user[];
