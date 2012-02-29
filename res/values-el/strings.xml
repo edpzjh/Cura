@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Cura</string>
+    <string name="TerminalLabel">Τερματικό</string>
+    <string name="SysLogLabel">SysLog</string>
+    <string name="SysMonitorLabel">SysMonitor</string>
+    <string name="NessusLabel">Nessus</string>
+    <string name="NMapLabel">NMap</string>
+    <string name="SysConnectLabel">SysConnect</string>
+    <string name="executeButton">Εκτέλεση</string>
+    <string name="favoritesButton">Αγαπημένα</string>
+    <string name="hintTerminalMessage">Καταχωρήστε τις εντολές σας εδώ, ή πιέστε το πλήκτρο Μενού για να προσθέσετε νέα εντολή στη λίστα των αγαπημένων σας</string>
+    <string name="no_users">Προσθήκη νέου χρήστη</string>
+    <string name="usernameLabel">Όνομα χρήστη</string>
+    <string name="domainLabel">Domain</string>
+    <string name="portLabel">Θύρα</string>
+    <string name="domainTextFieldHint">ex: local.domain.com</string>
+    <string name="portTextField">Αριθμός θύρας</string>
+    <string name="DialogTitle">Καταχωρήστε τα ακόλουθα πιστοποιητικά</string>
+    <string name="DialogAddNewUserButton">Προσθήκη νέου χρήστη</string>
+    <string name="DialogCancelButton">Ακύρωση</string>
+    <string name="LoginScreenName">Καλωσορίσατε στο Cura</string>
+    <string name="ModifyUserInfo">Τροποποίηση στοιχείων χρήστη</string>
+    <string name="DeleteUser">Διαγραφή χρήστη</string>
+    <string name="msgProgressDialog">Παρακαλούμε, περιμένετε μέχρι να επιτευχθεί η σύνδεση…</string>
+    <string name="addNewFavoriteCommand">Προσθήκη νέας εντολής</string>
+    <string name="modifyFavoriteCommand">Τροποποίηση εντολής</string>
+    <string name="deleteFavoriteCommand">Διαγραφή</string>
+    <string name="enterCommandPopupMessage">Καταχώρηση εντολής</string>
+    <string name="firstTimeUseMessageTitle">Εγκαθιστάτε το Cura για πρώτη φορά!</string>
+    <string name="firstTimeUseMessage">Καλωσορίσατε στο Cura, μια εφαρμογή που σχεδιάστηκε για να σας βοηθήσει στην καλύτερη διαχείριση των συστημάτων σας. Για να ξεκινήσετε, διαγράψτε αυτόν το διάλογο και πιέστε το πλήκτρο Μενού για να αρχίσετε να προσθέτετε νέους χρήστες!</string>
+    <string name="firstTimeUseOKButton">OK</string>
+    <string name="firstTimeUseCancelButton">Ακύρωση</string>
+    <string name="logout">Αποσύνδεση</string>
+    <string name="logoutConfirmationDialog">Θέλετε να αποσυνδεθείτε από το λογαριασμό αυτόν;</string>
+    <string name="sysLogButtonText">Λήψη ημερολογίου</string>
+    <string name="checkBoxSysLogs">Δυνατότητα αρίθμησης σειρών</string>
+    <string name="favoritesWelcome">Καλωσορίσατε στα αγαπημένα σας </string>
+    <string name="credentialsWrong">Λανθασμένος συνδυασμός ονόματος χρήστη/κωδικού πρόσβασης. Παρακαλούμε, ξαναδοκιμάστε!</string>
+    <string name="LoginScreenPasswordPrompt">Παρακαλούμε, καταχωρίστε τον κωδικό πρόσβασής σας</string>
+    <string name="SysLogLineNumberprompt">Παρακαλούμε, καταχωρίστε τον αριθμό των σειρών</string>
+    <string name="SysLogNoLogsFoundprompt">Δεν υπάρχουν ημερολόγια προς εμφάνιση εδώ\(Υπήρξε πρόβλημα με την άδεια ή το αρχείο ημερολογίου δεν υπάρχει στο διακομιστή σας)</string>
+    <string name="addNewCommandToFavoritesprompt">Καταχωρίστε την εντολή σας</string>
+
+</resources>
