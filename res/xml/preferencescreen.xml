@@ -1,30 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-    <PreferenceCategory android:title="@string/languageCategory">
-        <ListPreference
-			   android:title="@string/language"
-			   android:summary="@string/languagePrefsSummary"
-			   android:entries="@array/languageArray"
-			   android:entryValues="@array/languageValue" />
+
+    <PreferenceCategory android:title="@string/securityCategory" >
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="enableSMS"
+            android:title="@string/security" />
+
+        <EditTextPreference
+            android:defaultValue=""
+            android:key="securityPattern"
+            android:summary=""
+            android:title="@string/securityPattern" />
     </PreferenceCategory>
-    <PreferenceCategory android:title="@string/securityCategory">
- <CheckBoxPreference 
-     android:key="enableSMS"
-     android:title="@string/security"
-     android:defaultValue="false"/>   
-<EditTextPreference
-    android:key="securityPattern"
-   android:title="@string/securityPattern"
-   android:summary=""
-   android:defaultValue=""/>
-</PreferenceCategory>
-<PreferenceCategory android:title="@string/curaPassword">
-    <com.cura.PassDialogPreference
-	android:key="curaPassDialog" 
-	android:title="@string/setCuraPass"
-	android:dialogLayout="@layout/prefpassdialog"
-	android:positiveButtonText="OK"
-	android:negativeButtonText="Cancel"
-	/>
-</PreferenceCategory>
+    <PreferenceCategory android:title="@string/curaPassword" >
+        <com.cura.PassDialogPreference
+            android:dialogLayout="@layout/prefpassdialog"
+            android:key="curaPassDialog"
+            android:negativeButtonText="Cancel"
+            android:positiveButtonText="OK"
+            android:title="@string/setCuraPass" />
+    </PreferenceCategory>
+
 </PreferenceScreen>
