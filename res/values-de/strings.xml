@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Cura</string>
+    <string name="TerminalLabel">Terminal</string>
+    <string name="SysLogLabel">SysLog</string>
+    <string name="SysMonitorLabel">SysMonitor</string>
+    <string name="NessusLabel">Nessus</string>
+    <string name="NMapLabel">NMap</string>
+    <string name="SysConnectLabel">SysConnect</string>
+    <string name="executeButton">Ausführen</string>
+    <string name="favoritesButton">Favoriten</string>
+    <string name="hintTerminalMessage">Geben Sie Ihre Befehle hier ein, oder drücken Sie die Menü-Taste, um einen neuen Befehl in Ihre Favoritenliste hizuzufügen</string>
+    <string name="no_users">Fügen Sie einen neuen Benutzer hinzu</string>
+    <string name="usernameLabel">Benutzername</string>
+    <string name="domainLabel">Domäne</string>
+    <string name="portLabel">Port</string>
+    <string name="domainTextFieldHint">ex: local.domain.com</string>
+    <string name="portTextField">Portnummer</string>
+    <string name="DialogTitle">Geben Sie folgende Anmeldedaten ein</string>
+    <string name="DialogAddNewUserButton">Fügen Sie einen neuen Benutzer hinzu</string>
+    <string name="DialogCancelButton">Abbrechen</string>
+    <string name="LoginScreenName">Willkommen zu Cura</string>
+    <string name="ModifyUserInfo">Benutzerinfo verändern</string>
+    <string name="DeleteUser">Benutzer löschen</string>
+    <string name="msgProgressDialog">Bitte, warten Sie, bis die Verbindung hergestellt wird…</string>
+    <string name="addNewFavoriteCommand">Fügen Sie einen neuen Befehl hinzu</string>
+    <string name="modifyFavoriteCommand">Befehl verändern</string>
+    <string name="deleteFavoriteCommand">Löschen</string>
+    <string name="enterCommandPopupMessage">Geben Sie Ihren Befehl ein</string>
+    <string name="firstTimeUseMessageTitle">Sie installieren Cura zum ersten Mal!</string>
+    <string name="firstTimeUseMessage">Willkommen zu Cura, einer Anwendung zur besseren Verwaltung Ihrer Systeme. Zum Starten löschen Sie, bitte, diesen Dialog, drücken Sie die Menü-Taste, und fangen Sie an, neue Benutzer hinzuzufügen!</string>
+    <string name="firstTimeUseOKButton">OK</string>
+    <string name="firstTimeUseCancelButton">Abbrechen</string>
+    <string name="logout">Ausloggen</string>
+    <string name="logoutConfirmationDialog">Möchten Sie sich vom Konto ausloggen? ?</string>
+    <string name="sysLogButtonText">Logdaten holen</string>
+    <string name="checkBoxSysLogs">Zeilenzahl erlauben</string>
+    <string name="favoritesWelcome">Willkommen zu Ihren Favoriten </string>
+    <string name="credentialsWrong">Falsche Benutzername/Passwort-Kombination. Bitte, erneute anmelden!</string>
+    <string name="LoginScreenPasswordPrompt">Geben Sie, Ihr Passwort ein</string>
+    <string name="SysLogLineNumberprompt">Zeilenzahl eingeben</string>
+    <string name="SysLogNoLogsFoundprompt">Keine Logdaten hier (Zugriff verweigert oder keine Logdatei in Ihrem Server)</string>
+    <string name="addNewCommandToFavoritesprompt">Geben Sie Ihren Befehl ein</string>
+
+</resources>
