@@ -132,7 +132,7 @@ public class CuraActivity extends Activity implements OnClickListener {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		boolean result = super.onCreateOptionsMenu(menu);
-		menu.add(0, Menu.FIRST, 0, R.string.logout);
+		menu.add(0, Menu.FIRST, 0, R.string.logout).setIcon(R.drawable.ic_lock_power_off);
 		return result;
 	}
 

@@ -18,33 +18,19 @@
  */
 package com.cura.Terminal;
 
-import com.cura.Connection.CommunicationInterface;
-import com.cura.DbHelper;
-import com.cura.LoginScreenActivity;
-import com.cura.R;
-import com.cura.User;
-import com.cura.Connection.CommunicationInterface.Stub;
-import com.cura.Connection.ConnectionService;
-import com.cura.R.id;
-import com.cura.R.layout;
-import com.cura.R.string;
-
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.Menu;
@@ -54,6 +40,13 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.cura.DbHelper;
+import com.cura.LoginScreenActivity;
+import com.cura.R;
+import com.cura.User;
+import com.cura.Connection.CommunicationInterface;
+import com.cura.Connection.ConnectionService;
 
 public class TerminalActivity extends Activity {
 	EditText result;
@@ -179,8 +172,8 @@ public class TerminalActivity extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		boolean result = super.onCreateOptionsMenu(menu);
 		// Add a button to menu
-		menu.add(0, Menu.FIRST, 0, R.string.addNewFavoriteCommand);
-		menu.add(1,2,0,R.string.logout);
+		menu.add(0, Menu.FIRST, 0, R.string.addNewFavoriteCommand).setIcon(android.R.drawable.ic_input_add);
+		menu.add(1,2,0,R.string.logout).setIcon(R.drawable.ic_lock_power_off);
 		return result;
 	}
 
@@ -192,7 +185,7 @@ public class TerminalActivity extends Activity {
 			// display dialog box
 			AlertDialog.Builder addUser = new AlertDialog.Builder(
 					TerminalActivity.this);
-			addUser.setMessage("Enter your command");
+			addUser.setMessage(R.string.addNewCommandToFavoritesprompt);
 			final EditText commandText = new EditText(this);
 			addUser.setView(commandText);
 

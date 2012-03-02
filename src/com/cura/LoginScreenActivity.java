@@ -18,8 +18,6 @@
  */
 package com.cura;
 
-import com.cura.Connection.ConnectionService;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
@@ -30,10 +28,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -47,7 +46,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.cura.Connection.ConnectionService;
 
 public class LoginScreenActivity extends ListActivity {
 	private final String connected = "cura.connected";
@@ -61,19 +63,26 @@ public class LoginScreenActivity extends ListActivity {
 	Intent goToMainActivity;
 	BroadcastReceiver br;
 	ProgressDialog loader;
+	private SharedPreferences prefs;
 	private static final int DIALOG_YES_NO_LONG_MESSAGE = 99;
+	private static final int SET_CURA_PASSWORD = 98;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		this.setTitle(R.string.LoginScreenName);
+		prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
 		user = getUser();
 		// create the listView
 
 		if (user.length == 0) {
 			showDialog(DIALOG_YES_NO_LONG_MESSAGE);
 		}
+
+		if (prefs.getString("myPass", "").compareTo("") == 0)
+			showDialog(SET_CURA_PASSWORD);
 
 		array = new CustomArrayAdapter(this, user);
 		setListAdapter(array);
@@ -88,7 +97,7 @@ public class LoginScreenActivity extends ListActivity {
 				if (extras != null) {
 					userTemp = extras.getParcelable("user");
 				}
-				if (intent.getAction().compareTo("cura.connected") == 0) {
+				if (intent.getAction().compareTo(connected) == 0) {
 					loader.cancel();
 					goToMainActivity = new Intent(LoginScreenActivity.this,
 							CuraActivity.class);
@@ -96,9 +105,7 @@ public class LoginScreenActivity extends ListActivity {
 					startActivity(goToMainActivity);
 				} else {
 					loader.cancel();
-					Toast.makeText(
-							context,
-							"Username or password are incorrect. Please try again",
+					Toast.makeText(context, R.string.credentialsWrong,
 							Toast.LENGTH_LONG).show();
 				}
 			}
@@ -146,7 +153,7 @@ public class LoginScreenActivity extends ListActivity {
 
 	@Override
 	protected Dialog onCreateDialog(int id) {
-		// TODO Auto-generated method stub
+
 		return new AlertDialog.Builder(LoginScreenActivity.this)
 				// .setIconAttribute(android.R.attr.alertDialogIcon)
 				.setTitle(R.string.firstTimeUseMessageTitle)
@@ -167,6 +174,7 @@ public class LoginScreenActivity extends ListActivity {
 								/* User clicked Cancel so do some stuff */
 							}
 						}).create();
+
 	}
 
 	@Override
@@ -178,7 +186,7 @@ public class LoginScreenActivity extends ListActivity {
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
 		// set an alert dialog to prompt the user for their password to login.
 		alert.setTitle("Login");
-		alert.setMessage("Enter your password");
+		alert.setMessage(R.string.LoginScreenPasswordPrompt);
 
 		final EditText passField = new EditText(this);
 		passField.setTransformationMethod(PasswordTransformationMethod
@@ -191,7 +199,7 @@ public class LoginScreenActivity extends ListActivity {
 			public void onClick(DialogInterface dialog, int whichButton) {
 				// UPON CLICKING "OK" IN THE DIALOG BOX (ALERT)
 				loader = ProgressDialog.show(LoginScreenActivity.this,
-						"Connecting...", "Loading. Please wait...", true);
+						"Connecting...", "Loading, please wait...", true);
 				dialog.dismiss();
 				String pass = passField.getText().toString();
 				user[position].setPassword(pass);
@@ -221,7 +229,9 @@ public class LoginScreenActivity extends ListActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		boolean result = super.onCreateOptionsMenu(menu);
 		// Add a button to menu
-		menu.add(0, Menu.FIRST, 0, R.string.no_users);
+		menu.add(0, Menu.FIRST, 0, R.string.no_users).setIcon(android.R.drawable.ic_menu_add);
+		menu.add(0, 2, 0, R.string.preferenceSettings).setIcon(android.R.drawable.ic_menu_preferences);
+		menu.add(1, 3, 1, "Refresh").setIcon(android.R.drawable.ic_menu_rotate);
 		return result;
 	}
 
@@ -294,6 +304,52 @@ public class LoginScreenActivity extends ListActivity {
 			});
 			myDialog.show();
 			return true;
+		case 2:
+			AlertDialog.Builder alert = new AlertDialog.Builder(this);
+			// set an alert dialog to prompt the user for their password to
+			// login.
+			alert.setTitle(R.string.settingsPassDialogTitle);
+			alert.setMessage(R.string.settignsScreenPasswordPrompt);
+
+			final EditText passField = new EditText(this);
+			passField.setTransformationMethod(PasswordTransformationMethod
+					.getInstance());
+			// make it turn into stars, as available from the API.
+			alert.setView(passField);
+			// show the alert.
+
+			alert.setPositiveButton(R.string.ok,
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog,
+								int whichButton) {
+							// UPON CLICKING "OK" IN THE DIALOG BOX (ALERT)
+							String curaPass = prefs.getString("myPass", "");
+							String passfield = passField.getText().toString();
+							if (passfield.compareTo(curaPass) == 0)
+								startActivity(new Intent(
+										LoginScreenActivity.this,
+										PreferenceScreen.class));
+							else
+								Toast.makeText(LoginScreenActivity.this,
+										R.string.wrongPassword,
+										Toast.LENGTH_SHORT).show();
+							return;
+						}
+					});
+			alert.setNegativeButton(R.string.cancel,
+					new DialogInterface.OnClickListener() {
+						// UPON CLICKING "CANCEL" IN THE DIALOG BOX (ALERT)
+						public void onClick(DialogInterface dialog, int which) {
+							return;
+						}
+					});
+			alert.show();
+			return true;
+		case 3:
+			user = getUser();
+			array = new CustomArrayAdapter(LoginScreenActivity.this, user);
+			setListAdapter(array);
+			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -304,8 +360,8 @@ public class LoginScreenActivity extends ListActivity {
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		// add to buttons to context menu "Modify user Info", "Delete User"
-		menu.add(0, Menu.FIRST + 1, 0, R.string.ModifyUserInfo);
-		menu.add(0, Menu.FIRST + 2, 0, R.string.DeleteUser);
+		menu.add(0, Menu.FIRST + 1, 0, R.string.ModifyUserInfo).setIcon(R.drawable.ic_menu_edit);
+		menu.add(0, Menu.FIRST + 2, 0, R.string.DeleteUser).setIcon(R.drawable.ic_menu_delete);
 	}
 
 	@Override
