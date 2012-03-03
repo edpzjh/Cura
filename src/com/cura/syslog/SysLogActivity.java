@@ -44,9 +44,8 @@ public class SysLogActivity extends Activity implements
 		android.view.View.OnClickListener {
 	private String menu1[] = new String[] { "Head", "Tail" };
 	// GUI menu where "Head" and "Tail" appear
-	private String menu2[] = new String[] { "alternatives.log", "auth.log",
-			"boot.log", "daemon.log", "dpkg.log", "jockey.log", "kern.log",
-			"user.log" };
+	private String menu2[] = new String[] { "errors.log", "kernel.log", "boot", "auth.log",
+			"daemon.log", "dmesg.log", "crond.log", "user.log", "Xorg.0.log" };
 	// GUI menu where the drop-down list of available log files appears
 	private Spinner position, logFile;
 	private CheckBox checkBox;
@@ -126,7 +125,7 @@ public class SysLogActivity extends Activity implements
 				} catch (NumberFormatException e) {
 					// if the line numbers checkbox is checked but no numbers
 					// have been entered in the textfield, display this
-					Toast.makeText(this, "Please enter a number",
+					Toast.makeText(this, R.string.SysLogLineNumberprompt,
 							Toast.LENGTH_SHORT).show();
 					return;
 				}
@@ -136,7 +135,7 @@ public class SysLogActivity extends Activity implements
 			// above)
 			if (result.equalsIgnoreCase(""))
 				// if it doesn't produce anything, display this
-				result = "No logs in this file";
+				result = getString(R.string.SysLogNoLogsFoundprompt);
 			// else, take the user to the Dialog activity which displays the
 			// results of the result variable
 			Intent res = new Intent(this, LogsDialog.class);
