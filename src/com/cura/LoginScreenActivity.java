@@ -31,6 +31,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.method.PasswordTransformationMethod;
@@ -124,26 +125,32 @@ public class LoginScreenActivity extends ListActivity {
 
 		// select all users.
 		Cursor c = db.rawQuery("select * from user", null);
-
 		// create an array of users
-		user = new User[c.getCount()];
-		int counter = 0;
+		if (c.getCount() == 0) {
+			user = new User[1];
+			user[0] = new User("username", "domain", 22);
+			Log.d("HERE", "HERE");
+		} else {
+			user = new User[c.getCount()];
 
-		// get info and store them into objects
-		if (c != null) {
-			if (c.moveToFirst()) {
-				do {
-					String username = c.getString(c.getColumnIndex("username"));
-					String domain = c.getString(c.getColumnIndex("domain"));
-					int port = Integer.parseInt(c.getString(c
-							.getColumnIndex("port")));
-					// fetch the user's data.
-					user[counter] = new User(username, domain, port);
-					counter++;
-				} while (c.moveToNext());
+			int counter = 0;
+
+			// get info and store them into objects
+			if (c != null) {
+				if (c.moveToFirst()) {
+					do {
+						String username = c.getString(c
+								.getColumnIndex("username"));
+						String domain = c.getString(c.getColumnIndex("domain"));
+						int port = Integer.parseInt(c.getString(c
+								.getColumnIndex("port")));
+						// fetch the user's data.
+						user[counter] = new User(username, domain, port);
+						counter++;
+					} while (c.moveToNext());
+				}
 			}
 		}
-
 		// close database
 		db.close();
 		dbHelper.close();
@@ -182,44 +189,78 @@ public class LoginScreenActivity extends ListActivity {
 	protected void onListItemClick(ListView l, View v, final int position,
 			long id) {
 		super.onListItemClick(l, v, position, id);
+		if (user.length == 1
+				&& user[0].getUsername().equalsIgnoreCase("username")
+				&& user[0].getDomain().equalsIgnoreCase("domain")) {
+			Toast.makeText(this, R.string.addUserHint, Toast.LENGTH_LONG)
+					.show();
+		} else {
+			AlertDialog.Builder alert = new AlertDialog.Builder(this);
+			// set an alert dialog to prompt the user for their password to
+			// login.
+			alert.setTitle("Login");
+			alert.setMessage(R.string.LoginScreenPasswordPrompt);
 
-		AlertDialog.Builder alert = new AlertDialog.Builder(this);
-		// set an alert dialog to prompt the user for their password to login.
-		alert.setTitle("Login");
-		alert.setMessage(R.string.LoginScreenPasswordPrompt);
+			final EditText passField = new EditText(this);
+			passField.setTransformationMethod(PasswordTransformationMethod
+					.getInstance());
+			// make it turn into stars, as available from the API.
+			alert.setView(passField);
+			// show the alert.
 
-		final EditText passField = new EditText(this);
-		passField.setTransformationMethod(PasswordTransformationMethod
-				.getInstance());
-		// make it turn into stars, as available from the API.
-		alert.setView(passField);
-		// show the alert.
+			alert.setPositiveButton("Ok",
+					new DialogInterface.OnClickListener() {
+						public void onClick(final DialogInterface dialog,
+								int whichButton) {
+							// UPON CLICKING "OK" IN THE DIALOG BOX (ALERT)
+							AsyncTask<String, String, String> task = new AsyncTask<String, String, String>() {
+								Intent passUserObjToService;
 
-		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int whichButton) {
-				// UPON CLICKING "OK" IN THE DIALOG BOX (ALERT)
-				loader = ProgressDialog.show(LoginScreenActivity.this,
-						"Connecting...", "Loading, please wait...", true);
-				dialog.dismiss();
-				String pass = passField.getText().toString();
-				user[position].setPassword(pass);
-				userTemp = user[position];
-				Intent passUserObjToService = new Intent(
-						LoginScreenActivity.this, ConnectionService.class);
-				passUserObjToService.putExtra("user", userTemp);
-				passUserObjToService.putExtra("pass", pass);
-				startService(passUserObjToService);
-				return;
-			}
-		});
-		alert.setNegativeButton("Cancel",
-				new DialogInterface.OnClickListener() {
-					// UPON CLICKING "CANCEL" IN THE DIALOG BOX (ALERT)
-					public void onClick(DialogInterface dialog, int which) {
-						return;
-					}
-				});
-		alert.show();
+								@Override
+								protected void onPreExecute() {
+									dialog.dismiss();
+									loader = ProgressDialog.show(
+											LoginScreenActivity.this,
+											"Connecting...",
+											"Loading, please wait...", true);
+								}
+
+								@Override
+								protected String doInBackground(
+										String... params) {
+									String pass = passField.getText()
+											.toString();
+									user[position].setPassword(pass);
+									userTemp = user[position];
+									passUserObjToService = new Intent(
+											LoginScreenActivity.this,
+											ConnectionService.class);
+									passUserObjToService.putExtra("user",
+											userTemp);
+									passUserObjToService.putExtra("pass", pass);
+									return null;
+								}
+
+								@Override
+								protected void onPostExecute(String result) {
+									startService(passUserObjToService);
+									loader.dismiss();
+								}
+
+							};
+							task.execute();
+							return;
+						}
+					});
+			alert.setNegativeButton("Cancel",
+					new DialogInterface.OnClickListener() {
+						// UPON CLICKING "CANCEL" IN THE DIALOG BOX (ALERT)
+						public void onClick(DialogInterface dialog, int which) {
+							return;
+						}
+					});
+			alert.show();
+		}
 	}
 
 	// MENU STUFF IS IMPLEMENTED BELOW, FIRST THE REGULAR MENU THAT APPEARS WHEN
@@ -229,8 +270,10 @@ public class LoginScreenActivity extends ListActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		boolean result = super.onCreateOptionsMenu(menu);
 		// Add a button to menu
-		menu.add(0, Menu.FIRST, 0, R.string.no_users).setIcon(android.R.drawable.ic_menu_add);
-		menu.add(0, 2, 0, R.string.preferenceSettings).setIcon(android.R.drawable.ic_menu_preferences);
+		menu.add(0, Menu.FIRST, 0, R.string.no_users).setIcon(
+				android.R.drawable.ic_menu_add);
+		menu.add(0, 2, 0, R.string.preferenceSettings).setIcon(
+				android.R.drawable.ic_menu_preferences);
 		menu.add(1, 3, 1, "Refresh").setIcon(android.R.drawable.ic_menu_rotate);
 		return result;
 	}
@@ -360,8 +403,10 @@ public class LoginScreenActivity extends ListActivity {
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		// add to buttons to context menu "Modify user Info", "Delete User"
-		menu.add(0, Menu.FIRST + 1, 0, R.string.ModifyUserInfo).setIcon(R.drawable.ic_menu_edit);
-		menu.add(0, Menu.FIRST + 2, 0, R.string.DeleteUser).setIcon(R.drawable.ic_menu_delete);
+		menu.add(0, Menu.FIRST + 1, 0, R.string.ModifyUserInfo).setIcon(
+				R.drawable.ic_menu_edit);
+		menu.add(0, Menu.FIRST + 2, 0, R.string.DeleteUser).setIcon(
+				R.drawable.ic_menu_delete);
 	}
 
 	@Override
