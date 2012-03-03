@@ -181,7 +181,6 @@ public class LoginScreenActivity extends ListActivity {
 								/* User clicked Cancel so do some stuff */
 							}
 						}).create();
-
 	}
 
 	@Override
