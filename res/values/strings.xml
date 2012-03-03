@@ -64,4 +64,8 @@
     <string name="wrongPassword">The password you entered is incorrect</string>
     <string name="passwordChanged">Password changed successfully</string>
     <string name="wrongConfPass">Passwords do not match</string>
+    <string name="addUserHint">This is just a sample user account.\nPress the Menu button and add a user account of your own.</string>
+    <string name="ServerInfoDialog">Server\'s general information</string>
+    <string name="uptimeText">It has been up for: </string>
+    <string name="GetServerInfoOptionMenu">Server\'s info</string>
 </resources>

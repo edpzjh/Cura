@@ -42,5 +42,8 @@
     <string name="SysLogLineNumberprompt">Παρακαλούμε, καταχωρίστε τον αριθμό των σειρών</string>
     <string name="SysLogNoLogsFoundprompt">Δεν υπάρχουν ημερολόγια προς εμφάνιση εδώ\(Υπήρξε πρόβλημα με την άδεια ή το αρχείο ημερολογίου δεν υπάρχει στο διακομιστή σας)</string>
     <string name="addNewCommandToFavoritesprompt">Καταχωρίστε την εντολή σας</string>
+    <string name="ServerInfoDialog">γενικές πληροφορίες διακομιστή</string>
+    <string name="uptimeText">Έχει για: </string>
+    <string name="GetServerInfoOptionMenu">πληροφορίες διακομιστή</string>
 
 </resources>

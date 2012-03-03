@@ -42,5 +42,8 @@
     <string name="SysLogLineNumberprompt">Zeilenzahl eingeben</string>
     <string name="SysLogNoLogsFoundprompt">Keine Logdaten hier (Zugriff verweigert oder keine Logdatei in Ihrem Server)</string>
     <string name="addNewCommandToFavoritesprompt">Geben Sie Ihren Befehl ein</string>
+    <string name="ServerInfoDialog">Servers allgemeine Informationen</string>
+    <string name="uptimeText">Es hat sich für bereits: </string>
+    <string name="GetServerInfoOptionMenu">Server info</string>
 
 </resources>
