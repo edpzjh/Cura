@@ -204,8 +204,8 @@ public class CuraActivity extends Activity implements OnClickListener {
 			break;
 		case 2:
 			String finalResultForDialog = "";
-			finalResultForDialog = getUname() + " \nit has been up for -- "
-					+ getUptime();
+			finalResultForDialog = getUname() + "\n"
+					+ getString(R.string.uptimeText) + getUptime();
 			AlertDialog.Builder alert = new AlertDialog.Builder(this);
 			alert.setTitle(R.string.ServerInfoDialog);
 			final TextView infoArea = new TextView(this);
