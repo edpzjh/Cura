@@ -18,8 +18,11 @@
  */
 package com.cura;
 
+import java.util.Date;
+
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -28,12 +31,14 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.text.InputFilter.LengthFilter;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cura.Connection.CommunicationInterface;
@@ -50,7 +55,6 @@ public class CuraActivity extends Activity implements OnClickListener {
 	// menu buttons
 
 	User userTemp;
-
 	// user object
 	private CommunicationInterface conn;
 
@@ -67,6 +71,28 @@ public class CuraActivity extends Activity implements OnClickListener {
 					Toast.LENGTH_LONG);
 		}
 	};
+
+	public synchronized String getUname() {
+		String resultUNAME = "";
+		try {
+			resultUNAME = conn.executeCommand("uname -a");
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return resultUNAME;
+	}
+
+	public synchronized String getUptime() {
+		String resultUPTIME = "";
+		try {
+			resultUPTIME = conn.executeCommand("uptime");
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return resultUPTIME;
+	}
 
 	public void doBindService() {
 		Intent i = new Intent(this, ConnectionService.class);
@@ -132,7 +158,10 @@ public class CuraActivity extends Activity implements OnClickListener {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		boolean result = super.onCreateOptionsMenu(menu);
-		menu.add(0, Menu.FIRST, 0, R.string.logout).setIcon(R.drawable.ic_lock_power_off);
+		menu.add(0, 2, 0, R.string.GetServerInfoOptionMenu).setIcon(
+				android.R.drawable.ic_menu_info_details);
+		menu.add(0, Menu.FIRST, 0, R.string.logout).setIcon(
+				R.drawable.ic_lock_power_off);
 		return result;
 	}
 
@@ -172,6 +201,24 @@ public class CuraActivity extends Activity implements OnClickListener {
 									dialog.dismiss();
 								}
 							}).show();
+			break;
+		case 2:
+			String finalResultForDialog = "";
+			finalResultForDialog = getUname() + " \nit has been up for -- "
+					+ getUptime();
+			AlertDialog.Builder alert = new AlertDialog.Builder(this);
+			alert.setTitle(R.string.ServerInfoDialog);
+			final TextView infoArea = new TextView(this);
+			infoArea.setText(finalResultForDialog);
+			alert.setView(infoArea);
+			alert.setNegativeButton("Ok",
+					new DialogInterface.OnClickListener() {
+						// UPON CLICKING "CANCEL" IN THE DIALOG BOX (ALERT)
+						public void onClick(DialogInterface dialog, int which) {
+							return;
+						}
+					});
+			alert.show();
 			break;
 		}
 		return super.onOptionsItemSelected(item);
