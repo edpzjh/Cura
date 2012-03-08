@@ -49,6 +49,7 @@ import com.cura.Connection.CommunicationInterface;
 import com.cura.Connection.ConnectionService;
 
 public class TerminalActivity extends Activity {
+
 	EditText result;
 	EditText commandLine;
 	Button execute;
@@ -257,6 +258,12 @@ public class TerminalActivity extends Activity {
 		db.close();
 		dbHelper.close();
 		startActivity(getIntent());
+		finish();
+	}
+	
+	@Override
+	protected void onStop() {
+		super.onStop();
 		finish();
 	}
 }
