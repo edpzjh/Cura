@@ -78,7 +78,8 @@ public class LoginScreenActivity extends ListActivity {
 		user = getUser();
 		// create the listView
 
-		if (user.length == 0) {
+		if (user.length == 1 && user[0].getUsername().equalsIgnoreCase("username")
+				&& user[0].getDomain().equalsIgnoreCase("domain")) {
 			showDialog(DIALOG_YES_NO_LONG_MESSAGE);
 		}
 
@@ -270,10 +271,10 @@ public class LoginScreenActivity extends ListActivity {
 		boolean result = super.onCreateOptionsMenu(menu);
 		// Add a button to menu
 		menu.add(0, Menu.FIRST, 0, R.string.no_users).setIcon(
-				android.R.drawable.ic_menu_add);
+				R.drawable.ic_menu_add);
 		menu.add(0, 2, 0, R.string.preferenceSettings).setIcon(
-				android.R.drawable.ic_menu_preferences);
-		menu.add(1, 3, 1, "Refresh").setIcon(android.R.drawable.ic_menu_rotate);
+				R.drawable.ic_menu_preferences);
+		menu.add(1, 3, 1, "Refresh").setIcon(R.drawable.ic_menu_rotate);
 		return result;
 	}
 
