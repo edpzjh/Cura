@@ -40,8 +40,11 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.cura.R;
 import com.cura.Connection.CommunicationInterface;
 import com.cura.Connection.ConnectionService;
 
@@ -54,7 +57,7 @@ public class SysMonitorActivity extends Activity {
 	private static GraphicalView view;
 
 	private static Thread mThread;
-
+	private static boolean state = true;
 	private CommunicationInterface conn;
 
 	private ServiceConnection connection = new ServiceConnection() {
@@ -81,12 +84,16 @@ public class SysMonitorActivity extends Activity {
 		try {
 			resultCPU = conn
 					.executeCommand("ps aux | awk '{sum+=$3} END {print sum}'");
-			Log.d ("CPUValue", resultCPU);
+			Log.d("CPUValue", resultCPU);
 			resultRAM = conn
 					.executeCommand("ps aux | awk '{sum+=$4} END {print sum}'");
-			Log.d ("RAMValue", resultRAM);
+			Log.d("RAMValue", resultRAM);
 			if (!resultCPU.equalsIgnoreCase("")
 					&& !resultRAM.equalsIgnoreCase("")) {
+				if (Double.parseDouble(resultCPU) > 100)
+					resultCPU = "100";
+				if (Double.parseDouble(resultRAM) > 100)
+					resultRAM = "100";
 				// if results are not empty
 				timeSeriesCPU.add(new Date(), Double.parseDouble(resultCPU));
 				timeSeriesRAM.add(new Date(), Double.parseDouble(resultRAM));
@@ -121,11 +128,12 @@ public class SysMonitorActivity extends Activity {
 		renderer.setChartTitleTextSize(25);
 		renderer.setFitLegend(false);
 		renderer.setGridColor(Color.LTGRAY);
-		renderer.setPanEnabled(true, true);
+		renderer.setPanEnabled(true, false);
 		renderer.setPointSize(5);
 		renderer.setXTitle("Time");
 		renderer.setYTitle("Number");
 		renderer.setYAxisMax(100);
+		renderer.setYAxisMin(0);
 		renderer.setMargins(new int[] { 20, 30, 20, 30 });
 		renderer.setZoomButtonsVisible(true);
 		renderer.setBarSpacing(20);
@@ -149,15 +157,15 @@ public class SysMonitorActivity extends Activity {
 
 		mThread = new Thread() {
 			public void run() {
-				while (true) {
+				while (state) {
 					try {
-						Thread.sleep(1500);
+						Thread.sleep(1000);
 						sendAndReceive();
 					} catch (InterruptedException IE) {
 						IE.printStackTrace();
 					}
 				}
-			}	
+			}
 		};
 		mThread.start();
 	}
@@ -174,15 +182,42 @@ public class SysMonitorActivity extends Activity {
 		setContentView(view);
 	}
 
+	public boolean onCreateOptionsMenu(Menu menu) {
+		boolean result = super.onCreateOptionsMenu(menu);
+		// Add a button to menu
+		menu.add(0, Menu.FIRST, 0, R.string.SysMonitorPause).setIcon(
+				android.R.drawable.ic_media_pause);
+		menu.add(0, 2, 0, R.string.SysMonitorStart).setIcon(
+				android.R.drawable.ic_media_play);
+		return result;
+	}
+
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case Menu.FIRST:
+			mThread.suspend();
+			state = false;
+			return true;
+		case 2:
+			state = true;
+			mThread.resume();
+			return true;
+		}
+		return false;
+	}
+
 	@Override
 	protected void onDestroy() {
-		// TODO Auto-generated method stub
 		super.onDestroy();
+		// state = false;
+		mThread.stop();
+		unbindService(connection);
+		finish();
 	}
 
 	@Override
 	protected void onStop() {
-		// TODO Auto-generated method stub
 		super.onStop();
+		finish();
 	}
 }
