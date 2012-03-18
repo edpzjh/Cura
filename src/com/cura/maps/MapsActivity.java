@@ -28,17 +28,7 @@ public class MapsActivity extends MapActivity {
 		Drawable drawable = this.getResources().getDrawable(
 				R.drawable.androidmarker);
 		ItemizedOverlay itemizedoverlay = new ItemizedOverlay(drawable, this);
-		String host = "wu.ourproject.org";
-		Locale location = null;
-		try {
-			location = InetAddressLocator.getLocale(host);
-		} catch (InetAddressLocatorException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		Toast.makeText(MapsActivity.this, location.toString(), Toast.LENGTH_LONG).show();
-		GeoPoint point = new GeoPoint(35, 33);
+		GeoPoint point = new GeoPoint(19240000,-99120000);
 		OverlayItem overlayitem = new OverlayItem(point, "Hola, Mundo!",
 				"I'm in Mexico City!");
 		itemizedoverlay.addOverlay(overlayitem);
