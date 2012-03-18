@@ -169,4 +169,10 @@ public class SysLogActivity extends Activity implements
 		adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		logFile.setAdapter(adapter2);
 	}
+	
+	@Override
+	protected void onDestroy(){
+		super.onDestroy();
+		unbindService(connection);
+	}
 }
