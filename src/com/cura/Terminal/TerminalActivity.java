@@ -176,15 +176,8 @@ public class TerminalActivity extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		boolean result = super.onCreateOptionsMenu(menu);
 		// Add a button to menu
-<<<<<<< HEAD
 		menu.add(0, FAVORITES, 0, R.string.addNewFavoriteCommand).setIcon(android.R.drawable.ic_input_add);
 		menu.add(1, LOGOUT,0,R.string.logout).setIcon(R.drawable.ic_lock_power_off);
-=======
-		menu.add(0, FAVORITES, 0, R.string.addNewFavoriteCommand).setIcon(
-				android.R.drawable.ic_input_add);
-		menu.add(1, LOGOUT, 0, R.string.logout).setIcon(
-				R.drawable.ic_lock_power_off);
->>>>>>> 09df241f12c082cce444c807281f7d6c747764d4
 		return result;
 	}
 
@@ -219,7 +212,6 @@ public class TerminalActivity extends Activity {
 			addUser.show();
 			break;
 		case LOGOUT:
-<<<<<<< HEAD
 				new AlertDialog.Builder(this)
 				.setTitle("Logout Confirmation")
 				.setMessage(R.string.logoutConfirmationDialog)
@@ -243,7 +235,6 @@ public class TerminalActivity extends Activity {
 						dialog.dismiss();	
 					}
 				}).show();
-=======
 			new AlertDialog.Builder(this)
 					.setTitle("Logout Confirmation")
 					.setMessage(R.string.logoutConfirmationDialog)
@@ -275,7 +266,6 @@ public class TerminalActivity extends Activity {
 									dialog.dismiss();
 								}
 							}).show();
->>>>>>> 09df241f12c082cce444c807281f7d6c747764d4
 			break;
 		}
 		return super.onOptionsItemSelected(item);
@@ -306,31 +296,17 @@ public class TerminalActivity extends Activity {
 		startActivity(getIntent());
 		finish();
 	}
-<<<<<<< HEAD
 	
-=======
-
->>>>>>> 09df241f12c082cce444c807281f7d6c747764d4
 	@Override
 	protected void onStop() {
 		super.onStop();
 		unbindService(connection);
 		finish();
 	}
-<<<<<<< HEAD
 	
-	@Override
-	protected void onDestroy() {
-		super.onStop();
-//		unbindService(connection);
-	}
-	
-=======
-
 	@Override
 	protected void onDestroy() {
 		super.onStop();
 		// unbindService(connection);
 	}
->>>>>>> 09df241f12c082cce444c807281f7d6c747764d4
 }
