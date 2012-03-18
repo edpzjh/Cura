@@ -142,7 +142,7 @@ public class CuraActivity extends Activity implements OnClickListener {
 		nmapRow = (TableRow) findViewById(R.id.NMapRow);
 		nmapRow.setOnClickListener(this);
 
-		sysConnectRow = (TableRow) findViewById(R.id.SysConnectRow);
+		sysConnectRow = (TableRow) findViewById(R.drawable.mapsicon);
 		sysConnectRow.setOnClickListener(this);
 	}
 
@@ -167,6 +167,7 @@ public class CuraActivity extends Activity implements OnClickListener {
 		case R.id.SysLogRow:
 			Intent sysLogIntent = new Intent(this, SysLogActivity.class);
 			startActivity(sysLogIntent);
+			break;
 		case R.id.SysConnectRow:
 			Intent sysConnectIntent = new Intent(this, MapsActivity.class);
 			startActivity(sysConnectIntent);
