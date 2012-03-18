@@ -18,7 +18,6 @@
  */
 package com.cura.Terminal;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -43,11 +42,16 @@ public class Terminal extends Thread {
 	private String username;
 	private String host;
 	private String password;
-	int i = 0;
 	private int port;
+	private StringWriter writer; 
+	private InputStream in;
+	private String result = "";
+	int i = 0;
+	
 
 	public Terminal(User user) throws JSchException {
 		// TODO Auto-generated method stub
+		writer = new StringWriter();
 		jsch = new JSch();
 		username = user.getUsername();
 		host = user.getDomain();
@@ -64,21 +68,21 @@ public class Terminal extends Thread {
 	}
 
 	public synchronized String ExecuteCommand(String command) {
-		InputStream in;
-		String result = "";
+		
 		try {
 			channel = session.openChannel("exec");
 			((ChannelExec) channel).setCommand(command);
 			channel.connect();
-			channel.run();
 
 			// get output from server
 			in = channel.getInputStream();
 
 			// convert output to string
-			StringWriter writer = new StringWriter();
+			writer.getBuffer().setLength(0);
 			IOUtils.copy(in, writer);
 			result = writer.toString();
+			
+			System.gc();
 
 		} catch (IOException i) {
 			Log.d("terminal", i.toString());

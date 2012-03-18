@@ -6,7 +6,16 @@
             android:defaultValue="false"
             android:key="enableSMS"
             android:title="@string/security" />
-
+		<EditTextPreference
+            android:defaultValue=""
+            android:key="alternativeEmail"
+            android:summary=""
+            android:title="@string/alternativeEmail" />
+		<EditTextPreference
+            android:defaultValue=""
+            android:key="alternativePhoneNo"
+            android:summary=""
+            android:title="@string/alternativePhoneNo" />
         <EditTextPreference
             android:defaultValue=""
             android:key="securityPattern"

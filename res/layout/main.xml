@@ -1,4 +1,8 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+>
+<LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
@@ -39,8 +43,8 @@
                 android:id="@+id/imageView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="35dp"
+                android:layout_gravity="center|right"
+                android:layout_marginLeft="10dp"
                 android:src="@drawable/icon_right_arrow_2" />
         </TableRow>
 
@@ -77,8 +81,8 @@
                 android:id="@+id/imageView4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="35dp"
+                android:layout_gravity="center|right"
+                android:layout_marginLeft="10dp"
                 android:src="@drawable/icon_right_arrow_2" />
         </TableRow>
 
@@ -115,8 +119,8 @@
                 android:id="@+id/imageView6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="35dp"
+                android:layout_gravity="center|right"
+                android:layout_marginLeft="10dp"
                 android:src="@drawable/icon_right_arrow_2" />
         </TableRow>
 
@@ -153,8 +157,8 @@
                 android:id="@+id/imageView8"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="35dp"
+                android:layout_gravity="center|right"
+                android:layout_marginLeft="10dp"
                 android:src="@drawable/icon_right_arrow_2" />
         </TableRow>
 
@@ -191,8 +195,8 @@
                 android:id="@+id/imageView10"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="35dp"
+                android:layout_gravity="center|right"
+                android:layout_marginLeft="10dp"
                 android:src="@drawable/icon_right_arrow_2" />
         </TableRow>
 
@@ -229,8 +233,8 @@
                 android:id="@+id/imageView12"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="35dp"
+                android:layout_gravity="center|right"
+                android:layout_marginLeft="10dp"
                 android:src="@drawable/icon_right_arrow_2" />
         </TableRow>
 
@@ -240,3 +244,4 @@
     </TableLayout>
 
 </LinearLayout>
+</ScrollView>

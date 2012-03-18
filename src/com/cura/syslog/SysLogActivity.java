@@ -44,8 +44,9 @@ public class SysLogActivity extends Activity implements
 		android.view.View.OnClickListener {
 	private String menu1[] = new String[] { "Head", "Tail" };
 	// GUI menu where "Head" and "Tail" appear
-	private String menu2[] = new String[] { "errors.log", "kernel.log", "boot", "auth.log",
-			"daemon.log", "dmesg.log", "crond.log", "user.log", "Xorg.0.log" };
+	private String menu2[] = new String[] { "errors.log", "kernel.log", "boot",
+			"auth.log", "daemon.log", "dmesg.log", "crond.log", "user.log",
+			"Xorg.0.log" };
 	// GUI menu where the drop-down list of available log files appears
 	private Spinner position, logFile;
 	private CheckBox checkBox;
@@ -168,5 +169,11 @@ public class SysLogActivity extends Activity implements
 		// initialize the logFile spinner (drop-down list of all the log files)
 		adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		logFile.setAdapter(adapter2);
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		unbindService(connection);
 	}
 }
