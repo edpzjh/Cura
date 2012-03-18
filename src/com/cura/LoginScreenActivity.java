@@ -83,7 +83,8 @@ public class LoginScreenActivity extends ListActivity {
 		user = getUser();
 		// create the listView
 
-		if (user.length == 1 && user[0].getUsername().equalsIgnoreCase("username")
+		if (user.length == 1
+				&& user[0].getUsername().equalsIgnoreCase("username")
 				&& user[0].getDomain().equalsIgnoreCase("domain")) {
 			showDialog(DIALOG_YES_NO_LONG_MESSAGE);
 		}
@@ -225,7 +226,7 @@ public class LoginScreenActivity extends ListActivity {
 											LoginScreenActivity.this,
 											"Connecting...",
 											"Loading, please wait...", true);
-								}	
+								}
 
 								@Override
 								protected String doInBackground(
@@ -240,18 +241,18 @@ public class LoginScreenActivity extends ListActivity {
 									passUserObjToService.putExtra("user",
 											userTemp);
 									passUserObjToService.putExtra("pass", pass);
-								return null;
+									return null;
 								}
 
 								@Override
-								protected void onPostExecute(String result) {		
+								protected void onPostExecute(String result) {
 									startService(passUserObjToService);
 								}
 
 							};
 							task.execute();
 						}
-							});
+					});
 			alert.setNegativeButton("Cancel",
 					new DialogInterface.OnClickListener() {
 						// UPON CLICKING "CANCEL" IN THE DIALOG BOX (ALERT)
@@ -275,6 +276,11 @@ public class LoginScreenActivity extends ListActivity {
 		menu.add(0, SETTINGS, 0, R.string.preferenceSettings).setIcon(
 				R.drawable.ic_menu_preferences);
 		menu.add(1, REFRESH, 1, "Refresh").setIcon(R.drawable.ic_menu_rotate);
+		// menu.add(0, Menu.FIRST, 0, R.string.no_users).setIcon(
+		// R.drawable.ic_menu_add);
+		// menu.add(0, 2, 0, R.string.preferenceSettings).setIcon(
+		// R.drawable.ic_menu_preferences);
+		// menu.add(1, 3, 1, "Refresh").setIcon(R.drawable.ic_menu_rotate);
 		return result;
 	}
 
@@ -369,8 +375,9 @@ public class LoginScreenActivity extends ListActivity {
 							BasicPasswordEncryptor passwordEncryptor = new BasicPasswordEncryptor();
 							String curaPass = prefs.getString("myPass", "");
 							String passfield = passField.getText().toString();
-//							if (passfield.compareTo(curaPass) == 0)
-							 if (passwordEncryptor.checkPassword(passfield, curaPass))
+							// if (passfield.compareTo(curaPass) == 0)
+							if (passwordEncryptor.checkPassword(passfield,
+									curaPass))
 								startActivity(new Intent(
 										LoginScreenActivity.this,
 										PreferenceScreen.class));
@@ -520,6 +527,5 @@ public class LoginScreenActivity extends ListActivity {
 		}
 		return super.onContextItemSelected(item);
 	}
-	
-	
+
 }
