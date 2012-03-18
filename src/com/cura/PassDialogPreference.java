@@ -19,6 +19,8 @@
 
 package com.cura;
 
+import org.jasypt.util.password.BasicPasswordEncryptor;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.DialogPreference;
@@ -34,6 +36,7 @@ public class PassDialogPreference extends DialogPreference {
 	private EditText oldPassED, newPassED, confPassED;
 	// 3 editTexts to appear in the prompt for changing the password
 	private SharedPreferences prefs;
+	private BasicPasswordEncryptor passwordEncryptor ;
 	// to be able to access the content in PreferenceScreen
 	private Context context;
 
@@ -44,6 +47,8 @@ public class PassDialogPreference extends DialogPreference {
 		//set the password dialog from the 
 		prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		oldPassword = prefs.getString("myPass", "");
+		
+		passwordEncryptor = new BasicPasswordEncryptor();
 	}
 
 	@Override
@@ -61,7 +66,7 @@ public class PassDialogPreference extends DialogPreference {
 		persistBoolean(positiveResult);
 		if (positiveResult) {
 			// if the fields are set
-			if ((oldPassED.getText().toString()).compareTo(oldPassword) == 0)
+			if (passwordEncryptor.checkPassword(oldPassED.getText().toString(), oldPassword))
 				// and if the old password that was typed in matches the actual
 				// oldPassword value
 				if ((newPassED.getText().toString()).compareTo(confPassED
@@ -74,7 +79,7 @@ public class PassDialogPreference extends DialogPreference {
 					// if the confirm password editText is not empty
 					SharedPreferences.Editor editor = prefs.edit();
 					// open preferences
-					editor.putString("myPass", newPassED.getText().toString());
+					editor.putString("myPass", passwordEncryptor.encryptPassword(newPassED.getText().toString()));
 					// save the new password
 					editor.commit();
 					// commit the changes
