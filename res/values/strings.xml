@@ -7,7 +7,7 @@
     <string name="SysMonitorLabel">SysMonitor</string>
     <string name="NessusLabel">Nessus</string>
     <string name="NMapLabel">NMap</string>
-    <string name="SysConnectLabel">SysConnect</string>
+    <string name="MapsLabel">Server Location</string>
     <string name="executeButton">Execute</string>
     <string name="favoritesButton">Favorites</string>
     <string name="hintTerminalMessage">Enter your commands here, or press the Menu button to add a new command to your list of favorites</string>
