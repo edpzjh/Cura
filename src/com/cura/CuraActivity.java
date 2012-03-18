@@ -18,11 +18,12 @@
  */
 package com.cura;
 
-import java.util.Date;
+import java.util.Locale;
 
+import net.sf.javainetlocator.InetAddressLocator;
+import net.sf.javainetlocator.InetAddressLocatorException;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -31,8 +32,8 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.text.InputFilter.LengthFilter;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,11 +45,14 @@ import android.widget.Toast;
 import com.cura.Connection.CommunicationInterface;
 import com.cura.Connection.ConnectionService;
 import com.cura.Terminal.TerminalActivity;
-import com.cura.security.SMSService;
+import com.cura.maps.MapsActivity;
 import com.cura.syslog.SysLogActivity;
 import com.cura.sysmonitor.SysMonitorActivity;
 
 public class CuraActivity extends Activity implements OnClickListener {
+
+	private final int LOGOUT = 1;
+	private final int SERVER_INFO = 2;
 
 	TableRow terminalRow, sysMonitorRow, sysLogRow, nessusRow, nmapRow,
 			sysConnectRow;
@@ -68,7 +72,7 @@ public class CuraActivity extends Activity implements OnClickListener {
 			// TODO Auto-generated method stub
 			conn = null;
 			Toast.makeText(CuraActivity.this, "Service Disconnected",
-					Toast.LENGTH_LONG);
+					Toast.LENGTH_LONG).show();
 		}
 	};
 
@@ -94,6 +98,17 @@ public class CuraActivity extends Activity implements OnClickListener {
 		return resultUPTIME;
 	}
 
+	public synchronized String getLocation() {
+		Locale location = null;
+		try {
+			location = InetAddressLocator.getLocale(userTemp.getDomain());
+		} catch (InetAddressLocatorException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return location.toString();
+	}
+
 	public void doBindService() {
 		Intent i = new Intent(this, ConnectionService.class);
 		bindService(i, connection, Context.BIND_AUTO_CREATE);
@@ -103,8 +118,8 @@ public class CuraActivity extends Activity implements OnClickListener {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		doBindService();
 		Bundle extras = getIntent().getExtras();
+		doBindService();
 		if (extras != null) {
 			userTemp = extras.getParcelable("user");
 		}
@@ -152,22 +167,26 @@ public class CuraActivity extends Activity implements OnClickListener {
 		case R.id.SysLogRow:
 			Intent sysLogIntent = new Intent(this, SysLogActivity.class);
 			startActivity(sysLogIntent);
+		case R.id.SysConnectRow:
+			Intent sysConnectIntent = new Intent(this, MapsActivity.class);
+			startActivity(sysConnectIntent);
+			break;
 		}
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		boolean result = super.onCreateOptionsMenu(menu);
-		menu.add(0, 2, 0, R.string.GetServerInfoOptionMenu).setIcon(
+		menu.add(0, SERVER_INFO, 0, R.string.GetServerInfoOptionMenu).setIcon(
 				android.R.drawable.ic_menu_info_details);
-		menu.add(0, Menu.FIRST, 0, R.string.logout).setIcon(
+		menu.add(0, LOGOUT, 0, R.string.logout).setIcon(
 				R.drawable.ic_lock_power_off);
 		return result;
 	}
 
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case Menu.FIRST:
+		case LOGOUT:
 			// Confirm logout for user
 			new AlertDialog.Builder(this)
 					.setTitle("Logout Confirmation")
@@ -202,10 +221,11 @@ public class CuraActivity extends Activity implements OnClickListener {
 								}
 							}).show();
 			break;
-		case 2:
+		case SERVER_INFO:
 			String finalResultForDialog = "";
 			finalResultForDialog = getUname() + "\n"
-					+ getString(R.string.uptimeText) + getUptime();
+					+ getString(R.string.uptimeText) + getUptime() + "\n"
+					+ getString(R.string.userLocation) + getLocation();
 			AlertDialog.Builder alert = new AlertDialog.Builder(this);
 			alert.setTitle(R.string.ServerInfoDialog);
 			final TextView infoArea = new TextView(this);
@@ -223,4 +243,63 @@ public class CuraActivity extends Activity implements OnClickListener {
 		}
 		return super.onOptionsItemSelected(item);
 	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		doBindService();
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		// unbindService(connection);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		// unbindService(connection);
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+			new AlertDialog.Builder(this)
+					.setTitle("Logout Confirmation")
+					.setMessage(R.string.logoutConfirmationDialog)
+					.setPositiveButton("Yes",
+							new DialogInterface.OnClickListener() {
+
+								public void onClick(DialogInterface dialog,
+										int which) {
+									try {
+										conn.close();
+										unbindService(connection);
+										Log.d("Connection", "connection closed");
+									} catch (RemoteException e) {
+										Log.d("Connection", e.toString());
+									}
+									Intent closeAllActivities = new Intent(
+											CuraActivity.this,
+											LoginScreenActivity.class);
+									// just close everything
+									closeAllActivities
+											.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+									CuraActivity.this
+											.startActivity(closeAllActivities);
+								}
+							})
+					.setNegativeButton("No",
+							new DialogInterface.OnClickListener() {
+
+								public void onClick(DialogInterface dialog,
+										int which) {
+									dialog.dismiss();
+								}
+							}).show();
+		}
+		return super.onKeyDown(keyCode, event);
+	}
+
 }
