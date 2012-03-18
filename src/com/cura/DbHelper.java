@@ -18,6 +18,9 @@
  */
 package com.cura;
 
+import org.jasypt.util.password.BasicPasswordEncryptor;
+import org.jasypt.util.password.StrongPasswordEncryptor;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
@@ -35,11 +38,13 @@ public class DbHelper extends SQLiteOpenHelper {
 	public static final String C_PORT = "port";
 	public static final String C_COMMAND = "command";
 	private SharedPreferences prefs;
+	private BasicPasswordEncryptor passEncryptor ;
 	Context context;
 
 	public DbHelper(Context context) {
 		super(context, databaseName, null, version);
 		this.context = context;
+		passEncryptor = new BasicPasswordEncryptor();
 	}
 
 	@Override
@@ -55,7 +60,7 @@ public class DbHelper extends SQLiteOpenHelper {
 		//Save default pass
 		prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		SharedPreferences.Editor editor = prefs.edit();
-		editor.putString("myPass", "default");
+		editor.putString("myPass", passEncryptor.encryptPassword("default"));
 		editor.commit();
 	}
 
