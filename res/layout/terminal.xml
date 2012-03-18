@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    android:id = "@+id/terminalLayout"
+    android:layout_width="fill_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
@@ -8,43 +9,48 @@
         <EditText
         android:id="@+id/result"
         android:layout_width="match_parent"
-        android:layout_height="219dp"
+        android:layout_height="219dip"
         android:hint="@string/hintTerminalMessage" 
         android:textSize="10dip" 
         android:clickable="false" 
         android:editable="false" 
         android:autoText="false"
-        android:background="@android:color/black"/>
-        <LinearLayout
+        android:background="@android:color/black"/>
+
+       <!--  <LinearLayout
 	    	android:layout_width="fill_parent"
 	    	android:layout_height="wrap_content"
-	    	android:orientation="horizontal">
+	    	android:orientation="horizontal"> -->
 	    	
-        <Button 
-	        android:id="@+id/executeButton"
-	        android:layout_width="142dp"
-	        android:layout_height="46dp"
-	        android:background="@android:color/transparent"
-	        android:text="@string/executeButton"
-	        android:textColor="#FFFFFF" />
+        
 	
     	<EditText
 	        android:id="@+id/commandLine"
-	        android:layout_width="260dip"
-	        android:layout_height="match_parent"
-	        android:layout_gravity="fill_horizontal"
+	        android:layout_width="250dip"
+	        android:layout_height="50dip"
+	        android:layout_gravity="center"
 	        android:background="@android:color/black"
 	        android:textColor="@android:color/white" >
 	        <requestFocus />
 	    	</EditText>
 
+    	<Button 
+	        android:id="@+id/executeButton"
+	        android:layout_width="120dip"
+	        android:layout_height="48dip"
+	        android:layout_gravity="center"
+	        android:background="@android:color/transparent"
+	        android:text="@string/executeButton"
+	        android:textColor="#FFFFFF" />
+    	
 	    <Button
 	        android:id="@+id/favoritesButton"
-	        android:layout_width="132dp"
-	        android:layout_height="48dp"
+	        android:layout_width="120dip"
+	        android:layout_height="48dip"
+	        android:layout_gravity="center"
 	        android:background="@android:color/transparent"
 	        android:text="@string/favoritesButton"
 	        android:textColor="#FFFFFF" />
-		</LinearLayout>
+		<!-- </LinearLayout> -->
 
 </LinearLayout>

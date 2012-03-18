@@ -39,6 +39,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.cura.DbHelper;
@@ -49,6 +50,10 @@ import com.cura.Connection.CommunicationInterface;
 import com.cura.Connection.ConnectionService;
 
 public class TerminalActivity extends Activity {
+	
+	private final int FAVORITES = 1;
+	private final int LOGOUT = 2;
+	
 	EditText result;
 	EditText commandLine;
 	Button execute;
@@ -88,7 +93,7 @@ public class TerminalActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.terminal);
-
+		doBindService();
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
 			userTemp = extras.getParcelable("user");
@@ -101,7 +106,6 @@ public class TerminalActivity extends Activity {
 					+ ":~$ ";
 		}
 		this.setTitle("Welcome to the terminal, " + userTemp.getUsername());
-		doBindService();
 		commandLine = (EditText) findViewById(R.id.commandLine);
 		execute = (Button) findViewById(R.id.executeButton);
 		result = (EditText) findViewById(R.id.result);
@@ -172,8 +176,8 @@ public class TerminalActivity extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		boolean result = super.onCreateOptionsMenu(menu);
 		// Add a button to menu
-		menu.add(0, Menu.FIRST, 0, R.string.addNewFavoriteCommand).setIcon(android.R.drawable.ic_input_add);
-		menu.add(1,2,0,R.string.logout).setIcon(R.drawable.ic_lock_power_off);
+		menu.add(0, FAVORITES, 0, R.string.addNewFavoriteCommand).setIcon(android.R.drawable.ic_input_add);
+		menu.add(1, LOGOUT,0,R.string.logout).setIcon(R.drawable.ic_lock_power_off);
 		return result;
 	}
 
@@ -181,7 +185,7 @@ public class TerminalActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		// if "Add new command" button is pressed from the menu
-		case Menu.FIRST:
+		case FAVORITES:
 			// display dialog box
 			AlertDialog.Builder addUser = new AlertDialog.Builder(
 					TerminalActivity.this);
@@ -207,7 +211,7 @@ public class TerminalActivity extends Activity {
 					});
 			addUser.show();
 			break;
-		case 2:
+		case LOGOUT:
 				new AlertDialog.Builder(this)
 				.setTitle("Logout Confirmation")
 				.setMessage(R.string.logoutConfirmationDialog)
@@ -259,4 +263,18 @@ public class TerminalActivity extends Activity {
 		startActivity(getIntent());
 		finish();
 	}
+	
+	@Override
+	protected void onStop() {
+		super.onStop();
+		unbindService(connection);
+		finish();
+	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onStop();
+//		unbindService(connection);
+	}
+	
 }

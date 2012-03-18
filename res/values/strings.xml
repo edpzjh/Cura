@@ -68,4 +68,10 @@
     <string name="ServerInfoDialog">Server\'s general information</string>
     <string name="uptimeText">It has been up for: </string>
     <string name="GetServerInfoOptionMenu">Server\'s info</string>
+    <string name="SysMonitorPause">Pause</string>
+    <string name="SysMonitorStart">Start</string>
+    <string name="alternativeEmail">Alternative Email</string>
+    <string name="alternativePhoneNo">Alternative Phone No.</string>
+    <string name="smsSecurityError">Please make sure that email, phone no. and pattern are filled...</string>
+    <string name="userLocation">Location: </string>
 </resources>
