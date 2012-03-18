@@ -55,7 +55,7 @@ public class CuraActivity extends Activity implements OnClickListener {
 	private final int SERVER_INFO = 2;
 
 	TableRow terminalRow, sysMonitorRow, sysLogRow, nessusRow, nmapRow,
-			sysConnectRow;
+			mapsRow;
 	// menu buttons
 
 	User userTemp;
@@ -142,8 +142,8 @@ public class CuraActivity extends Activity implements OnClickListener {
 		nmapRow = (TableRow) findViewById(R.id.NMapRow);
 		nmapRow.setOnClickListener(this);
 
-		sysConnectRow = (TableRow) findViewById(R.drawable.mapsicon);
-		sysConnectRow.setOnClickListener(this);
+		mapsRow = (TableRow) findViewById(R.id.MapsRow);
+		mapsRow.setOnClickListener(this);
 	}
 
 	public void onClick(View v) {
@@ -168,7 +168,7 @@ public class CuraActivity extends Activity implements OnClickListener {
 			Intent sysLogIntent = new Intent(this, SysLogActivity.class);
 			startActivity(sysLogIntent);
 			break;
-		case R.id.SysConnectRow:
+		case R.id.MapsRow:
 			Intent sysConnectIntent = new Intent(this, MapsActivity.class);
 			startActivity(sysConnectIntent);
 			break;
