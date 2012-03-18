@@ -12,7 +12,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_gravity="bottom"
-        android:background="@drawable/gradientbackgroundexample">
+        android:background="@drawable/background">
 
         <TableRow
             android:id="@+id/TerminalRow"
@@ -205,18 +205,18 @@
             android:background="#FF909090" />
 
         <TableRow
-            android:id="@+id/SysConnectRow"
+            android:id="@+id/MapsRow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:layout_marginTop="10dp" >
-
+
             <ImageView
                 android:id="@+id/imageView11"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
                 android:layout_marginLeft="5dip"
-                android:src="@drawable/sysconnect" />
+                android:src="@drawable/mapsicon" />
 
             <TextView
                 android:id="@+id/textView6"
@@ -224,7 +224,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginLeft="40dp"
-                android:text="@string/SysConnectLabel"
+                android:text="@string/MapsLabel"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textSize="20dp"
                 android:textStyle="normal|bold" />
