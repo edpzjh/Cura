@@ -99,14 +99,15 @@ public class CuraActivity extends Activity implements OnClickListener {
 	}
 
 	public synchronized String getLocation() {
-		Locale location = null;
+		String resultLocation = "";
 		try {
-			location = InetAddressLocator.getLocale(userTemp.getDomain());
-		} catch (InetAddressLocatorException e) {
+			resultLocation = conn.executeCommand("geoiplookup "
+					+ userTemp.getDomain() + " | awk '{print $4, $5}'");
+		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return location.toString();
+		return resultLocation;
 	}
 
 	public void doBindService() {
