@@ -12,4 +12,14 @@
      <item>ge</item>
      <item>gr</item>
  	 </string-array>
+<string-array name="commands">
+	<item>nmap</item>
+	<item>nping</item>
+	<item>ncat</item>
+</string-array>
+<string-array name="output">
+	<item>Normal</item>
+	<item>XML</item>
+	<item>Grepable</item>
+</string-array>
 </resources>
