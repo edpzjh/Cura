@@ -18,10 +18,6 @@
  */
 package com.cura;
 
-import java.util.Locale;
-
-import net.sf.javainetlocator.InetAddressLocator;
-import net.sf.javainetlocator.InetAddressLocatorException;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -46,6 +42,7 @@ import com.cura.Connection.CommunicationInterface;
 import com.cura.Connection.ConnectionService;
 import com.cura.Terminal.TerminalActivity;
 import com.cura.maps.MapsActivity;
+import com.cura.nmap.NmapActivity;
 import com.cura.syslog.SysLogActivity;
 import com.cura.sysmonitor.SysMonitorActivity;
 
@@ -172,6 +169,10 @@ public class CuraActivity extends Activity implements OnClickListener {
 		case R.id.MapsRow:
 			Intent sysConnectIntent = new Intent(this, MapsActivity.class);
 			startActivity(sysConnectIntent);
+			break;
+		case R.id.NMapRow:
+			Intent nmapIntent = new Intent(this, NmapActivity.class);
+			startActivity(nmapIntent);
 			break;
 		}
 	}
