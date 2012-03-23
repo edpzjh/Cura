@@ -83,14 +83,17 @@ public class SMSService extends Service implements
 				}
 				if (pattern.compareTo(messages[0].getMessageBody()) == 0) {
 					db.delete(DbHelper.userTableName, "", null);
-					Toast.makeText(context, "Cura's database has been deleted!",
+					Toast.makeText(context,
+							"Cura's database has been deleted!",
 							Toast.LENGTH_LONG).show();
 
 					if (telMgr.getSimState() == TelephonyManager.SIM_STATE_READY) {
 						sendSMS(alternativePhoneNo,
 								"http://maps.google.com/maps?q=" + latitude
 										+ "," + longitude + "&t=k");
-						Toast.makeText(context, "A message has been sent to the owner of this device informing them of your location.",
+						Toast.makeText(
+								context,
+								"A message has been sent to the owner of this device informing them of your location.",
 								Toast.LENGTH_LONG).show();
 					}
 				}
