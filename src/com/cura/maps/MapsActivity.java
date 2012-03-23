@@ -5,8 +5,13 @@ import java.util.Locale;
 
 import net.sf.javainetlocator.InetAddressLocator;
 import net.sf.javainetlocator.InetAddressLocatorException;
+import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 import com.cura.R;
 import com.google.android.maps.GeoPoint;
@@ -17,22 +22,30 @@ import com.google.android.maps.OverlayItem;
 import com.google.android.maps.MyLocationOverlay;
 
 public class MapsActivity extends MapActivity {
+	LocationManager locMgr;
+	LocationListener locListener;
+	double latitude;
+	double longitude;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.maps);
+		gpsLocation();
 		MapView mapView = (MapView) findViewById(R.id.mapview);
 		mapView.setBuiltInZoomControls(true);
 		List<Overlay> mapOverlays = mapView.getOverlays();
 		Drawable drawable = this.getResources().getDrawable(
 				R.drawable.androidmarker);
 		ItemizedOverlay itemizedoverlay = new ItemizedOverlay(drawable, this);
-		GeoPoint point = new GeoPoint(19240000,-99120000);
-		OverlayItem overlayitem = new OverlayItem(point, "Hola, Mundo!",
-				"I'm in Mexico City!");
-		itemizedoverlay.addOverlay(overlayitem);
-		mapOverlays.add(itemizedoverlay);
+		
+
+		// GeoPoint point = new GeoPoint(latitude, longitude);
+		// OverlayItem overlayitem = new OverlayItem(point, "Hola, Mundo!",
+		// "You are here!");
+		// itemizedoverlay.addOverlay(overlayitem);
+		// mapOverlays.add(itemizedoverlay);
 	}
 
 	@Override
@@ -41,4 +54,35 @@ public class MapsActivity extends MapActivity {
 		return false;
 	}
 
+	public void gpsLocation() {
+		locMgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		locListener = new LocationListener() {
+
+			public void onLocationChanged(Location location) {
+				latitude = location.getLatitude();
+				longitude = location.getLongitude();
+				Toast.makeText(MapsActivity.this, "" + latitude + longitude,
+						Toast.LENGTH_LONG).show();
+			}
+
+			public void onProviderDisabled(String provider) {
+				// TODO Auto-generated method stub
+
+			}
+
+			public void onProviderEnabled(String provider) {
+				// TODO Auto-generated method stub
+
+			}
+
+			public void onStatusChanged(String provider, int status,
+					Bundle extras) {
+				// TODO Auto-generated method stub
+
+			}
+
+		};
+		locMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0,
+				locListener);
+	}
 }
