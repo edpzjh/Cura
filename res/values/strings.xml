@@ -74,4 +74,8 @@
     <string name="alternativePhoneNo">Alternative Phone No.</string>
     <string name="smsSecurityError">Please make sure that email, phone no. and pattern are filled...</string>
     <string name="userLocation">Location: </string>
+    <string name="loginBtn">Login</string>
+    <string name="cancelBtn">Cancel</string>
+    <string name="showPassword">Show password.</string>
+    <string name="noFavoritesFound">No favorites found</string>
 </resources>
