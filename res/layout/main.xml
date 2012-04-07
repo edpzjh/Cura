@@ -1,18 +1,20 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="fill_parent"
+    android:background="@drawable/background"
 >
 <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+     >
 
     <TableLayout
         android:id="@+id/tableLayout1"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_gravity="bottom"
-        android:background="@drawable/background">
+        >
 
         <TableRow
             android:id="@+id/TerminalRow"
@@ -44,12 +46,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center|right"
-                android:layout_marginLeft="10dp"
+                android:layout_marginLeft="3dp"
                 android:src="@drawable/icon_right_arrow_2" />
         </TableRow>
 
         <View
-            android:layout_height="2dip"
+            android:layout_height="1dip"
             android:background="#FF909090" />
 
         <TableRow
@@ -63,7 +65,7 @@
                 android:id="@+id/imageView3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dip"
+                android:layout_marginLeft="5dp"
                 android:src="@drawable/sysmonitor" />
 
             <TextView
@@ -82,12 +84,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center|right"
-                android:layout_marginLeft="10dp"
+                android:layout_marginLeft="3dp"
                 android:src="@drawable/icon_right_arrow_2" />
         </TableRow>
 
         <View
-            android:layout_height="2dip"
+            android:layout_height="1dip"
             android:background="#FF909090" />
 
         <TableRow
@@ -101,7 +103,7 @@
                 android:id="@+id/imageView5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dip"
+                android:layout_marginLeft="5dp"
                 android:src="@drawable/syslog" />
 
             <TextView
@@ -120,12 +122,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center|right"
-                android:layout_marginLeft="10dp"
+                android:layout_marginLeft="3dp"
                 android:src="@drawable/icon_right_arrow_2" />
         </TableRow>
 
         <View
-            android:layout_height="2dip"
+            android:layout_height="1dip"
             android:background="#FF909090" />
 
         <TableRow
@@ -139,7 +141,7 @@
                 android:id="@+id/imageView7"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dip"
+                android:layout_marginLeft="5dp"
                 android:src="@drawable/nessus" />
 
             <TextView
@@ -158,12 +160,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center|right"
-                android:layout_marginLeft="10dp"
+                android:layout_marginLeft="3dp"
                 android:src="@drawable/icon_right_arrow_2" />
         </TableRow>
 
         <View
-            android:layout_height="2dip"
+            android:layout_height="1dip"
             android:background="#FF909090" />
 
         <TableRow
@@ -177,7 +179,7 @@
                 android:id="@+id/imageView9"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dip"
+                android:layout_marginLeft="5dp"
                 android:src="@drawable/nmap" />
 
             <TextView
@@ -196,12 +198,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center|right"
-                android:layout_marginLeft="10dp"
+                android:layout_marginLeft="3dp"
                 android:src="@drawable/icon_right_arrow_2" />
         </TableRow>
 
         <View
-            android:layout_height="2dip"
+            android:layout_height="1dip"
             android:background="#FF909090" />
 
         <TableRow
@@ -215,7 +217,7 @@
                 android:id="@+id/imageView11"
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
-                android:layout_marginLeft="5dip"
+                android:layout_marginLeft="5dp"
                 android:src="@drawable/mapsicon" />
 
             <TextView
@@ -234,13 +236,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center|right"
-                android:layout_marginLeft="10dp"
+                android:layout_marginLeft="3dp"
                 android:src="@drawable/icon_right_arrow_2" />
         </TableRow>
 
-        <View
-            android:layout_height="2dip"
-            android:background="#FF909090" />
+
     </TableLayout>
 
 </LinearLayout>
