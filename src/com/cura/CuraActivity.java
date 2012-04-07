@@ -171,8 +171,15 @@ public class CuraActivity extends Activity implements OnClickListener {
 			startActivity(sysConnectIntent);
 			break;
 		case R.id.NMapRow:
-			Intent nmapIntent = new Intent(this, NmapActivity.class);
-			startActivity(nmapIntent);
+			if ((userTemp.getUsername()).compareTo("root") == 0) {
+				Intent nmapIntent = new Intent(this, NmapActivity.class);
+				startActivity(nmapIntent);
+			} else {
+				Toast.makeText(
+						CuraActivity.this,
+						"Error! You are not allowed to access the Nmap module if you do not have root privileges over this server.",
+						Toast.LENGTH_LONG).show();
+			}
 			break;
 		}
 	}
