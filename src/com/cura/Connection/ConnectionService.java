@@ -18,12 +18,15 @@
  */
 package com.cura.Connection;
 
+import android.app.ProgressDialog;
 import android.app.Service;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 
+import com.cura.LoginScreenActivity;
 import com.cura.User;
 import com.cura.Terminal.Terminal;
 
@@ -69,14 +72,13 @@ public class ConnectionService extends Service {
 		String password = intent.getStringExtra("pass");
 		user.setPassword(password);
 		sshconnection = (SSHConnection) new SSHConnection().execute(user);
-		try {
-			i.setAction(sshconnection.get());
+		try{
+		i.setAction(sshconnection.get());
 		} catch (Exception e) {
 			Log.d("Connection", e.toString());
 		}
 		i.putExtra("user", user);
 		sendBroadcast(i);
-
 	}
 
 	@Override
