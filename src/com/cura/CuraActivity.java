@@ -201,6 +201,7 @@ public class CuraActivity extends Activity implements OnClickListener {
 										int which) {
 									try {
 										conn.close();
+										unbindService(connection);
 										Log.d("Connection", "connection closed");
 									} catch (RemoteException e) {
 										Log.d("Connection", e.toString());

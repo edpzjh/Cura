@@ -23,6 +23,7 @@ import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.EditTextPreference;
@@ -30,6 +31,7 @@ import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -51,6 +53,7 @@ public class PreferenceScreen extends PreferenceActivity implements
 		if (preference.getKey().equalsIgnoreCase("enableSMS") && cp.isChecked()) {
 			// if the "enable SMS" checkbox is checked, enable the listening
 			// (for SMS) service
+			enableGps();
 			startService(new Intent(this, SMSService.class));
 			return true;
 		}
@@ -58,6 +61,7 @@ public class PreferenceScreen extends PreferenceActivity implements
 				&& !cp.isChecked()) {
 			// else if the "enable SMS" key is present while the box is not
 			// checked, stop the listening (for SMS) service
+			disableGps();
 			stopService(new Intent(this, SMSService.class));
 			return true;
 		}
@@ -78,5 +82,20 @@ public class PreferenceScreen extends PreferenceActivity implements
 			}
 		}
 		return false;
+	}
+	
+	public void enableGps(){
+		String provider = Settings.Secure.getString(getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+
+	    if(!provider.contains("gps")){ //if gps is disabled
+	        final Intent poke = new Intent();
+	        poke.setClassName("com.android.settings", "com.android.settings.widget.SettingsAppWidgetProvider"); 
+	        poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
+	        poke.setData(Uri.parse("3")); 
+	        sendBroadcast(poke);
+	    }
+	}
+	public void disableGps(){
+		
 	}
 }
