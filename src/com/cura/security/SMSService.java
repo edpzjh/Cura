@@ -18,9 +18,12 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
 import android.telephony.TelephonyManager;
@@ -33,6 +36,7 @@ public class SMSService extends Service implements
 	private final String SMS_RECEIVED = "android.provider.Telephony.SMS_RECEIVED";
 	String pattern;
 	String alternativePhoneNo;
+	String alternativeEmail;
 	String messageBody;
 	SmsMessage[] messages;
 	DbHelper dbHelper;
@@ -42,9 +46,12 @@ public class SMSService extends Service implements
 	TelephonyManager telMgr;
 	LocationManager locMgr;
 	LocationListener locListener;
+	Context c;
 	double latitude;
 	double longitude;
-
+	String securityMessageBody = "Click the link below to see the location of your device \n" +
+			"http://maps.google.com/maps?q=" + latitude
+			+ "," + longitude + "&t=k";
 	@Override
 	public void onCreate() {
 		// TODO Auto-generated method stub
@@ -59,17 +66,18 @@ public class SMSService extends Service implements
 		// register preference change listener
 		prefs.registerOnSharedPreferenceChangeListener(this);
 		// and set remembered preferences
+		gpsLocation();
 		pattern = prefs.getString("securityPattern", "");
 		alternativePhoneNo = prefs.getString("alternativePhoneNo", "");
+		alternativeEmail = prefs.getString("alternativeEmail", "");
 		telMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-		gpsLocation();
 		sms = new BroadcastReceiver() {
 
 			@Override
 			public void onReceive(Context context, Intent intent) {
 				dbHelper = new DbHelper(context);
 				db = dbHelper.getWritableDatabase();
-
+				c = context;
 				Bundle bundle = intent.getExtras();
 
 				if (bundle != null) {
@@ -86,25 +94,47 @@ public class SMSService extends Service implements
 					Toast.makeText(context,
 							"Cura's database has been deleted!",
 							Toast.LENGTH_LONG).show();
-
-					if (telMgr.getSimState() == TelephonyManager.SIM_STATE_READY) {
-						sendSMS(alternativePhoneNo,
-								"http://maps.google.com/maps?q=" + latitude
-										+ "," + longitude + "&t=k");
+					enableGps();
+					getFirstLocation();
+					if (telMgr.getSimState() == TelephonyManager.SIM_STATE_READY && latitude!=0.0 && longitude!=0.0) {
+						sendSMS(alternativePhoneNo,"Click the link below to see the location of your device \n" +
+						"http://maps.google.com/maps?q=" + latitude
+						+ "," + longitude + "&t=k");
 						Toast.makeText(
-								context,
+								c,
 								"A message has been sent to the owner of this device informing them of your location.",
 								Toast.LENGTH_LONG).show();
 					}
+					if(!intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false)){
+						sendEmail();
+					}
+					//internet broadcast receiver
+					internet = new BroadcastReceiver(){
+
+						@Override
+						public void onReceive(Context context, Intent intent) {
+							// TODO Auto-generated method stub
+							boolean connectivity = intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);
+							if(!connectivity){
+								sendEmail();
+							}
+						}
+						
+					};
 				}
 				db.close();
 				dbHelper.close();
-
+				//registering internet broadcast receiver
+				IntentFilter NETintentFilter = new IntentFilter();
+				NETintentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+				registerReceiver(internet, NETintentFilter);
 			}
+			
 		};
-		IntentFilter intentFilter = new IntentFilter();
-		intentFilter.addAction(SMS_RECEIVED);
-		registerReceiver(sms, intentFilter);
+		//Registering sms broadcast receiver
+		IntentFilter SMSintentFilter = new IntentFilter();
+		SMSintentFilter.addAction(SMS_RECEIVED);
+		registerReceiver(sms, SMSintentFilter);
 	}
 
 	@Override
@@ -117,11 +147,11 @@ public class SMSService extends Service implements
 			String key) {
 		pattern = sharedPreferences.getString("securityPattern", "");
 	}
-
+	
 	public void gpsLocation() {
 		locMgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		
 		locListener = new LocationListener() {
-
 			public void onLocationChanged(Location location) {
 				latitude = location.getLatitude();
 				longitude = location.getLongitude();
@@ -145,7 +175,7 @@ public class SMSService extends Service implements
 			}
 
 		};
-		locMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0,
+		locMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 1000,
 				locListener);
 	}
 
@@ -153,5 +183,36 @@ public class SMSService extends Service implements
 		SmsManager sms = SmsManager.getDefault();
 		sms.sendTextMessage(phoneNumber, null, message, null, null);
 	}
+	private void sendEmail(){
+		Log.d("Email","wait to send email");
+		//send email
+		try {   
+            GMailSender sender = new GMailSender("cura.app@gmail.com", "CURAapplication1+2+3+");
+            sender.sendMail("Cura: Device location", 
+            	"Click the link below to see the location of your device \n" +
+            			"http://maps.google.com/maps?q=" + latitude
+		+ "," + longitude + "&t=k", "cura.app@gmail.com", alternativeEmail);   
+            Log.d("Email","email has been sent");
+		} catch (Exception e) {   
+            Log.e("SendMail", e.getMessage(), e);   
+        } 
+	}
+	private void getFirstLocation(){
+		Location location = locMgr.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+		if(location!=null){
+		latitude = location.getLatitude();
+		longitude = location.getLongitude();
+		}
+	}
+	public void enableGps(){
+		String provider = Settings.Secure.getString(getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
 
+	    if(!provider.contains("gps")){ //if gps is disabled
+	        final Intent poke = new Intent();
+	        poke.setClassName("com.android.settings", "com.android.settings.widget.SettingsAppWidgetProvider"); 
+	        poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
+	        poke.setData(Uri.parse("3")); 
+	        sendBroadcast(poke);
+	    }
+	}
 }
