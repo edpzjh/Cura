@@ -20,6 +20,7 @@ package com.cura.Terminal;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
@@ -32,6 +33,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -153,7 +156,12 @@ public class TerminalActivity extends Activity {
 						} while (c.moveToNext());
 					}
 				}
-
+				if(counter==0)
+				{
+					Toast.makeText(TerminalActivity.this,R.string.noFavoritesFound,Toast.LENGTH_SHORT).show();
+				}
+				else
+				{
 				AlertDialog.Builder builder = new AlertDialog.Builder(
 						TerminalActivity.this);
 				builder.setTitle("Pick a command");
@@ -165,6 +173,7 @@ public class TerminalActivity extends Activity {
 
 						});
 				builder.show();
+				}
 				db.close();
 				dbHelper.close();
 			}
@@ -177,7 +186,7 @@ public class TerminalActivity extends Activity {
 		boolean result = super.onCreateOptionsMenu(menu);
 		// Add a button to menu
 		menu.add(0, FAVORITES, 0, R.string.addNewFavoriteCommand).setIcon(android.R.drawable.ic_input_add);
-		menu.add(1, LOGOUT,0,R.string.logout).setIcon(R.drawable.ic_lock_power_off);
+//		menu.add(1, LOGOUT,0,R.string.logout).setIcon(R.drawable.ic_lock_power_off);
 		return result;
 	}
 
@@ -192,7 +201,6 @@ public class TerminalActivity extends Activity {
 			addUser.setMessage(R.string.addNewCommandToFavoritesprompt);
 			final EditText commandText = new EditText(this);
 			addUser.setView(commandText);
-
 			addUser.setPositiveButton("Ok",
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog,
@@ -209,9 +217,32 @@ public class TerminalActivity extends Activity {
 							return;
 						}
 					});
-			addUser.show();
+			final AlertDialog alert = addUser.create();
+			alert.show();
+			commandText.addTextChangedListener(new TextWatcher() {
+				
+				public void onTextChanged(CharSequence s, int start, int before, int count) {
+					// TODO Auto-generated method stub
+					if(commandText.getText().length()>0)
+						alert.getButton(Dialog.BUTTON1).setEnabled(true);
+					else
+						alert.getButton(Dialog.BUTTON1).setEnabled(false);
+				}
+				
+				public void beforeTextChanged(CharSequence s, int start, int count,
+						int after) {
+					// TODO Auto-generated method stub
+					
+				}
+				
+				public void afterTextChanged(Editable s) {
+					// TODO Auto-generated method stub
+					
+				}
+			});
+			alert.getButton(Dialog.BUTTON1).setEnabled(false);
 			break;
-		case LOGOUT:
+		/*case LOGOUT:
 				new AlertDialog.Builder(this)
 				.setTitle("Logout Confirmation")
 				.setMessage(R.string.logoutConfirmationDialog)
@@ -220,6 +251,7 @@ public class TerminalActivity extends Activity {
 					public void onClick(DialogInterface dialog, int which) {
 						try {
 						conn.close();
+						unbindService(connection);
 						Log.d("Connection","connection closed");
 						} catch (RemoteException e) {
 							Log.d("Connection",e.toString());
@@ -235,38 +267,7 @@ public class TerminalActivity extends Activity {
 						dialog.dismiss();	
 					}
 				}).show();
-			new AlertDialog.Builder(this)
-					.setTitle("Logout Confirmation")
-					.setMessage(R.string.logoutConfirmationDialog)
-					.setPositiveButton("Yes",
-							new DialogInterface.OnClickListener() {
-
-								public void onClick(DialogInterface dialog,
-										int which) {
-									try {
-										conn.close();
-										Log.d("Connection", "connection closed");
-									} catch (RemoteException e) {
-										Log.d("Connection", e.toString());
-									}
-									Intent closeAllActivities = new Intent(
-											TerminalActivity.this,
-											LoginScreenActivity.class);
-									closeAllActivities
-											.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-									TerminalActivity.this
-											.startActivity(closeAllActivities);
-								}
-							})
-					.setNegativeButton("No",
-							new DialogInterface.OnClickListener() {
-
-								public void onClick(DialogInterface dialog,
-										int which) {
-									dialog.dismiss();
-								}
-							}).show();
-			break;
+			break;*/
 		}
 		return super.onOptionsItemSelected(item);
 	}

@@ -24,6 +24,7 @@ import java.io.StringWriter;
 
 import org.apache.commons.io.IOUtils;
 
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.cura.User;
@@ -49,22 +50,20 @@ public class Terminal extends Thread {
 	int i = 0;
 	
 
-	public Terminal(User user) throws JSchException {
+	public Terminal(final User user) throws JSchException {
 		// TODO Auto-generated method stub
 		writer = new StringWriter();
 		jsch = new JSch();
 		username = user.getUsername();
 		host = user.getDomain();
-		this.password = user.getPassword();
+		password = user.getPassword();
 		port = user.getPort();
-
 		session = jsch.getSession(username, host, port);
 		session.setPassword(password);
 		session.setConfig("StrictHostKeyChecking", "no");
 		session.connect();
 		Log.i("Terminal", "connected");
 		channel = session.openChannel("exec");
-
 	}
 
 	public synchronized String ExecuteCommand(String command) {
