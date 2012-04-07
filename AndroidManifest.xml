@@ -30,7 +30,7 @@
             android:name=".Terminal.TerminalActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/TerminalLabel"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="landscape" >
         </activity>
         <activity
             android:name=".FavoriteCommands"
@@ -94,5 +94,6 @@
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.BROADCAST_SMS" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
 </manifest>
