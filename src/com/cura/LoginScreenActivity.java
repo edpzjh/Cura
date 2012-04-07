@@ -215,20 +215,22 @@ public class LoginScreenActivity extends ListActivity {
 			LayoutInflater li = LayoutInflater.from(this);
 			View view = li.inflate(R.layout.password_dialog, null);
 			passwordAlert.setView(view);
-			final EditText passField = (EditText) view.findViewById(R.id.passwordprompt);
-			
+			final EditText passField = (EditText) view
+					.findViewById(R.id.passwordprompt);
+
 			CheckBox showPass = (CheckBox) view.findViewById(R.id.showPassword);
 			showPass.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-				
-				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+				public void onCheckedChanged(CompoundButton buttonView,
+						boolean isChecked) {
 					// TODO Auto-generated method stub
-					if(isChecked)
+					if (isChecked)
 						passField.setTransformationMethod(null);
 					else
-					passField.setTransformationMethod(PasswordTransformationMethod
-							.getInstance());
-					
-					
+						passField
+								.setTransformationMethod(PasswordTransformationMethod
+										.getInstance());
+
 				}
 			});
 			passwordAlert.setPositiveButton("Connect",
@@ -243,9 +245,9 @@ public class LoginScreenActivity extends ListActivity {
 								protected void onPreExecute() {
 									dialog.dismiss();
 									loader = ProgressDialog.show(
-									LoginScreenActivity.this,
-									"Connecting...",
-									"Loading, please wait...", true);
+											LoginScreenActivity.this,
+											"Connecting...",
+											"Loading, please wait...", true);
 								}
 
 								@Override
@@ -283,21 +285,23 @@ public class LoginScreenActivity extends ListActivity {
 			final AlertDialog alert = passwordAlert.create();
 			alert.show();
 			passField.addTextChangedListener(new TextWatcher() {
-				
-				public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+				public void onTextChanged(CharSequence s, int start,
+						int before, int count) {
 					// TODO Auto-generated method stub
 					String pass = passField.getText().toString();
-					if(pass.length()>0)
-					alert.getButton(Dialog.BUTTON1).setEnabled(true);
-					else
-						if(pass.length()==0)
-							alert.getButton(Dialog.BUTTON1).setEnabled(false);
+					if (pass.length() > 0)
+						alert.getButton(Dialog.BUTTON1).setEnabled(true);
+					else if (pass.length() == 0)
+						alert.getButton(Dialog.BUTTON1).setEnabled(false);
 				}
-				
-				public void beforeTextChanged(CharSequence s, int start, int count,
-						int after) {}
-				
-				public void afterTextChanged(Editable s) {}
+
+				public void beforeTextChanged(CharSequence s, int start,
+						int count, int after) {
+				}
+
+				public void afterTextChanged(Editable s) {
+				}
 			});
 			alert.getButton(Dialog.BUTTON1).setEnabled(false);
 		}
@@ -337,20 +341,21 @@ public class LoginScreenActivity extends ListActivity {
 			myDialog.setCancelable(true);
 			myDialog.setCanceledOnTouchOutside(true);
 
-			final Button AddUserButton = (Button) myDialog.findViewById(R.id.button1);
+			final Button AddUserButton = (Button) myDialog
+					.findViewById(R.id.button1);
 			AddUserButton.setEnabled(false);
 			Button cancelButton = (Button) myDialog.findViewById(R.id.button2);
 			TextWatcher watcher = null;
 			final EditText usernameInput = (EditText) myDialog
 					.findViewById(R.id.usernameTextField);
-			
+
 			final EditText domainInput = (EditText) myDialog
 					.findViewById(R.id.domainTextField);
-			
+
 			final EditText portInput = (EditText) myDialog
 					.findViewById(R.id.portTextField);
-			
-			watcher = new TextWatcher(){
+
+			watcher = new TextWatcher() {
 
 				public void afterTextChanged(Editable s) {
 					// TODO Auto-generated method stub
@@ -359,7 +364,7 @@ public class LoginScreenActivity extends ListActivity {
 				public void beforeTextChanged(CharSequence s, int start,
 						int count, int after) {
 					// TODO Auto-generated method stub
-					
+
 				}
 
 				public void onTextChanged(CharSequence s, int start,
@@ -368,12 +373,13 @@ public class LoginScreenActivity extends ListActivity {
 					String username = usernameInput.getText().toString();
 					String domain = domainInput.getText().toString();
 					String port = portInput.getText().toString();
-					if(!username.isEmpty() && !domain.isEmpty() && !port.isEmpty())
+					if (!username.isEmpty() && !domain.isEmpty()
+							&& !port.isEmpty())
 						AddUserButton.setEnabled(true);
 					else
 						AddUserButton.setEnabled(false);
 				}
-				
+
 			};
 			usernameInput.addTextChangedListener(watcher);
 			domainInput.addTextChangedListener(watcher);
@@ -597,7 +603,7 @@ public class LoginScreenActivity extends ListActivity {
 		}
 		return super.onContextItemSelected(item);
 	}
-	
+
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();

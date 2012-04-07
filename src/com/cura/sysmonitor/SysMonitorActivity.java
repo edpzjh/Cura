@@ -160,7 +160,8 @@ public class SysMonitorActivity extends Activity {
 
 		startThread();
 	}
-	public void startThread(){
+
+	public void startThread() {
 		mThread = new Thread() {
 			public void run() {
 				while (state) {
@@ -175,6 +176,7 @@ public class SysMonitorActivity extends Activity {
 		};
 		mThread.start();
 	}
+
 	@Override
 	protected void onStart() {
 		super.onStart();
