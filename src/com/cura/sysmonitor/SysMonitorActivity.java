@@ -87,13 +87,17 @@ public class SysMonitorActivity extends Activity {
 		try {
 			resultCPU = conn
 					.executeCommand("ps aux | awk '{sum+=$3} END {print sum}'");
+			// the command that fetches the CPU usage percentage
 			Log.d("CPUValue", resultCPU);
 			resultRAM = conn
 					.executeCommand("ps aux | awk '{sum+=$4} END {print sum}'");
+			// the command that fetches the RAM usage percentage
 			Log.d("RAMValue", resultRAM);
 			if (!resultCPU.equalsIgnoreCase("")
 					&& !resultRAM.equalsIgnoreCase("")) {
 				if (Double.parseDouble(resultCPU) > 100)
+					// even if the results go over the 100 mark, floor them so
+					// that they stick to the 100% limit
 					resultCPU = "100";
 				if (Double.parseDouble(resultRAM) > 100)
 					resultRAM = "100";
@@ -111,6 +115,7 @@ public class SysMonitorActivity extends Activity {
 
 	public void doBindService() {
 		Intent i = new Intent(this, ConnectionService.class);
+		// connect to the SSH service (Connection)
 		bindService(i, connection, Context.BIND_AUTO_CREATE);
 	}
 
@@ -154,7 +159,7 @@ public class SysMonitorActivity extends Activity {
 
 		renderer.addSeriesRenderer(rendererSeriesCPU);
 		renderer.addSeriesRenderer(rendererSeriesRAM);
-
+		// add these values to the graph
 		timeSeriesCPU = new TimeSeries("CPU");
 		timeSeriesRAM = new TimeSeries("RAM");
 
@@ -205,10 +210,12 @@ public class SysMonitorActivity extends Activity {
 			state = false;
 			mThread = null;
 			return true;
+			// when paused
 		case START:
 			state = true;
 			startThread();
 			return true;
+			// when resumed
 		}
 		return false;
 	}
