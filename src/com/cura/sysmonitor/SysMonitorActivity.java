@@ -158,6 +158,9 @@ public class SysMonitorActivity extends Activity {
 		timeSeriesCPU = new TimeSeries("CPU");
 		timeSeriesRAM = new TimeSeries("RAM");
 
+		startThread();
+	}
+	public void startThread(){
 		mThread = new Thread() {
 			public void run() {
 				while (state) {
@@ -172,7 +175,6 @@ public class SysMonitorActivity extends Activity {
 		};
 		mThread.start();
 	}
-
 	@Override
 	protected void onStart() {
 		super.onStart();
@@ -198,12 +200,12 @@ public class SysMonitorActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case PAUSE:
-			// mThread.suspend();
 			state = false;
+			mThread = null;
 			return true;
 		case START:
 			state = true;
-			// mThread.resume();
+			startThread();
 			return true;
 		}
 		return false;
@@ -212,8 +214,8 @@ public class SysMonitorActivity extends Activity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		// state = false;
-		mThread.stop();
+		state = false;
+		mThread = null;
 		unbindService(connection);
 		finish();
 	}
