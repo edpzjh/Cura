@@ -31,11 +31,6 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-/*
- * Todo:
- *  - fix h (handler) crashing application on resume - can we kill/dispose h?
- *  - finish making app resume nicely after keyboard/orientation change.
- */
 public class NmapActivity extends Activity {
 	/* --- view resources --- */
 	private TextView mResults;
@@ -88,6 +83,7 @@ public class NmapActivity extends Activity {
 		try {
 			int curVersion = getPackageManager().getPackageInfo(
 					"com.wjholden.nmap", 0).versionCode;
+			// get the current version of Nmap that's installed
 			Log.d(tag, "Nmap version: " + curVersion);
 		} catch (NameNotFoundException e) {
 			Log.d(tag, e.toString());
@@ -106,6 +102,7 @@ public class NmapActivity extends Activity {
 		adapterCommand
 				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mCommandSpinner.setAdapter(adapterCommand);
+		// construct the commands drop-down list
 
 		mCommandSpinner
 				.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -114,6 +111,7 @@ public class NmapActivity extends Activity {
 							int arg2, long arg3) {
 						scanType = mCommandSpinner.getSelectedItemPosition()
 								+ SCANTYPE_NMAP;
+						// when selected, store the type of scan
 
 						if (mCommandSpinner.getSelectedItem().toString()
 								.equals("nmap")
@@ -121,7 +119,8 @@ public class NmapActivity extends Activity {
 										.contains("--system-dns"))
 							mArguments.setText("--system-dns "
 									+ mArguments.getText().toString());
-
+						// if nothing was changed in the first screen that was
+						// shown to the user, set it as the one that's selected
 						Log.d(tag, mCommandSpinner.getSelectedItem().toString()
 								+ " selected.");
 					}
@@ -181,7 +180,8 @@ public class NmapActivity extends Activity {
 		});
 
 		mHelp.setOnClickListener(new View.OnClickListener() {
-
+			// when the help menu is brought up and something is selected from
+			// it
 			public void onClick(View v) {
 				// scanType = mCommandSpinner.getSelectedItemPosition() +
 				// SCANTYPE_NMAP;
@@ -233,6 +233,8 @@ public class NmapActivity extends Activity {
 			case SCANTYPE_NMAP:
 				command = "nmap ";
 				break;
+			// if one of the following was chosen, store it as the command and
+			// leave a space so that the command can be constructed from it
 			case SCANTYPE_NPING:
 				command = "nping ";
 				break;
@@ -245,53 +247,76 @@ public class NmapActivity extends Activity {
 			}
 
 			command += NmapActivity.outputArgs;
-
+			// add to it whatever was input in the "Output Arguments" textfield
 			Log.d(tag, "Selected scan type: " + command + " ("
 					+ NmapActivity.scanType + ")");
+			// output the scan type complete, for debugging purposes
 
 			pd = new ProgressDialog(NmapActivity.this);
 			pd.setMessage("Please wait...");
 			pd.show();
+			// show the progress dialog
 		}
 
 		protected void onPostExecute(Void v) {
 			pd.dismiss();
 			NmapActivity.hasRunOneScan = true;
+			// when finished, finish it and set that the AsyncTask status was
+			// finished
 		}
 
 		@Override
 		protected Void doInBackground(String... params) {
+			// what the fuck is "Void"?!
 			for (int i = 0; i < params.length; i++)
 				Log.d(tag, "Execution Parameters [" + i + "]: " + params[i]);
 
 			if (canGetRoot)
 				Log.d(tag, "Getting root...");
+
 			Process p = null;
+			// initialize a Process p
 			try {
 				if (canGetRoot)
+					// if it was able to get root privileges...
 					p = Runtime.getRuntime().exec("su");
+				// issue the command "su"
 				else
+					// if not..
 					p = Runtime.getRuntime().exec("sh");
+				// issue the command "sh"
 			} catch (IOException e) {
 				Message msg = Message.obtain();
 				msg.obj = "Unable to start shell: " + e.toString();
+				// that's if "sh" command was not able to run, ya3ne ma mishe el
+				// shell
 				msg.what = RUN_ERROR;
 				h.sendMessage(msg);
 				return (null);
 			}
 			if (canGetRoot && p != null)
+				// if root was gotten...
 				Log.d(tag, "Got root!");
+
 			DataOutputStream os = new DataOutputStream(p.getOutputStream());
 			BufferedReader in = new BufferedReader(new InputStreamReader(
 					p.getInputStream()));
 			BufferedReader err = new BufferedReader(new InputStreamReader(
 					p.getErrorStream()));
+			// this is the way that they send messages to the server, as opposed
+			// to our way
 
 			if (os == null)
+				// if both OS and IN were not initiaized properly
 				Log.d(tag, "os is null!");
 			if (in == null)
 				Log.d(tag, "in is null!");
 
+			// -----------------------------------------------------------------------------------------------------------------------
+			// -----------------------------------------------------------------------------------------------------------------------
+			// THIS IS WHERE THE REAL WORK STARTS, EVERYTHING BELOW THIS LINE IS
+			// SUPPOSED TO BE CHANGED TO REFLECT THE WAY THAT WE SEND MESSAGES
+			// TO THE SERVER.
 			try {
 				os.writeBytes("cd " + bindir + "\n");
 				os.flush();
