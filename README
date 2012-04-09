@@ -14,4 +14,4 @@ When in the hands of a sysadmin, Cura will provide:
 
 **Added to which, a security feature will be implemented that allows users to have Cura's database completely wiped upon them sending the compromised phone a secret pattern of their choosing. (ex: send an SMS message containing "phone has been stolen!" to your Android phone to wipe Cura's database and receive the location of the compromised phone as an SMS to your emergency phone number or as an e-mail to your emergency e-mail address).
 
-**Cura is multi-lingual and for now, it supports English, Arabic, German and Greek.
+Cura is multi-lingual and for now, it supports English, Arabic, German and Greek.
