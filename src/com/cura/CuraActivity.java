@@ -75,6 +75,7 @@ public class CuraActivity extends Activity implements OnClickListener {
 
 	public synchronized String getUname() {
 		String resultUNAME = "";
+		// produces the result of "uname -a"
 		try {
 			resultUNAME = conn.executeCommand("uname -a");
 		} catch (RemoteException e) {
@@ -86,6 +87,7 @@ public class CuraActivity extends Activity implements OnClickListener {
 
 	public synchronized String getUptime() {
 		String resultUPTIME = "";
+		// produces the output of "uptime"
 		try {
 			resultUPTIME = conn.executeCommand("uptime");
 		} catch (RemoteException e) {
@@ -97,6 +99,8 @@ public class CuraActivity extends Activity implements OnClickListener {
 
 	public synchronized String getLocation() {
 		String resultLocation = "";
+		// produces the output of "geoiplookup domain" and prints the 4th and
+		// 5th column from that. This produces the locale of a given domain name
 		try {
 			resultLocation = conn.executeCommand("geoiplookup "
 					+ userTemp.getDomain() + " | awk '{print $4, $5}'");
@@ -110,6 +114,7 @@ public class CuraActivity extends Activity implements OnClickListener {
 	public void doBindService() {
 		Intent i = new Intent(this, ConnectionService.class);
 		bindService(i, connection, Context.BIND_AUTO_CREATE);
+		// function needed for binding to the Connection service
 	}
 
 	@Override
@@ -120,6 +125,7 @@ public class CuraActivity extends Activity implements OnClickListener {
 		doBindService();
 		if (extras != null) {
 			userTemp = extras.getParcelable("user");
+			// gets the username on entry
 		}
 		this.setTitle(userTemp.getUsername() + "'s Control Box");
 		// welcoming the user in this activity's title.
@@ -156,22 +162,29 @@ public class CuraActivity extends Activity implements OnClickListener {
 			startActivity(terminalIntent);
 			break;
 		case R.id.SysMonitorRow:
-			// when the row entitled "SysMonitor" is clicked, take the user to
-			// the
+			// when the row entitled "SysMonitor" is clicked, take the user the
 			// SysMonitor activity.
 			Intent sysMonitorIntent = new Intent(this, SysMonitorActivity.class);
 			startActivity(sysMonitorIntent);
 			break;
 		case R.id.SysLogRow:
+			// when the row entitled "SysLog" is clicked, take the user to
+			// the SysLog activity
 			Intent sysLogIntent = new Intent(this, SysLogActivity.class);
 			startActivity(sysLogIntent);
 			break;
 		case R.id.MapsRow:
+			// when the row entitled "Server Location" is clicked, take the user
+			// to the Google Maps activity
 			Intent sysConnectIntent = new Intent(this, MapsActivity.class);
 			startActivity(sysConnectIntent);
 			break;
 		case R.id.NMapRow:
+			// when the row entitled "Nmap" is clicked, take the user
+			// to the Nmap activity
 			if ((userTemp.getUsername()).compareTo("root") == 0) {
+				// if the user is root, allow them to access this activity
+				// if they are not, don't allow them
 				Intent nmapIntent = new Intent(this, NmapActivity.class);
 				startActivity(nmapIntent);
 			} else {
@@ -189,6 +202,7 @@ public class CuraActivity extends Activity implements OnClickListener {
 		boolean result = super.onCreateOptionsMenu(menu);
 		menu.add(0, SERVER_INFO, 0, R.string.GetServerInfoOptionMenu).setIcon(
 				android.R.drawable.ic_menu_info_details);
+		// creates the options menu that includes "Server Info" and "Logout"
 		menu.add(0, LOGOUT, 0, R.string.logout).setIcon(
 				R.drawable.ic_lock_power_off);
 		return result;
@@ -207,7 +221,9 @@ public class CuraActivity extends Activity implements OnClickListener {
 								public void onClick(DialogInterface dialog,
 										int which) {
 									try {
+										// close the connection
 										conn.close();
+										// unbind the service
 										unbindService(connection);
 										Log.d("Connection", "connection closed");
 									} catch (RemoteException e) {
@@ -216,6 +232,8 @@ public class CuraActivity extends Activity implements OnClickListener {
 									Intent closeAllActivities = new Intent(
 											CuraActivity.this,
 											LoginScreenActivity.class);
+									// return the user to the login screen
+									// activity
 									// just close everything
 									closeAllActivities
 											.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -225,7 +243,8 @@ public class CuraActivity extends Activity implements OnClickListener {
 							})
 					.setNegativeButton("No",
 							new DialogInterface.OnClickListener() {
-
+								// if No is chosen, don't do anything and
+								// dismiss the dialog
 								public void onClick(DialogInterface dialog,
 										int which) {
 									dialog.dismiss();
@@ -234,6 +253,9 @@ public class CuraActivity extends Activity implements OnClickListener {
 			break;
 		case SERVER_INFO:
 			String finalResultForDialog = "";
+			// if "Server info" is selected, produce the output of Uptime and
+			// Uname, concatenate them into a paragraph and display it for the
+			// user
 			finalResultForDialog = getUname() + "\n"
 					+ getString(R.string.uptimeText) + getUptime() + "\n"
 					+ getString(R.string.userLocation) + getLocation();
@@ -276,8 +298,10 @@ public class CuraActivity extends Activity implements OnClickListener {
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-			new AlertDialog.Builder(this)
-					.setTitle("Logout Confirmation")
+			// if the back button is pressed when the user is in this (Cura
+			// Activity)
+			new AlertDialog.Builder(this).setTitle("Logout Confirmation")
+					// confirm logout
 					.setMessage(R.string.logoutConfirmationDialog)
 					.setPositiveButton("Yes",
 							new DialogInterface.OnClickListener() {
@@ -285,7 +309,9 @@ public class CuraActivity extends Activity implements OnClickListener {
 								public void onClick(DialogInterface dialog,
 										int which) {
 									try {
+										// close connection
 										conn.close();
+										// unbind from the service
 										unbindService(connection);
 										Log.d("Connection", "connection closed");
 									} catch (RemoteException e) {
@@ -300,8 +326,8 @@ public class CuraActivity extends Activity implements OnClickListener {
 									CuraActivity.this
 											.startActivity(closeAllActivities);
 								}
-							})
-					.setNegativeButton("No",
+							}).setNegativeButton("No",
+					// if No is selected, dismiss the dialog
 							new DialogInterface.OnClickListener() {
 
 								public void onClick(DialogInterface dialog,
