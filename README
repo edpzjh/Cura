@@ -1,17 +1,17 @@
-Cura is a mobile phone application for the Android platform (Gingerbread 2.3.3 and above).
-It is a bundle of remote systems administration tools targeted mainly at sysadmins.
+Cura is a mobile phone application for the Android platform (Gingerbread 2.3.3 and above). It is a bundle of remote systems administration tools targeted mainly at sysadmins.
 
 When in the hands of a sysadmin, Cura will provide:
-**Personal terminal emulator with full Bash (bourne-again
-shell) capabilities. The Terminal also allows adding commands to a Favorites list (ssh, top, uname, uptime, cat /proc/cpuinfo, dmidecode, etc..)
 
-**The SysLog module will allow a user to view usual syslog dumps (kern.log, boot.log, errors.log, etc...) directly from their machine's /var/log/ directory.
-The logfile can be either displayed in Head (first 10 lines) or in Tail (last 10 lines). It can also be Head or Tailed for a user-defined number of lines.
+**A personalized Terminal emulator for direct interaction with said server.
 
-**The SysMonitor module displays a graph that is always monitoring CPU and Memory usage.
+**The Syslog module that allows for reading logs directly from the server.
 
-**Access to the most powerful port/vulnerability-scanning and penetration-testing tools (Nessus, Nmap, Wireshark). (Not until 2.0)
+**The SysMonitor module that visually graphs CPU and RAM usage percentages.
 
-**Also, a security measure/feature has been implemented and it allows users to have Cura's database completely wiped upon them sending the compromised phone a secret pattern of their choosing. (ex: send an SMS message containing "L is dead." to your Android phone and Cura's database will be wiped.)
+**Access to the port-scanning utility “Nmap”. (not until 2.0)
+
+**Google Maps access for determining the locations of all of the user's added servers.
+
+**Added to which, a security feature will be implemented that allows users to have Cura's database completely wiped upon them sending the compromised phone a secret pattern of their choosing. (ex: send an SMS message containing "phone has been stolen!" to your Android phone to wipe Cura's database and receive the location of the compromised phone as an SMS to your emergency phone number or as an e-mail to your emergency e-mail address).
 
 **Cura is multi-lingual and for now, it supports English, Arabic, German and Greek.
