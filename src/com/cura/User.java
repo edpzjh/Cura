@@ -26,6 +26,8 @@ public class User implements Parcelable {
 	private String domain;
 	private int port;
 	private String password;
+	
+	//The User class, used to store and send the user's information through activities
 
 	public User(String usern, String dom, int port) {
 		username = usern;

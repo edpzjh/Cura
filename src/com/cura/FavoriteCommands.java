@@ -53,6 +53,7 @@ public class FavoriteCommands extends ListActivity {
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
 			userTemp = extras.getParcelable("user");
+			// find out who the user is
 		}
 		this.setTitle(R.string.favoritesWelcome + userTemp.getUsername());
 
@@ -80,15 +81,17 @@ public class FavoriteCommands extends ListActivity {
 				android.R.layout.simple_list_item_1, favoriteCommands);
 		// display them.
 		setListAdapter(adapter);
-		//register context menu 
+		// register context menu
 		registerForContextMenu(getListView());
 	}
-	
+
 	String commandItem;
+
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		commandItem = (String) getListAdapter().getItem(position);
-		Toast.makeText(this, commandItem + " selected", Toast.LENGTH_LONG).show();
+		Toast.makeText(this, commandItem + " selected", Toast.LENGTH_LONG)
+				.show();
 	}
 
 	@Override
@@ -113,7 +116,7 @@ public class FavoriteCommands extends ListActivity {
 		case Menu.FIRST + 1:
 			// Delete command
 			try {
-				
+
 				String where = "command = ?";
 				String[] whereArgs = { command };
 				// prepare the query.
@@ -122,18 +125,17 @@ public class FavoriteCommands extends ListActivity {
 
 				startActivity(getIntent());
 				finish();
-				} catch (Exception e) {
-					Log.d("SQL", e.toString());
-					// so that we can know where to follow the errors (if
-					// any).
-				}
+			} catch (Exception e) {
+				Log.d("SQL", e.toString());
+				// so that we can know where to follow the errors (if
+				// any).
+			}
 
-				return true;
+			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
-	
+
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();

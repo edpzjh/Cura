@@ -171,6 +171,8 @@ public class SysMonitorActivity extends Activity {
 			public void run() {
 				while (state) {
 					try {
+						// hold off for 1 second between each fetch of the
+						// CPU/RAM usage percentages
 						Thread.sleep(1000);
 						sendAndReceive();
 					} catch (InterruptedException IE) {
@@ -185,6 +187,7 @@ public class SysMonitorActivity extends Activity {
 	@Override
 	protected void onStart() {
 		super.onStart();
+		// add all of the above variables to the chart and construct it
 		dataset.addSeries(timeSeriesCPU);
 		dataset.addSeries(timeSeriesRAM);
 		view = ChartFactory.getTimeChartView(this, dataset, renderer,
@@ -223,6 +226,7 @@ public class SysMonitorActivity extends Activity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		// unbind and set state to false
 		state = false;
 		mThread = null;
 		unbindService(connection);

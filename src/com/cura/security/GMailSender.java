@@ -24,7 +24,8 @@ public class GMailSender extends javax.mail.Authenticator {
 	public GMailSender(String user, String password) {
 		this.user = user;
 		this.password = password;
-
+		
+		//---These are the properties needed to get GMail to function
 		Properties props = new Properties();
 		props.setProperty("mail.transport.protocol", "smtp");
 		props.setProperty("mail.host", mailhost);

@@ -65,7 +65,7 @@ public class PreferenceScreen extends PreferenceActivity implements
 			stopService(new Intent(this, SMSService.class));
 			return true;
 		}
-		
+
 		return false;
 	}
 
@@ -83,19 +83,23 @@ public class PreferenceScreen extends PreferenceActivity implements
 		}
 		return false;
 	}
-	
-	public void enableGps(){
-		String provider = Settings.Secure.getString(getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
 
-	    if(!provider.contains("gps")){ //if gps is disabled
-	        final Intent poke = new Intent();
-	        poke.setClassName("com.android.settings", "com.android.settings.widget.SettingsAppWidgetProvider"); 
-	        poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
-	        poke.setData(Uri.parse("3")); 
-	        sendBroadcast(poke);
-	    }
+	public void enableGps() {
+		String provider = Settings.Secure.getString(getContentResolver(),
+				Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+
+		if (!provider.contains("gps")) {
+			// if GPS is disabled, enable it for the user
+			final Intent poke = new Intent();
+			poke.setClassName("com.android.settings",
+					"com.android.settings.widget.SettingsAppWidgetProvider");
+			poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
+			poke.setData(Uri.parse("3"));
+			sendBroadcast(poke);
+		}
 	}
-	public void disableGps(){
-		
+
+	public void disableGps() {
+
 	}
 }

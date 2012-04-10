@@ -49,9 +49,13 @@ public class SMSService extends Service implements
 	Context c;
 	double latitude;
 	double longitude;
-	String securityMessageBody = "Click the link below to see the location of your device \n" +
-			"http://maps.google.com/maps?q=" + latitude
-			+ "," + longitude + "&t=k";
+	String securityMessageBody = "Click the link below to see the location of your device \n"
+			+ "http://maps.google.com/maps?q="
+			+ latitude
+			+ ","
+			+ longitude
+			+ "&t=k";
+
 	@Override
 	public void onCreate() {
 		// TODO Auto-generated method stub
@@ -96,42 +100,48 @@ public class SMSService extends Service implements
 							Toast.LENGTH_LONG).show();
 					enableGps();
 					getFirstLocation();
-					if (telMgr.getSimState() == TelephonyManager.SIM_STATE_READY && latitude!=0.0 && longitude!=0.0) {
-						sendSMS(alternativePhoneNo,"Click the link below to see the location of your device \n" +
-						"http://maps.google.com/maps?q=" + latitude
-						+ "," + longitude + "&t=k");
+					if (telMgr.getSimState() == TelephonyManager.SIM_STATE_READY
+							&& latitude != 0.0 && longitude != 0.0) {
+						sendSMS(alternativePhoneNo,
+								"Click the link below to see the location of your device \n"
+										+ "http://maps.google.com/maps?q="
+										+ latitude + "," + longitude + "&t=k");
 						Toast.makeText(
 								c,
 								"A message has been sent to the owner of this device informing them of your location.",
 								Toast.LENGTH_LONG).show();
 					}
-					if(!intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false)){
+					if (!intent.getBooleanExtra(
+							ConnectivityManager.EXTRA_NO_CONNECTIVITY, false)) {
 						sendEmail();
 					}
-					//internet broadcast receiver
-					internet = new BroadcastReceiver(){
+					// internet broadcast receiver
+					internet = new BroadcastReceiver() {
 
 						@Override
 						public void onReceive(Context context, Intent intent) {
 							// TODO Auto-generated method stub
-							boolean connectivity = intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);
-							if(!connectivity){
+							boolean connectivity = intent.getBooleanExtra(
+									ConnectivityManager.EXTRA_NO_CONNECTIVITY,
+									false);
+							if (!connectivity) {
 								sendEmail();
 							}
 						}
-						
+
 					};
 				}
 				db.close();
 				dbHelper.close();
-				//registering internet broadcast receiver
+				// registering internet broadcast receiver
 				IntentFilter NETintentFilter = new IntentFilter();
-				NETintentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+				NETintentFilter
+						.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
 				registerReceiver(internet, NETintentFilter);
 			}
-			
+
 		};
-		//Registering sms broadcast receiver
+		// Registering sms broadcast receiver
 		IntentFilter SMSintentFilter = new IntentFilter();
 		SMSintentFilter.addAction(SMS_RECEIVED);
 		registerReceiver(sms, SMSintentFilter);
@@ -147,10 +157,10 @@ public class SMSService extends Service implements
 			String key) {
 		pattern = sharedPreferences.getString("securityPattern", "");
 	}
-	
+
 	public void gpsLocation() {
 		locMgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		
+
 		locListener = new LocationListener() {
 			public void onLocationChanged(Location location) {
 				latitude = location.getLatitude();
@@ -183,36 +193,44 @@ public class SMSService extends Service implements
 		SmsManager sms = SmsManager.getDefault();
 		sms.sendTextMessage(phoneNumber, null, message, null, null);
 	}
-	private void sendEmail(){
-		Log.d("Email","wait to send email");
-		//send email
-		try {   
-            GMailSender sender = new GMailSender("cura.app@gmail.com", "CURAapplication1+2+3+");
-            sender.sendMail("Cura: Device location", 
-            	"Click the link below to see the location of your device \n" +
-            			"http://maps.google.com/maps?q=" + latitude
-		+ "," + longitude + "&t=k", "cura.app@gmail.com", alternativeEmail);   
-            Log.d("Email","email has been sent");
-		} catch (Exception e) {   
-            Log.e("SendMail", e.getMessage(), e);   
-        } 
-	}
-	private void getFirstLocation(){
-		Location location = locMgr.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-		if(location!=null){
-		latitude = location.getLatitude();
-		longitude = location.getLongitude();
+
+	private void sendEmail() {
+		Log.d("Email", "wait to send email");
+		// send email
+		try {
+			GMailSender sender = new GMailSender("cura.app@gmail.com",
+					"CURAapplication1+2+3+");
+			sender.sendMail("Cura: Device location",
+					"Click the link below to see the location of your device \n"
+							+ "http://maps.google.com/maps?q=" + latitude + ","
+							+ longitude + "&t=k", "cura.app@gmail.com",
+					alternativeEmail);
+			Log.d("Email", "email has been sent");
+		} catch (Exception e) {
+			Log.e("SendMail", e.getMessage(), e);
 		}
 	}
-	public void enableGps(){
-		String provider = Settings.Secure.getString(getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
 
-	    if(!provider.contains("gps")){ //if gps is disabled
-	        final Intent poke = new Intent();
-	        poke.setClassName("com.android.settings", "com.android.settings.widget.SettingsAppWidgetProvider"); 
-	        poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
-	        poke.setData(Uri.parse("3")); 
-	        sendBroadcast(poke);
-	    }
+	private void getFirstLocation() {
+		Location location = locMgr
+				.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+		if (location != null) {
+			latitude = location.getLatitude();
+			longitude = location.getLongitude();
+		}
+	}
+
+	public void enableGps() {
+		String provider = Settings.Secure.getString(getContentResolver(),
+				Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+
+		if (!provider.contains("gps")) { // if gps is disabled
+			final Intent poke = new Intent();
+			poke.setClassName("com.android.settings",
+					"com.android.settings.widget.SettingsAppWidgetProvider");
+			poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
+			poke.setData(Uri.parse("3"));
+			sendBroadcast(poke);
+		}
 	}
 }

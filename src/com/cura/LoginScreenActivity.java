@@ -109,8 +109,11 @@ public class LoginScreenActivity extends ListActivity {
 				Bundle extras = intent.getExtras();
 				if (extras != null) {
 					userTemp = extras.getParcelable("user");
+					// find out who the user is
 				}
 				if (intent.getAction().compareTo(connected) == 0) {
+					// if they are connected, take them to the main activity
+					// (CuraActivity)
 					loader.dismiss();
 					goToMainActivity = new Intent(LoginScreenActivity.this,
 							CuraActivity.class);
@@ -118,6 +121,10 @@ public class LoginScreenActivity extends ListActivity {
 					startActivity(goToMainActivity);
 				} else {
 					loader.dismiss();
+					// else if they are not connected, meaning that the
+					// username/password combination was incorrect (or some
+					// other reason which will be dealt with later on) show this
+					// the appropriate error dialog
 					Toast.makeText(context, R.string.credentialsWrong,
 							Toast.LENGTH_LONG).show();
 				}
@@ -174,6 +181,8 @@ public class LoginScreenActivity extends ListActivity {
 	protected Dialog onCreateDialog(int id) {
 
 		return new AlertDialog.Builder(LoginScreenActivity.this)
+				// this is the screen that shows up with the user installs Cura
+				// for the very first time
 				// .setIconAttribute(android.R.attr.alertDialogIcon)
 				.setTitle(R.string.firstTimeUseMessageTitle)
 				.setMessage(R.string.firstTimeUseMessage)
@@ -219,6 +228,8 @@ public class LoginScreenActivity extends ListActivity {
 					.findViewById(R.id.passwordprompt);
 
 			CheckBox showPass = (CheckBox) view.findViewById(R.id.showPassword);
+			// this is for the "Show password" checkbox that allows the user to
+			// see their password in the clear
 			showPass.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
 				public void onCheckedChanged(CompoundButton buttonView,
@@ -226,15 +237,19 @@ public class LoginScreenActivity extends ListActivity {
 					// TODO Auto-generated method stub
 					if (isChecked)
 						passField.setTransformationMethod(null);
+					// if that checkbox is checked, do the transformation
 					else
 						passField
 								.setTransformationMethod(PasswordTransformationMethod
 										.getInstance());
+					// if it isn't, leave it as is
 
 				}
 			});
 			passwordAlert.setPositiveButton("Connect",
 					new DialogInterface.OnClickListener() {
+						// if the textfield is now filled with a password, allow
+						// the "Connect button" to be clickable
 						public void onClick(final DialogInterface dialog,
 								int whichButton) {
 							// UPON CLICKING "OK" IN THE DIALOG BOX (ALERT)
@@ -248,6 +263,8 @@ public class LoginScreenActivity extends ListActivity {
 											LoginScreenActivity.this,
 											"Connecting...",
 											"Loading, please wait...", true);
+									// show this dialog to signify that the user
+									// is being connected to their server
 								}
 
 								@Override
@@ -384,6 +401,8 @@ public class LoginScreenActivity extends ListActivity {
 			usernameInput.addTextChangedListener(watcher);
 			domainInput.addTextChangedListener(watcher);
 			portInput.addTextChangedListener(watcher);
+			// cannot click "Add" if all of the above textfields are empty
+
 			AddUserButton.setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
 					// get username, domain and port from EditText
@@ -391,7 +410,7 @@ public class LoginScreenActivity extends ListActivity {
 					String domain = domainInput.getText().toString();
 					int port = Integer.parseInt(portInput.getText().toString());
 
-					// open database
+					// open writable database
 					DbHelper dbHelper = new DbHelper(LoginScreenActivity.this);
 					SQLiteDatabase db = dbHelper.getWritableDatabase();
 
@@ -451,13 +470,17 @@ public class LoginScreenActivity extends ListActivity {
 							BasicPasswordEncryptor passwordEncryptor = new BasicPasswordEncryptor();
 							String curaPass = prefs.getString("myPass", "");
 							String passfield = passField.getText().toString();
+							// encrypt the given password
 							// if (passfield.compareTo(curaPass) == 0)
 							if (passwordEncryptor.checkPassword(passfield,
 									curaPass))
+								// if it matches the password that we have for
+								// the user, take them to where they should go
 								startActivity(new Intent(
 										LoginScreenActivity.this,
 										PreferenceScreen.class));
 							else
+								// else, prompt for wrong password
 								Toast.makeText(LoginScreenActivity.this,
 										R.string.wrongPassword,
 										Toast.LENGTH_SHORT).show();
@@ -474,6 +497,10 @@ public class LoginScreenActivity extends ListActivity {
 			alert.show();
 			return true;
 		case REFRESH:
+			// this button from the Login Screen's menu items is used to refresh
+			// that specific screen in order to instantly see that Cura's
+			// database has been wiped due to an emergency SMS having been sent
+			// to the phone
 			user = getUser();
 			array = new CustomArrayAdapter(LoginScreenActivity.this, user);
 			setListAdapter(array);
