@@ -77,5 +77,5 @@
     <string name="loginBtn">Login</string>
     <string name="cancelBtn">Cancel</string>
     <string name="showPassword">Show password.</string>
-    <string name="noFavoritesFound">No favorites found</string>
+    <string name="noFavoritesFound">You have not added any favorite commands yet, press the Menu &gt; Add New Comand to start adding!</string>
 </resources>
