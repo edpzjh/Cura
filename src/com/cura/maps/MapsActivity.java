@@ -1,25 +1,19 @@
 package com.cura.maps;
 
 import java.util.List;
-import java.util.Locale;
 
-import net.sf.javainetlocator.InetAddressLocator;
-import net.sf.javainetlocator.InetAddressLocatorException;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
+
 import com.cura.R;
-import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
-import com.google.android.maps.OverlayItem;
-import com.google.android.maps.MyLocationOverlay;
 
 public class MapsActivity extends MapActivity {
 	LocationManager locMgr;

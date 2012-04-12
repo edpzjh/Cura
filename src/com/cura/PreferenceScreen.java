@@ -22,18 +22,14 @@ package com.cura;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
-import android.preference.EditTextPreference;
 import android.preference.Preference;
-import android.preference.PreferenceManager;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.provider.Settings;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.cura.security.SMSService;
 
@@ -69,6 +65,7 @@ public class PreferenceScreen extends PreferenceActivity implements
 		return false;
 	}
 
+	@SuppressWarnings("unused")
 	private boolean isMyServiceRunning() {
 		// checks for the status of the above service so that it can be used
 		// later to enable the service once the phone is started
@@ -94,6 +91,7 @@ public class PreferenceScreen extends PreferenceActivity implements
 			poke.setClassName("com.android.settings",
 					"com.android.settings.widget.SettingsAppWidgetProvider");
 			poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
+			//enable it
 			poke.setData(Uri.parse("3"));
 			sendBroadcast(poke);
 		}

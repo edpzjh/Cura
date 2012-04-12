@@ -32,7 +32,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.RemoteException;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -42,20 +41,22 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.cura.DbHelper;
-import com.cura.LoginScreenActivity;
 import com.cura.R;
 import com.cura.User;
 import com.cura.Connection.CommunicationInterface;
 import com.cura.Connection.ConnectionService;
 
+/*
+ * TODO: Move the fetching of commands to onCreate instead of onClick
+ * 
+ */
+
 public class TerminalActivity extends Activity {
-	
+
 	private final int FAVORITES = 1;
-	private final int LOGOUT = 2;
 
 	EditText result;
 	EditText commandLine;
@@ -77,12 +78,15 @@ public class TerminalActivity extends Activity {
 		public void onServiceConnected(ComponentName arg0, IBinder service) {
 			// TODO Auto-generated method stub
 			conn = CommunicationInterface.Stub.asInterface(service);
+			// connect to the service and prepare the terminal to start
+			// receiving new commands
 			sendAndReceive();
 		}
 
 		public void onServiceDisconnected(ComponentName name) {
 			// TODO Auto-generated method stub
 			conn = null;
+			// when the service is disconnected, show this message
 			Toast.makeText(TerminalActivity.this, "Service Disconnected",
 					Toast.LENGTH_LONG);
 		}
@@ -91,20 +95,26 @@ public class TerminalActivity extends Activity {
 	public void doBindService() {
 		Intent i = new Intent(this, ConnectionService.class);
 		bindService(i, connection, Context.BIND_AUTO_CREATE);
+		// function for binding to the Connection service
 	}
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.terminal);
 		doBindService();
+
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
 			userTemp = extras.getParcelable("user");
+			// determine who the user object is
 		}
 		if (userTemp.getUsername().compareTo("root") == 0) {
+			// according to its username, if it's root, append the result with #
+			// to signifgy root privileges
 			username = userTemp.getUsername() + "@" + userTemp.getDomain()
 					+ ":~# ";
 		} else {
+			// otherwise a $ for non-privileged user
 			username = userTemp.getUsername() + "@" + userTemp.getDomain()
 					+ ":~$ ";
 		}
@@ -121,6 +131,7 @@ public class TerminalActivity extends Activity {
 			public void onClick(View arg0) {
 				String command = commandLine.getText().toString();
 				result.setTextColor(Color.GREEN);
+				// set the color
 				result.append(command + "\n");
 				String res = "";
 				try {
@@ -148,31 +159,35 @@ public class TerminalActivity extends Activity {
 				int counter = 0;
 
 				if (c != null) {
+					// if the cursor finds something at the table
 					if (c.moveToFirst()) {
 						do {
 							favoriteCommands[counter] = c.getString(c
 									.getColumnIndex("command"));
+							// fetch all the commands and display them
 							counter++;
 						} while (c.moveToNext());
 					}
 				}
-				if(counter==0)
-				{
-					Toast.makeText(TerminalActivity.this,R.string.noFavoritesFound,Toast.LENGTH_SHORT).show();
-				}
-				else
-				{
-				AlertDialog.Builder builder = new AlertDialog.Builder(
-						TerminalActivity.this);
-				builder.setTitle("Pick a command");
-				builder.setItems(favoriteCommands,
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int item) {
-								commandLine.append(favoriteCommands[item]);
-							}
+				if (counter == 0) {
+					// if there are no commands to be displayed
+					Toast.makeText(TerminalActivity.this,
+							R.string.noFavoritesFound, Toast.LENGTH_SHORT)
+							.show();
+				} else {
+					// there are commands and they are now displayed
+					AlertDialog.Builder builder = new AlertDialog.Builder(
+							TerminalActivity.this);
+					builder.setTitle("Pick a command");
+					builder.setItems(favoriteCommands,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int item) {
+									commandLine.append(favoriteCommands[item]);
+								}
 
-						});
-				builder.show();
+							});
+					builder.show();
 				}
 				db.close();
 				dbHelper.close();
@@ -185,8 +200,8 @@ public class TerminalActivity extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		boolean result = super.onCreateOptionsMenu(menu);
 		// Add a button to menu
-		menu.add(0, FAVORITES, 0, R.string.addNewFavoriteCommand).setIcon(android.R.drawable.ic_input_add);
-//		menu.add(1, LOGOUT,0,R.string.logout).setIcon(R.drawable.ic_lock_power_off);
+		menu.add(0, FAVORITES, 0, R.string.addNewFavoriteCommand).setIcon(
+				android.R.drawable.ic_input_add);
 		return result;
 	}
 
@@ -220,59 +235,39 @@ public class TerminalActivity extends Activity {
 			final AlertDialog alert = addUser.create();
 			alert.show();
 			commandText.addTextChangedListener(new TextWatcher() {
-				
-				public void onTextChanged(CharSequence s, int start, int before, int count) {
+				// the user is not allowed to press OK unless there is text in
+				// the textfield
+				public void onTextChanged(CharSequence s, int start,
+						int before, int count) {
 					// TODO Auto-generated method stub
-					if(commandText.getText().length()>0)
+					if (commandText.getText().length() > 0)
+						// on text changed, enable the button
 						alert.getButton(Dialog.BUTTON1).setEnabled(true);
 					else
+						// when text is empty again, disable the button
 						alert.getButton(Dialog.BUTTON1).setEnabled(false);
 				}
-				
-				public void beforeTextChanged(CharSequence s, int start, int count,
-						int after) {
+
+				public void beforeTextChanged(CharSequence s, int start,
+						int count, int after) {
 					// TODO Auto-generated method stub
-					
+
 				}
-				
+
 				public void afterTextChanged(Editable s) {
 					// TODO Auto-generated method stub
-					
+
 				}
 			});
 			alert.getButton(Dialog.BUTTON1).setEnabled(false);
 			break;
-		/*case LOGOUT:
-				new AlertDialog.Builder(this)
-				.setTitle("Logout Confirmation")
-				.setMessage(R.string.logoutConfirmationDialog)
-				.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-					
-					public void onClick(DialogInterface dialog, int which) {
-						try {
-						conn.close();
-						unbindService(connection);
-						Log.d("Connection","connection closed");
-						} catch (RemoteException e) {
-							Log.d("Connection",e.toString());
-						}
-						Intent closeAllActivities = new Intent(TerminalActivity.this, LoginScreenActivity.class);
-						closeAllActivities.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-						TerminalActivity.this.startActivity(closeAllActivities);	
-					}
-				})
-				.setNegativeButton("No", new DialogInterface.OnClickListener() {
-				
-					public void onClick(DialogInterface dialog, int which) {	
-						dialog.dismiss();	
-					}
-				}).show();
-			break;*/
+
 		}
 		return super.onOptionsItemSelected(item);
 	}
 
 	public void addCommandToDatabase(String command) {
+		// instantiate the instances that will connect to the database
 		DbHelper dbHelper = new DbHelper(TerminalActivity.this);
 		SQLiteDatabase db = dbHelper.getWritableDatabase();
 
@@ -285,9 +280,11 @@ public class TerminalActivity extends Activity {
 			db.insertOrThrow(DbHelper.commandTableName, null, values);
 			Toast.makeText(this, "Command added successfully!",
 					Toast.LENGTH_SHORT).show();
+			// after the command has been added
 		} catch (Exception e) {
 			Toast.makeText(this, "Command could not be added!",
 					Toast.LENGTH_SHORT).show();
+			// if the command was not added successfully
 			Log.d("SQL", e.toString());
 		}
 
@@ -297,14 +294,14 @@ public class TerminalActivity extends Activity {
 		startActivity(getIntent());
 		finish();
 	}
-	
+
 	@Override
 	protected void onStop() {
 		super.onStop();
 		unbindService(connection);
 		finish();
 	}
-	
+
 	@Override
 	protected void onDestroy() {
 		super.onStop();

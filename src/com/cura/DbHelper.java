@@ -19,7 +19,6 @@
 package com.cura;
 
 import org.jasypt.util.password.BasicPasswordEncryptor;
-import org.jasypt.util.password.StrongPasswordEncryptor;
 
 import android.content.Context;
 import android.content.SharedPreferences;

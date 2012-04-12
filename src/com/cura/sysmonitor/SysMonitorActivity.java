@@ -35,7 +35,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -148,10 +147,13 @@ public class SysMonitorActivity extends Activity {
 		renderer.setAntialiasing(true);
 		renderer.setShowGrid(true);
 
+		//the renderer for the CPU percentage
 		rendererSeriesCPU = new XYSeriesRenderer();
 		rendererSeriesCPU.setColor(Color.RED);
 		rendererSeriesCPU.setFillPoints(true);
 		rendererSeriesCPU.setPointStyle(PointStyle.CIRCLE);
+		
+		//the renderer for the RAM percentage
 		rendererSeriesRAM = new XYSeriesRenderer();
 		rendererSeriesRAM.setColor(Color.GREEN);
 		rendererSeriesRAM.setFillPoints(true);

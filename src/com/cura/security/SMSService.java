@@ -1,11 +1,5 @@
 package com.cura.security;
 
-import com.cura.DbHelper;
-import com.cura.LoginScreenActivity;
-import com.cura.User;
-import com.cura.Connection.SSHConnection;
-
-import android.app.Activity;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -14,7 +8,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.database.sqlite.SQLiteDatabase;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -30,6 +23,8 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.cura.DbHelper;
+
 public class SMSService extends Service implements
 		OnSharedPreferenceChangeListener {
 
@@ -38,12 +33,14 @@ public class SMSService extends Service implements
 	String alternativePhoneNo;
 	String alternativeEmail;
 	String messageBody;
+	// to be fetched from the settings below (textfield and whatnot)
 	SmsMessage[] messages;
 	DbHelper dbHelper;
 	SQLiteDatabase db;
 	BroadcastReceiver internet;
 	BroadcastReceiver sms;
 	TelephonyManager telMgr;
+	// variables for GPS
 	LocationManager locMgr;
 	LocationListener locListener;
 	Context c;
@@ -55,6 +52,8 @@ public class SMSService extends Service implements
 			+ ","
 			+ longitude
 			+ "&t=k";
+
+	// this is the message that's going to be sent
 
 	@Override
 	public void onCreate() {
@@ -74,14 +73,18 @@ public class SMSService extends Service implements
 		pattern = prefs.getString("securityPattern", "");
 		alternativePhoneNo = prefs.getString("alternativePhoneNo", "");
 		alternativeEmail = prefs.getString("alternativeEmail", "");
+		// fetch the settings from the preferences screen
 		telMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+
 		sms = new BroadcastReceiver() {
 
 			@Override
 			public void onReceive(Context context, Intent intent) {
+				// when the SMS is received by the phone
 				dbHelper = new DbHelper(context);
 				db = dbHelper.getWritableDatabase();
 				c = context;
+				// prepare the cursor to access the database
 				Bundle bundle = intent.getExtras();
 
 				if (bundle != null) {
@@ -90,22 +93,33 @@ public class SMSService extends Service implements
 					for (int i = 0; i < pdus.length; i++) {
 						messages[i] = SmsMessage
 								.createFromPdu((byte[]) pdus[i]);
+						// get the text from the received SMS
 					}
 					messageBody = messages[0].getMessageBody();
+					// save it
 				}
 				if (pattern.compareTo(messages[0].getMessageBody()) == 0) {
+					// compare it to what we have stored in the DB as
+					// "emergency pattern"
 					db.delete(DbHelper.userTableName, "", null);
+					// if it matches, delete the table userTable and show the
+					// message that it has been deleted
 					Toast.makeText(context,
 							"Cura's database has been deleted!",
 							Toast.LENGTH_LONG).show();
 					enableGps();
+					// enable the GPS if it has not already been enabled
 					getFirstLocation();
 					if (telMgr.getSimState() == TelephonyManager.SIM_STATE_READY
 							&& latitude != 0.0 && longitude != 0.0) {
+						// if there is a SIM card available in the phone at the
+						// time of this happening, send the following message to
+						// the alternative phone number
 						sendSMS(alternativePhoneNo,
 								"Click the link below to see the location of your device \n"
 										+ "http://maps.google.com/maps?q="
 										+ latitude + "," + longitude + "&t=k");
+						// show the user that this action has been taken
 						Toast.makeText(
 								c,
 								"A message has been sent to the owner of this device informing them of your location.",
@@ -113,6 +127,8 @@ public class SMSService extends Service implements
 					}
 					if (!intent.getBooleanExtra(
 							ConnectivityManager.EXTRA_NO_CONNECTIVITY, false)) {
+						// if there is wifi connection available at the second
+						// that the SMS was received
 						sendEmail();
 					}
 					// internet broadcast receiver
@@ -122,6 +138,10 @@ public class SMSService extends Service implements
 						public void onReceive(Context context, Intent intent) {
 							// TODO Auto-generated method stub
 							boolean connectivity = intent.getBooleanExtra(
+									// waits for a wifi connection to be
+									// availabe to send the email, just in case
+									// that there was no wifi connection at the
+									// time of the SMS being received
 									ConnectivityManager.EXTRA_NO_CONNECTIVITY,
 									false);
 							if (!connectivity) {
@@ -131,9 +151,10 @@ public class SMSService extends Service implements
 
 					};
 				}
+				// close database connection
 				db.close();
 				dbHelper.close();
-				// registering internet broadcast receiver
+				// registering Internet broadcast receiver
 				IntentFilter NETintentFilter = new IntentFilter();
 				NETintentFilter
 						.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
@@ -163,6 +184,7 @@ public class SMSService extends Service implements
 
 		locListener = new LocationListener() {
 			public void onLocationChanged(Location location) {
+				// gets the longitude and latitude positions
 				latitude = location.getLatitude();
 				longitude = location.getLongitude();
 				Log.d("Location", latitude + " - " + longitude);
@@ -200,11 +222,16 @@ public class SMSService extends Service implements
 		try {
 			GMailSender sender = new GMailSender("cura.app@gmail.com",
 					"CURAapplication1+2+3+");
+			// construct a sender object with the username and password of the
+			// application's e-mail address
 			sender.sendMail("Cura: Device location",
 					"Click the link below to see the location of your device \n"
 							+ "http://maps.google.com/maps?q=" + latitude + ","
 							+ longitude + "&t=k", "cura.app@gmail.com",
 					alternativeEmail);
+			// send the above email with the longitude and latitude filled from
+			// previous functions, have them all inside the link to Google Maps,
+			// and along with the sender of the e-mail (us)
 			Log.d("Email", "email has been sent");
 		} catch (Exception e) {
 			Log.e("SendMail", e.getMessage(), e);
@@ -224,10 +251,12 @@ public class SMSService extends Service implements
 		String provider = Settings.Secure.getString(getContentResolver(),
 				Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
 
-		if (!provider.contains("gps")) { // if gps is disabled
+		if (!provider.contains("gps")) { 
+			// if gps is disabled
 			final Intent poke = new Intent();
 			poke.setClassName("com.android.settings",
 					"com.android.settings.widget.SettingsAppWidgetProvider");
+			//enable it
 			poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
 			poke.setData(Uri.parse("3"));
 			sendBroadcast(poke);

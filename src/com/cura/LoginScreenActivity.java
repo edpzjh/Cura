@@ -18,10 +18,7 @@
  */
 package com.cura;
 
-import java.util.Locale;
-
 import org.jasypt.util.password.BasicPasswordEncryptor;
-import org.jasypt.util.password.StrongPasswordEncryptor;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -58,7 +55,6 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TableRow;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cura.Connection.ConnectionService;
@@ -148,7 +144,6 @@ public class LoginScreenActivity extends ListActivity {
 		if (c.getCount() == 0) {
 			user = new User[1];
 			user[0] = new User("username", "domain", 22);
-			Log.d("HERE", "HERE");
 		} else {
 			user = new User[c.getCount()];
 
@@ -273,10 +268,15 @@ public class LoginScreenActivity extends ListActivity {
 									String pass = passField.getText()
 											.toString();
 									user[position].setPassword(pass);
+									// store the user's password according to
+									// their determined position
 									userTemp = user[position];
 									passUserObjToService = new Intent(
 											LoginScreenActivity.this,
 											ConnectionService.class);
+									// initiate the Connection intent and send
+									// the user's password and the user object
+									// along with it
 									passUserObjToService.putExtra("user",
 											userTemp);
 									passUserObjToService.putExtra("pass", pass);
@@ -285,9 +285,10 @@ public class LoginScreenActivity extends ListActivity {
 
 								@Override
 								protected void onPostExecute(String result) {
+									//causing the loader circle to stop spinning
+									//starts the connection service
 									startService(passUserObjToService);
 								}
-
 							};
 							task.execute();
 						}
@@ -336,11 +337,6 @@ public class LoginScreenActivity extends ListActivity {
 		menu.add(0, SETTINGS, 0, R.string.preferenceSettings).setIcon(
 				R.drawable.ic_menu_preferences);
 		menu.add(1, REFRESH, 1, "Refresh").setIcon(R.drawable.ic_menu_rotate);
-		// menu.add(0, Menu.FIRST, 0, R.string.no_users).setIcon(
-		// R.drawable.ic_menu_add);
-		// menu.add(0, 2, 0, R.string.preferenceSettings).setIcon(
-		// R.drawable.ic_menu_preferences);
-		// menu.add(1, 3, 1, "Refresh").setIcon(R.drawable.ic_menu_rotate);
 		return result;
 	}
 
@@ -392,13 +388,16 @@ public class LoginScreenActivity extends ListActivity {
 					String port = portInput.getText().toString();
 					if (!username.isEmpty() && !domain.isEmpty()
 							&& !port.isEmpty())
+						//if all the textfields are filled, enable the Add button
 						AddUserButton.setEnabled(true);
 					else
+						//else, disable it
 						AddUserButton.setEnabled(false);
 				}
 
 			};
 			usernameInput.addTextChangedListener(watcher);
+			//adding listeners
 			domainInput.addTextChangedListener(watcher);
 			portInput.addTextChangedListener(watcher);
 			// cannot click "Add" if all of the above textfields are empty

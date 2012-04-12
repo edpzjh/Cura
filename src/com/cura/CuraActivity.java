@@ -18,6 +18,7 @@
  */
 package com.cura;
 
+import com.cura.R;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -140,9 +141,6 @@ public class CuraActivity extends Activity implements OnClickListener {
 		sysLogRow = (TableRow) findViewById(R.id.SysLogRow);
 		sysLogRow.setOnClickListener(this);
 
-		nessusRow = (TableRow) findViewById(R.id.NessusRow);
-		nessusRow.setOnClickListener(this);
-
 		nmapRow = (TableRow) findViewById(R.id.NMapRow);
 		nmapRow.setOnClickListener(this);
 
@@ -155,8 +153,10 @@ public class CuraActivity extends Activity implements OnClickListener {
 		case R.id.TerminalRow:
 			// when the row entitled "Terminal" is clicked, take the user to the
 			// terminal activity.
+			// terminalRow.setBackgroundColor(R.drawable.moduleselectedhighlight);
 			Intent terminalIntent = new Intent(this, TerminalActivity.class);
 			terminalIntent.putExtra("user", userTemp);
+
 			// send userTemp (the current user)'s name along with the intent so
 			// that the name can be displayed there as well
 			startActivity(terminalIntent);
