@@ -35,6 +35,7 @@
                 <action android:name="cura.connected" />
                 <action android:name="cura.notConnected" />
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -94,4 +95,5 @@
             </intent-filter>
         </receiver>
     </application>
-</manifest>
+
+</manifest>
