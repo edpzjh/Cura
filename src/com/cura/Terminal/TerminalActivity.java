@@ -50,6 +50,12 @@ import com.cura.Connection.CommunicationInterface;
 import com.cura.Connection.ConnectionService;
 
 /*
+ * Description: In this Activity, we implement the means of talking to the server in a custom Terminal emulator that allows
+ * the user to run any command that can be run on a live Linux command line screen. We also add a Favorites Screen here that 
+ * will allow the user to add any number of their favorite commands to be executed when they choose one of them from the list.
+ */
+
+/*
  * TODO: Move the fetching of commands to onCreate instead of onClick
  * 
  */

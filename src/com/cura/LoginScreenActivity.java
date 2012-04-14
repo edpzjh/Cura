@@ -18,6 +18,12 @@
  */
 package com.cura;
 
+/*
+ * Description: This is the Login Screen, the very first activity that the user is dropped into. 
+ * This is where they can begin added new user accounts as well as modify or delete them. 
+ * They can also access Cura's settings from this activity's menu options.  
+ */
+
 import org.jasypt.util.password.BasicPasswordEncryptor;
 
 import android.app.AlertDialog;
@@ -285,8 +291,9 @@ public class LoginScreenActivity extends ListActivity {
 
 								@Override
 								protected void onPostExecute(String result) {
-									//causing the loader circle to stop spinning
-									//starts the connection service
+									// causing the loader circle to stop
+									// spinning
+									// starts the connection service
 									startService(passUserObjToService);
 								}
 							};
@@ -388,16 +395,17 @@ public class LoginScreenActivity extends ListActivity {
 					String port = portInput.getText().toString();
 					if (!username.isEmpty() && !domain.isEmpty()
 							&& !port.isEmpty())
-						//if all the textfields are filled, enable the Add button
+						// if all the textfields are filled, enable the Add
+						// button
 						AddUserButton.setEnabled(true);
 					else
-						//else, disable it
+						// else, disable it
 						AddUserButton.setEnabled(false);
 				}
 
 			};
 			usernameInput.addTextChangedListener(watcher);
-			//adding listeners
+			// adding listeners
 			domainInput.addTextChangedListener(watcher);
 			portInput.addTextChangedListener(watcher);
 			// cannot click "Add" if all of the above textfields are empty

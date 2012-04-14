@@ -18,6 +18,10 @@
  */
 package com.cura;
 
+/*
+ * Description: This class is used to automatically construct a list of user accounts for the Login Screen activity.
+ */
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.view.LayoutInflater;

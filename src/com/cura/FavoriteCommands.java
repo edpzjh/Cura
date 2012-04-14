@@ -18,6 +18,11 @@
  */
 package com.cura;
 
+/*
+ * Description: This is the Favorite Commands activity which exists in the Terminal module. Here is where the user can add
+ * new commands to their list of favorite commands and be able to select one of them and run it in the terminal.
+ */
+
 import android.app.ListActivity;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;

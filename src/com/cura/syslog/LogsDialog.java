@@ -18,6 +18,12 @@
  */
 package com.cura.syslog;
 
+/*
+ * Description: This Activity is for the dialog creation that happens when a user chooses to select a certain chunk of data
+ * from a certain file in the SysLog repository available on said server. This pops up a dialog containing the text that the
+ * user requested to see.
+ */
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;

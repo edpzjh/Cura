@@ -18,6 +18,12 @@
  */
 package com.cura;
 
+/*
+ * Description: This is the activity that the user gets dropped to after they have logged in successfully and this is where
+ * all of Cura's facilities are shown (Terminal, SysLog, SysMonitor, etc...). The options provided in this activity are
+ * Server Info and Logout. 
+ */
+
 import com.cura.R;
 import android.app.Activity;
 import android.app.AlertDialog;

@@ -18,6 +18,10 @@
  */
 package com.cura.security;
 
+/*
+ * Description: This class just starts the SMS broadcast receiver upon starting the phone.
+ */
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;

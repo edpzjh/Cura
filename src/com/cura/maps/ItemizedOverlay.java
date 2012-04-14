@@ -18,6 +18,11 @@
  */
 package com.cura.maps;
 
+/*
+ * Description: This class is used to place an ItemizedOverlay object (an Android icon) on the map at the location of our 
+ * choice.
+ */
+
 import java.util.ArrayList;
 
 import android.app.AlertDialog;

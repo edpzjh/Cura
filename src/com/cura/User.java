@@ -18,6 +18,11 @@
  */
 package com.cura;
 
+/*
+ * Description: This is just a User class and it's used to receive all of the user accounts' information and encapsulate 
+ * them in an object.
+ */
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -26,8 +31,9 @@ public class User implements Parcelable {
 	private String domain;
 	private int port;
 	private String password;
-	
-	//The User class, used to store and send the user's information through activities
+
+	// The User class, used to store and send the user's information through
+	// activities
 
 	public User(String usern, String dom, int port) {
 		username = usern;

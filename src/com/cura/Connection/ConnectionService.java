@@ -18,6 +18,11 @@
  */
 package com.cura.Connection;
 
+/*
+ * Description: This is where the Connection service functionality is constructed. Meaning that this is where we implement
+ * functions like executeCommand() which is used to execute a command at the terminal.
+ */
+
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;

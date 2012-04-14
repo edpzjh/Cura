@@ -18,6 +18,16 @@
  */
 package com.cura.maps;
 
+/*
+ * Description: The structure of this class and the other class (ItemizedOverlay.java) available in the com.cura.maps package are 
+ * almost straight out of Google Map View for Android available at: 
+ * http://developer.android.com/resources/tutorials/views/hello-mapview.html
+ * 
+ * TODO: Make this activity show exactly where the user is located and where the server they are CURRENTLY connected to is
+ * located on the map. Added to which, the menu options should provide a means for displaying where the user's OTHER added servers are
+ * located on the map.
+ */
+
 import java.util.List;
 
 import android.content.Context;
@@ -41,7 +51,7 @@ public class MapsActivity extends MapActivity {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		
+
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.maps);
 		gpsLocation();
@@ -51,7 +61,6 @@ public class MapsActivity extends MapActivity {
 		Drawable drawable = this.getResources().getDrawable(
 				R.drawable.androidmarker);
 		ItemizedOverlay itemizedoverlay = new ItemizedOverlay(drawable, this);
-		
 
 		// GeoPoint point = new GeoPoint(latitude, longitude);
 		// OverlayItem overlayitem = new OverlayItem(point, "Hola, Mundo!",

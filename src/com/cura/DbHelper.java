@@ -18,6 +18,11 @@
  */
 package com.cura;
 
+/*
+ * Description: This class is used to access the database and write to it the information about user accounts and their
+ * preferences plus the Favorite commands from the Terminal.
+ */
+
 import org.jasypt.util.password.BasicPasswordEncryptor;
 
 import android.content.Context;

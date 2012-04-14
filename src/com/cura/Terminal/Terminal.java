@@ -18,6 +18,12 @@
  */
 package com.cura.Terminal;
 
+/*
+ * Description: This class describes the way that we have chosen to interact with the server after having established an
+ * SSH connection to it. We use a JSch (Java Secure channel) object to send/receive messages to/from the server and we do
+ * this using a thread that can be ran/paused/etc...
+ */
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -43,11 +49,10 @@ public class Terminal extends Thread {
 	private String host;
 	private String password;
 	private int port;
-	private StringWriter writer; 
+	private StringWriter writer;
 	private InputStream in;
 	private String result = "";
 	int i = 0;
-	
 
 	public Terminal(final User user) throws JSchException {
 		// TODO Auto-generated method stub
@@ -66,7 +71,7 @@ public class Terminal extends Thread {
 	}
 
 	public synchronized String ExecuteCommand(String command) {
-		
+
 		try {
 			channel = session.openChannel("exec");
 			((ChannelExec) channel).setCommand(command);
@@ -79,7 +84,7 @@ public class Terminal extends Thread {
 			writer.getBuffer().setLength(0);
 			IOUtils.copy(in, writer);
 			result = writer.toString();
-			
+
 			System.gc();
 
 		} catch (IOException i) {
@@ -90,11 +95,13 @@ public class Terminal extends Thread {
 		}
 		return result;
 	}
-	public void close(){
+
+	public void close() {
 		session.disconnect();
 		channel.disconnect();
 	}
-	public boolean connected(){
+
+	public boolean connected() {
 		return true;
 	}
 }

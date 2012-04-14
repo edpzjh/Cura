@@ -15,7 +15,12 @@
 
     You should have received a copy of the GNU General Public License
     along with Cura.  If not, see <http://www.gnu.org/licenses/>.
- */package com.cura.nmap;
+ */
+package com.cura.nmap;
+
+/*
+ * Description: This is the implementation of Nmap for Android. Its source can be found here: http://nmap.wjholden.com/src/
+ */
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;

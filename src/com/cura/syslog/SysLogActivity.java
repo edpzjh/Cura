@@ -18,6 +18,13 @@
  */
 package com.cura.syslog;
 
+/*
+ * Description: This is the actual SysLog module Activity. Here is where the user can choose from a drop-down list the file
+ * that they choose to view from the list of files that SysLog usually dumps to on any Linux machine. After choosing that, 
+ * the user can then choose whether to Tail (last 10 lines) or Head (first 10 lines) that file. Added to which, they can 
+ * choose to Tail or Head that file according to a user-specified number (e.g. the first 45 lines, the last 20 lines).
+ */
+
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;

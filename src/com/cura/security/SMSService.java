@@ -18,6 +18,13 @@
  */
 package com.cura.security;
 
+/*
+ * Description: This class implements the Service and is used to listen for when the pattern that the user chooses is sent
+ * to the phone that has been compromised (this pattern is set in the Settings menu item from the Login Screen) upon which
+ * it sends an SMS to the emergency phone number that the user specified in that same Settings menu item, containing the 
+ * location of the compromised phone. We used GPS location to determine that.
+ */
+
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;

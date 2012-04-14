@@ -18,6 +18,15 @@
  */
 package com.cura;
 
+/*
+ * Description: This class is used to implement the part of the Settings Activity (Login Screen > Menu > Settings) that 
+ * deals with changing the password that allows the user to access the Settings Activity (by default it's "default").
+ * 
+ * Here we use the "Jasypt" library to encrypt the password with BasicPasswordEncryptor and not not StrongPasswordEncryptor
+ * because of a large lagging time that we experienced due to using the latter.
+ * More information about this library can be found here: http://www.jasypt.org/
+ */
+
 import org.jasypt.util.password.BasicPasswordEncryptor;
 
 import android.content.Context;
@@ -35,7 +44,7 @@ public class PassDialogPreference extends DialogPreference {
 	private EditText oldPassED, newPassED, confPassED;
 	// 3 editTexts to appear in the prompt for changing the password
 	private SharedPreferences prefs;
-	private BasicPasswordEncryptor passwordEncryptor ;
+	private BasicPasswordEncryptor passwordEncryptor;
 	// to be able to access the content in PreferenceScreen
 	private Context context;
 
@@ -43,10 +52,10 @@ public class PassDialogPreference extends DialogPreference {
 		super(context, attrs);
 		this.context = context;
 		setDialogLayoutResource(R.layout.prefpassdialog);
-		//set the password dialog from the 
+		// set the password dialog from the
 		prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		oldPassword = prefs.getString("myPass", "");
-		
+
 		passwordEncryptor = new BasicPasswordEncryptor();
 	}
 
@@ -65,7 +74,8 @@ public class PassDialogPreference extends DialogPreference {
 		persistBoolean(positiveResult);
 		if (positiveResult) {
 			// if the fields are set
-			if (passwordEncryptor.checkPassword(oldPassED.getText().toString(), oldPassword))
+			if (passwordEncryptor.checkPassword(oldPassED.getText().toString(),
+					oldPassword))
 				// and if the old password that was typed in matches the actual
 				// oldPassword value
 				if ((newPassED.getText().toString()).compareTo(confPassED
@@ -78,7 +88,8 @@ public class PassDialogPreference extends DialogPreference {
 					// if the confirm password editText is not empty
 					SharedPreferences.Editor editor = prefs.edit();
 					// open preferences
-					editor.putString("myPass", passwordEncryptor.encryptPassword(newPassED.getText().toString()));
+					editor.putString("myPass", passwordEncryptor
+							.encryptPassword(newPassED.getText().toString()));
 					// save the new password
 					editor.commit();
 					// commit the changes

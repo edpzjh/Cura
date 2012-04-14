@@ -18,6 +18,20 @@
  */
 package com.cura;
 
+/*
+ * Description: In this class we implement the screen that the user sees upon going to Login Screen > Menu > Settings.
+ * In here, the user is offered to enable the SMS/E-mail security feature. When this feature is enabled, the user is requested
+ * to enter their alternative phone number or their alternative e-mail address along with a specific pattern.
+ * 
+ * This security feature allows users to have Cura's database completely wiped upon them sending the compromised phone 
+ * a secret pattern of their choosing. (ex: send an SMS message containing "phone has been stolen!" to your Android phone to
+ * wipe Cura's database and receive the location of the compromised phone as an SMS to your emergency phone number or as an 
+ * e-mail to your emergency e-mail address).
+ * 
+ * Here the user is also allowed to change the password they need to allow them access to this very activity (as we explained
+ * in "PassDialogPreference.java") (this password defaults to "default" when Cura is first installed).
+ */
+
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningServiceInfo;
 import android.content.Intent;
@@ -90,7 +104,7 @@ public class PreferenceScreen extends PreferenceActivity implements
 			poke.setClassName("com.android.settings",
 					"com.android.settings.widget.SettingsAppWidgetProvider");
 			poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
-			//enable it
+			// enable it
 			poke.setData(Uri.parse("3"));
 			sendBroadcast(poke);
 		}

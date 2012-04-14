@@ -18,6 +18,12 @@
  */
 package com.cura.sysmonitor;
 
+/*
+ * Description: This is the SysMonitor module Activity. In here we construct an ongoing chart that tracks down the exact
+ * percentages of CPU and RAM usage for a pleasant and accurate server-monitoring experience. The menu options available 
+ * for this activity are Pause (where the monitoring pauses at the last fetched values) and Resume (where it resumes).
+ */
+
 import java.util.Date;
 
 import org.achartengine.ChartFactory;
