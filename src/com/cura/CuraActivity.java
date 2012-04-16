@@ -32,6 +32,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Color;
+import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -39,8 +41,10 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -53,7 +57,7 @@ import com.cura.nmap.NmapActivity;
 import com.cura.syslog.SysLogActivity;
 import com.cura.sysmonitor.SysMonitorActivity;
 
-public class CuraActivity extends Activity implements OnClickListener {
+public class CuraActivity extends Activity implements OnClickListener, OnTouchListener {
 
 	private final int LOGOUT = 1;
 	private final int SERVER_INFO = 2;
@@ -140,18 +144,23 @@ public class CuraActivity extends Activity implements OnClickListener {
 		// SETTING CLICK-LISTENERS FOR ALL OF THE BUTTONS
 		terminalRow = (TableRow) findViewById(R.id.TerminalRow);
 		terminalRow.setOnClickListener(this);
+		terminalRow.setOnTouchListener(this);
 
 		sysMonitorRow = (TableRow) findViewById(R.id.SysMonitorRow);
 		sysMonitorRow.setOnClickListener(this);
-
+		sysMonitorRow.setOnTouchListener(this);
+		
 		sysLogRow = (TableRow) findViewById(R.id.SysLogRow);
 		sysLogRow.setOnClickListener(this);
-
+		sysLogRow.setOnTouchListener(this);
+		
 		nmapRow = (TableRow) findViewById(R.id.NMapRow);
 		nmapRow.setOnClickListener(this);
-
+		nmapRow.setOnTouchListener(this);
+		
 		mapsRow = (TableRow) findViewById(R.id.MapsRow);
 		mapsRow.setOnClickListener(this);
+		mapsRow.setOnTouchListener(this);
 	}
 
 	public void onClick(View v) {
@@ -188,17 +197,18 @@ public class CuraActivity extends Activity implements OnClickListener {
 		case R.id.NMapRow:
 			// when the row entitled "Nmap" is clicked, take the user
 			// to the Nmap activity
-			if ((userTemp.getUsername()).compareTo("root") == 0) {
+//			if ((userTemp.getUsername()).compareTo("root") == 0) {
 				// if the user is root, allow them to access this activity
 				// if they are not, don't allow them
 				Intent nmapIntent = new Intent(this, NmapActivity.class);
+				nmapIntent.putExtra("user", userTemp);
 				startActivity(nmapIntent);
-			} else {
-				Toast.makeText(
-						CuraActivity.this,
-						"Error! You are not allowed to access the Nmap module if you do not have root privileges over this server.",
-						Toast.LENGTH_LONG).show();
-			}
+//			} else {
+//				Toast.makeText(
+//						CuraActivity.this,
+//						"Error! You are not allowed to access the Nmap module if you do not have root privileges over this server.",
+//						Toast.LENGTH_LONG).show();
+//			}
 			break;
 		}
 	}
@@ -343,6 +353,20 @@ public class CuraActivity extends Activity implements OnClickListener {
 							}).show();
 		}
 		return super.onKeyDown(keyCode, event);
+	}
+
+	public boolean onTouch(View v, MotionEvent event) {
+		// TODO Auto-generated method stub
+		switch(event.getAction()){
+		case MotionEvent.ACTION_DOWN:
+			v.setBackgroundResource(R.drawable.moduleselectedhighlight);
+		break;
+		case MotionEvent.ACTION_UP:
+			v.setBackgroundResource(0);
+		break;
+		}
+
+		return false;
 	}
 
 }

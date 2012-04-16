@@ -30,6 +30,7 @@ import java.io.StringWriter;
 
 import org.apache.commons.io.IOUtils;
 
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.cura.User;

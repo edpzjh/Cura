@@ -19,7 +19,15 @@
 package com.cura.nmap;
 
 /*
- * Description: This is the implementation of Nmap for Android. Its source can be found here: http://nmap.wjholden.com/src/
+ * Description: This is the implementation of Nmap for Android. Its source can be found here:
+ * http://nmap.wjholden.com/src/
+ * Nmap (“Network Mapper”) is an open source tool for network exploration and security auditing. It was designed to rapidly
+ * scan large networks, although it works fine against single hosts. Nmap uses raw IP packets in novel ways to determine
+ * what hosts are available on the network, what services (application name and version) those hosts are offering, what
+ * operating systems (and OS versions) they are running, what type of packet filters/firewalls are in use, and dozens
+ * of other characteristics. While Nmap is commonly used for security audits, many systems and network administrators
+ * find it useful for routine tasks such as network inventory, managing service upgrade schedules, and monitoring host
+ * or service uptime.
  */
 
 import java.io.BufferedReader;
@@ -34,6 +42,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 
 import com.cura.R;
+import com.cura.User;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -45,6 +54,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -55,9 +66,9 @@ import android.widget.TextView;
 
 public class NmapActivity extends Activity {
 	/* --- view resources --- */
-	private TextView mResults;
-	private EditText mArguments, mTarget;
-	private Button mStart, mHelp, mShare, mExit;
+	private TextView mResults, mTarget;
+	private EditText mArguments;
+	private Button mStart;// , mHelp, mShare, mExit;
 	private Spinner mCommandSpinner, mOutputSpinner;
 
 	/*
@@ -88,23 +99,29 @@ public class NmapActivity extends Activity {
 	private static final int SCANTYPE_NCAT = 9;
 	private static final int SCANTYPE_NDIFF = 10;
 	private static final String tag = "Nmap";
+	/* --- User --- */
+	private User user;
+	/* --- Menu Items --- */
+	private final int SHARE = 11;
+	private final int HELP = 12;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.nmap);
-
+		Bundle extras = getIntent().getExtras();
+		user = (User) extras.get("user");
 		mResults = (TextView) findViewById(R.id.results);
 		mArguments = (EditText) findViewById(R.id.Arguments);
-		mTarget = (EditText) findViewById(R.id.Target);
+		mTarget = (TextView) findViewById(R.id.Target);
+		mTarget.setText(user.getDomain());
 		mStart = (Button) findViewById(R.id.Start);
-		mHelp = (Button) findViewById(R.id.Help);
-		mShare = (Button) findViewById(R.id.Share);
-		mExit = (Button) findViewById(R.id.Exit);
+		// mHelp = (Button) findViewById(R.id.Help);
+		// mShare = (Button) findViewById(R.id.Share);
+		// mExit = (Button) findViewById(R.id.Exit);
 
 		try {
-			int curVersion = getPackageManager().getPackageInfo(
-					"com.wjholden.nmap", 0).versionCode;
+			int curVersion = getPackageManager().getPackageInfo("com.cura", 0).versionCode;
 			// get the current version of Nmap that's installed
 			Log.d(tag, "Nmap version: " + curVersion);
 		} catch (NameNotFoundException e) {
@@ -120,7 +137,7 @@ public class NmapActivity extends Activity {
 		mCommandSpinner = (Spinner) findViewById(R.id.CommandSpinner);
 		ArrayAdapter<CharSequence> adapterCommand = ArrayAdapter
 				.createFromResource(this, R.array.commands,
-						android.R.layout.simple_spinner_dropdown_item);
+						android.R.layout.simple_spinner_item);
 		adapterCommand
 				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		mCommandSpinner.setAdapter(adapterCommand);
@@ -201,45 +218,87 @@ public class NmapActivity extends Activity {
 			}
 		});
 
-		mHelp.setOnClickListener(new View.OnClickListener() {
-			// when the help menu is brought up and something is selected from
-			// it
-			public void onClick(View v) {
-				// scanType = mCommandSpinner.getSelectedItemPosition() +
-				// SCANTYPE_NMAP;
-				mResults.setText("");
-				if (sTask == null
-						|| sTask.getStatus() == AsyncTask.Status.FINISHED
-						|| sTask.getStatus() == AsyncTask.Status.RUNNING) {
-					sTask = new scan().execute("-h");
-				} else {
-					if (!sTask.cancel(false)) {
-						h.sendEmptyMessage(THREAD_ERROR);
-					}
+		// mHelp.setOnClickListener(new View.OnClickListener() {
+		// // when the help menu is brought up and something is selected from
+		// // it
+		// public void onClick(View v) {
+		// // scanType = mCommandSpinner.getSelectedItemPosition() +
+		// // SCANTYPE_NMAP;
+		// mResults.setText("");
+		// if (sTask == null
+		// || sTask.getStatus() == AsyncTask.Status.FINISHED
+		// || sTask.getStatus() == AsyncTask.Status.RUNNING) {
+		// sTask = new scan().execute("-h");
+		// } else {
+		// if (!sTask.cancel(false)) {
+		// h.sendEmptyMessage(THREAD_ERROR);
+		// }
+		// }
+		// }
+		// });
+		//
+		// mShare.setOnClickListener(new View.OnClickListener() {
+		//
+		// public void onClick(View v) {
+		// final Intent emailIntent = new Intent(
+		// android.content.Intent.ACTION_SEND);
+		// emailIntent.setType("plain/text");
+		// emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
+		// "Nmap Scan Results");
+		// emailIntent.putExtra(android.content.Intent.EXTRA_TEXT,
+		// mResults.getText().toString());
+		// NmapActivity.this.startActivity(emailIntent);
+		// }
+		// });
+		//
+		// mExit.setOnClickListener(new View.OnClickListener() {
+		//
+		// public void onClick(View v) {
+		// NmapActivity.this.finish();
+		// }
+		// });
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		boolean result = super.onCreateOptionsMenu(menu);
+		menu.add(0, SHARE, 0, R.string.Share).setIcon(
+				android.R.drawable.ic_menu_share);
+		// creates the options menu that includes "Server Info" and "Logout"
+		menu.add(0, HELP, 0, R.string.Help).setIcon(
+				android.R.drawable.ic_menu_help);
+		return result;
+	}
+
+	public boolean onOptionsItemSelected(MenuItem item) {
+
+		switch (item.getItemId()) {
+		case SHARE:
+			final Intent emailIntent = new Intent(
+					android.content.Intent.ACTION_SEND);
+			emailIntent.setType("plain/text");
+			emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
+					"Nmap Scan Results");
+			emailIntent.putExtra(android.content.Intent.EXTRA_TEXT, mResults
+					.getText().toString());
+			NmapActivity.this.startActivity(emailIntent);
+			break;
+		case HELP:
+			// scanType = mCommandSpinner.getSelectedItemPosition() +
+			// SCANTYPE_NMAP;
+			mResults.setText("");
+			if (sTask == null || sTask.getStatus() == AsyncTask.Status.FINISHED
+					|| sTask.getStatus() == AsyncTask.Status.RUNNING) {
+				sTask = new scan().execute("-h");
+			} else {
+				if (!sTask.cancel(false)) {
+					h.sendEmptyMessage(THREAD_ERROR);
 				}
 			}
-		});
 
-		mShare.setOnClickListener(new View.OnClickListener() {
-
-			public void onClick(View v) {
-				final Intent emailIntent = new Intent(
-						android.content.Intent.ACTION_SEND);
-				emailIntent.setType("plain/text");
-				emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
-						"Nmap Scan Results");
-				emailIntent.putExtra(android.content.Intent.EXTRA_TEXT,
-						mResults.getText().toString());
-				NmapActivity.this.startActivity(emailIntent);
-			}
-		});
-
-		mExit.setOnClickListener(new View.OnClickListener() {
-
-			public void onClick(View v) {
-				NmapActivity.this.finish();
-			}
-		});
+			break;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 
 	public static void setBinDir(String b) {
@@ -328,17 +387,6 @@ public class NmapActivity extends Activity {
 			// this is the way that they send messages to the server, as opposed
 			// to our way
 
-			if (os == null)
-				// if both OS and IN were not initiaized properly
-				Log.d(tag, "os is null!");
-			if (in == null)
-				Log.d(tag, "in is null!");
-
-			// -----------------------------------------------------------------------------------------------------------------------
-			// -----------------------------------------------------------------------------------------------------------------------
-			// THIS IS WHERE THE REAL WORK STARTS, EVERYTHING BELOW THIS LINE IS
-			// SUPPOSED TO BE CHANGED TO REFLECT THE WAY THAT WE SEND MESSAGES
-			// TO THE SERVER.
 			try {
 				os.writeBytes("cd " + bindir + "\n");
 				os.flush();
@@ -433,8 +481,8 @@ public class NmapActivity extends Activity {
 			else
 				try {
 					NmapActivity.setBinDir((NmapActivity.this
-							.getPackageManager().getApplicationInfo(
-									"com.wjholden.nmap", 0).dataDir + "/bin/"));
+							.getPackageManager().getApplicationInfo("com.cura",
+									0).dataDir + "/bin/"));
 				} catch (NameNotFoundException e) {
 					Log.d(tag, "Unable to set bindir: " + e.toString());
 				}
@@ -442,29 +490,20 @@ public class NmapActivity extends Activity {
 
 		protected void onPostExecute(Void v) {
 			pd.dismiss();
-
-			AlertDialog.Builder alert = new AlertDialog.Builder(
-					NmapActivity.this);
-			alert.setMessage("This is not an official release by www.nmap.org.\nPlease request support only from wjholden@gmail.com.");
-			alert.show();
-
 			NmapActivity.installationVerified = true;
 		}
 
 		@Override
 		protected Void doInBackground(Void... params) {
 			try {
-				// First we build a results folder - if we can't save output
-				// then...ugh
+				// First we build a results folder
 				File instdir = new File(NmapActivity.this.getPackageManager()
-						.getApplicationInfo("com.wjholden.nmap", 0).dataDir
+						.getApplicationInfo("com.cura", 0).dataDir
 						+ "/install/");
-				NmapActivity.outputArgs = new String(
-						" -oA "
-								+ NmapActivity.this.getPackageManager()
-										.getApplicationInfo(
-												"com.wjholden.nmap", 0).dataDir
-								+ "/tmp/scan ");
+				NmapActivity.outputArgs = new String(" -oA "
+						+ NmapActivity.this.getPackageManager()
+								.getApplicationInfo("com.cura", 0).dataDir
+						+ "/tmp/scan ");
 
 				Log.d(tag,
 						"Will attempt to uncompress binaries to "
@@ -479,8 +518,7 @@ public class NmapActivity extends Activity {
 				}
 
 				File tmpdir = new File(NmapActivity.this.getPackageManager()
-						.getApplicationInfo("com.wjholden.nmap", 0).dataDir
-						+ "/tmp/");
+						.getApplicationInfo("com.cura", 0).dataDir + "/tmp/");
 				if (!tmpdir.exists() && !tmpdir.mkdir()) {
 					Message msg = Message.obtain();
 					msg.obj = "Unable to create " + tmpdir.getCanonicalPath();
@@ -530,7 +568,6 @@ public class NmapActivity extends Activity {
 
 				for (int k = 0; k < requiredResources.length; k++) {
 					// First we're going to attempt to retrieve from resources.
-					// http://hashspeaks.wordpress.com/2009/04/18/how-to-compilerun-and-package-c-programs-in-android/
 					if (!(new File(filenames[k]).exists())) {
 						InputStream in1 = getResources().openRawResource(
 								requiredResources[k]);
@@ -588,7 +625,6 @@ public class NmapActivity extends Activity {
 
 				if (!(new File("nmap").exists())) {
 					// nmap is split because resources can only be 1MB
-					// http://www.mail-archive.com/android-developers@googlegroups.com/msg28194.html
 					InputStream in1 = getResources().openRawResource(
 							R.raw.nmap_a);
 					InputStream in2 = getResources().openRawResource(
@@ -668,9 +704,9 @@ public class NmapActivity extends Activity {
 			case INSTALL_NO_ROOT:
 			case RUN_ERROR:
 			case INSTALL_ERROR:
-				mResults.setText((String) msg.obj);
-				alert.setMessage((String) msg.obj);
-				alert.show();
+				// mResults.setText((String) msg.obj);
+				// alert.setMessage((String) msg.obj);
+				// alert.show();
 				break;
 			case INSTALL_GOOD:
 				// no actions necessary
@@ -693,10 +729,9 @@ public class NmapActivity extends Activity {
 										+ type);
 						type = new String("nmap");
 					}
-					BufferedReader b = new BufferedReader(
-							new FileReader(NmapActivity.this
-									.getPackageManager().getApplicationInfo(
-											"com.wjholden.nmap", 0).dataDir
+					BufferedReader b = new BufferedReader(new FileReader(
+							NmapActivity.this.getPackageManager()
+									.getApplicationInfo("com.cura", 0).dataDir
 									+ "/tmp/scan." + type));
 					String l;
 					while ((l = b.readLine()) != null) {

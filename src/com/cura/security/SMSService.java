@@ -25,6 +25,8 @@ package com.cura.security;
  * location of the compromised phone. We used GPS location to determine that.
  */
 
+import org.jasypt.util.text.BasicTextEncryptor;
+
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -276,12 +278,12 @@ public class SMSService extends Service implements
 		String provider = Settings.Secure.getString(getContentResolver(),
 				Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
 
-		if (!provider.contains("gps")) { 
+		if (!provider.contains("gps")) {
 			// if gps is disabled
 			final Intent poke = new Intent();
 			poke.setClassName("com.android.settings",
 					"com.android.settings.widget.SettingsAppWidgetProvider");
-			//enable it
+			// enable it
 			poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
 			poke.setData(Uri.parse("3"));
 			sendBroadcast(poke);

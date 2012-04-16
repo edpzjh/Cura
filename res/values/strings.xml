@@ -78,4 +78,7 @@
     <string name="cancelBtn">Cancel</string>
     <string name="showPassword">Show password.</string>
     <string name="noFavoritesFound">You have not added any favorite commands yet, press the Menu &gt; Add New Comand to start adding!</string>
+    <string name="Share">Share</string>
+    <string name="Help">Help</string>
+    <string name="emailNotValid">Email not valid</string>
 </resources>

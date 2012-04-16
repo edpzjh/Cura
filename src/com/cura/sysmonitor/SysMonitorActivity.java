@@ -152,13 +152,13 @@ public class SysMonitorActivity extends Activity {
 		renderer.setAntialiasing(true);
 		renderer.setShowGrid(true);
 
-		//the renderer for the CPU percentage
+		// the renderer for the CPU percentage
 		rendererSeriesCPU = new XYSeriesRenderer();
 		rendererSeriesCPU.setColor(Color.RED);
 		rendererSeriesCPU.setFillPoints(true);
 		rendererSeriesCPU.setPointStyle(PointStyle.CIRCLE);
-		
-		//the renderer for the RAM percentage
+
+		// the renderer for the RAM percentage
 		rendererSeriesRAM = new XYSeriesRenderer();
 		rendererSeriesRAM.setColor(Color.GREEN);
 		rendererSeriesRAM.setFillPoints(true);

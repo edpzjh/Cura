@@ -60,10 +60,12 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TableRow;
 import android.widget.Toast;
 
 import com.cura.Connection.ConnectionService;
+import com.cura.validation.regexValidator;
 
 public class LoginScreenActivity extends ListActivity {
 	private final String connected = "cura.connected";
@@ -82,14 +84,14 @@ public class LoginScreenActivity extends ListActivity {
 	ProgressDialog loader;
 	private SharedPreferences prefs;
 	private static final int DIALOG_YES_NO_LONG_MESSAGE = 99;
-
+	private regexValidator rv;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		this.setTitle(R.string.LoginScreenName);
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
+		rv = new regexValidator();
 		user = getUser();
 		// create the listView
 
@@ -393,7 +395,7 @@ public class LoginScreenActivity extends ListActivity {
 					String username = usernameInput.getText().toString();
 					String domain = domainInput.getText().toString();
 					String port = portInput.getText().toString();
-					if (!username.isEmpty() && !domain.isEmpty()
+					if (rv.validateUsername(username) && !domain.isEmpty()
 							&& !port.isEmpty())
 						// if all the textfields are filled, enable the Add
 						// button

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.cura"
-    android:installLocation="preferExternal"
+    android:installLocation="internalOnly"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -14,8 +14,8 @@
 
     <user-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <user-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_GPS" />
     <uses-permission android:name="android.permission.ACCESS_LOCATION" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
@@ -24,19 +24,24 @@
     <uses-permission android:name="android.permission.BROADCAST_SMS" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:icon="@drawable/iconcura"
         android:label="@string/app_name" >
         <uses-library android:name="com.google.android.maps" />
 
+        <activity android:name=".SplashScreen" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity android:name=".LoginScreenActivity" >
             <intent-filter>
                 <action android:name="cura.connected" />
                 <action android:name="cura.notConnected" />
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
@@ -87,11 +92,18 @@
         </activity>
 
         <service android:name=".Connection.ConnectionService" />
-        <service android:name=".security.SMSService" />
+        <service android:name=".security.SMSService" >
+            <intent-filter>
+                <action android:name="com.cura.security.SMSService" >
+                </action>
+            </intent-filter>
+        </service>
 
-        <receiver android:name=".security.BootService" >
+        <receiver android:name=".security.BootReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+
+                <category android:name="android.intent.category.HOME" />
             </intent-filter>
         </receiver>
     </application>

@@ -19,91 +19,168 @@
 package com.cura.maps;
 
 /*
- * Description: The structure of this class and the other class (ItemizedOverlay.java) available in the com.cura.maps package are 
- * almost straight out of Google Map View for Android available at: 
- * http://developer.android.com/resources/tutorials/views/hello-mapview.html
- * 
- * TODO: Make this activity show exactly where the user is located and where the server they are CURRENTLY connected to is
- * located on the map. Added to which, the menu options should provide a means for displaying where the user's OTHER added servers are
- * located on the map.
+ * Description: In this activity, we offer Google Maps access so the user would be able to view their own location and the
+ * location of the server they're connected to when accessing this Module. Added to which, an option menu provides the user
+ * with the ability to view the location of all the other servers that they've added to Cura.
  */
 
 import java.util.List;
 
-import android.content.Context;
-import android.graphics.drawable.Drawable;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Point;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.Message;
+import android.provider.Settings;
 import android.widget.Toast;
 
 import com.cura.R;
+import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
+import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 
 public class MapsActivity extends MapActivity {
-	LocationManager locMgr;
-	LocationListener locListener;
-	double latitude;
-	double longitude;
+	public static final String TAG = "GoogleMapsActivity";
+	private LocationManager locationManager;
+	Geocoder geocoder;
+	Location location;
+	LocationListener locationListener;
+	CountDownTimer locationtimer;
+	MapController mapController;
+	MapOverlay mapOverlay = new MapOverlay();
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-
-		super.onCreate(savedInstanceState);
+	protected void onCreate(Bundle icicle) {
+		super.onCreate(icicle);
 		setContentView(R.layout.maps);
-		gpsLocation();
+		enableGPS();
+
 		MapView mapView = (MapView) findViewById(R.id.mapview);
 		mapView.setBuiltInZoomControls(true);
-		List<Overlay> mapOverlays = mapView.getOverlays();
-		Drawable drawable = this.getResources().getDrawable(
-				R.drawable.androidmarker);
-		ItemizedOverlay itemizedoverlay = new ItemizedOverlay(drawable, this);
+		mapView.setSatellite(true);
+		mapController = mapView.getController();
+		mapController.setZoom(5);
 
-		// GeoPoint point = new GeoPoint(latitude, longitude);
-		// OverlayItem overlayitem = new OverlayItem(point, "Hola, Mundo!",
-		// "You are here!");
-		// itemizedoverlay.addOverlay(overlayitem);
-		// mapOverlays.add(itemizedoverlay);
+		locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+		if (locationManager == null) {
+			Toast.makeText(MapsActivity.this, "Location Manager Not Available",
+					Toast.LENGTH_SHORT).show();
+			return;
+		}
+
+		location = locationManager
+				.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+		if (location == null)
+			location = locationManager
+					.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+		if (location != null) {
+			double latitude = location.getLatitude();
+			double longitude = location.getLongitude();
+			GeoPoint point = new GeoPoint((int) (latitude * 1E6),
+					(int) (longitude * 1E6));
+			mapController.animateTo(point, new Message());
+			mapOverlay.setPointToDraw(point);
+			List<Overlay> listOfOverlays = mapView.getOverlays();
+			listOfOverlays.clear();
+			listOfOverlays.add(mapOverlay);
+		}
+
+		locationListener = new LocationListener() {
+			public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
+
+			}
+
+			public void onProviderEnabled(String arg0) {
+
+			}
+
+			public void onProviderDisabled(String arg0) {
+
+			}
+
+			public void onLocationChanged(Location loc) {
+
+			}
+		};
+
+		if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+			locationManager.requestLocationUpdates(
+					LocationManager.GPS_PROVIDER, 1000, 10f, locationListener);
+		locationManager.requestLocationUpdates(
+				LocationManager.NETWORK_PROVIDER, 1000, 10f, locationListener);
+		locationtimer = new CountDownTimer(30000, 5000) {
+			@Override
+			public void onTick(long millisUntilFinished) {
+				if (location != null)
+					locationtimer.cancel();
+			}
+
+			@Override
+			public void onFinish() {
+				if (location == null) {
+				}
+			}
+		};
+		locationtimer.start();
 	}
 
 	@Override
 	protected boolean isRouteDisplayed() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
-	public void gpsLocation() {
-		locMgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		locListener = new LocationListener() {
+	class MapOverlay extends Overlay {
+		private GeoPoint pointToDraw;
+		Point screenPts = new Point();
 
-			public void onLocationChanged(Location location) {
-				latitude = location.getLatitude();
-				longitude = location.getLongitude();
-				Toast.makeText(MapsActivity.this, "" + latitude + longitude,
-						Toast.LENGTH_LONG).show();
-			}
+		public void setPointToDraw(GeoPoint point) {
+			pointToDraw = point;
+		}
 
-			public void onProviderDisabled(String provider) {
-				// TODO Auto-generated method stub
+		public GeoPoint getPointToDraw() {
+			return pointToDraw;
+		}
 
-			}
+		@Override
+		public boolean draw(Canvas canvas, MapView mapView, boolean shadow,
+				long when) {
+			super.draw(canvas, mapView, shadow);
 
-			public void onProviderEnabled(String provider) {
-				// TODO Auto-generated method stub
+			// Point screenPts = new Point();
+			mapView.getProjection().toPixels(pointToDraw, screenPts);
 
-			}
+			Bitmap bmp = BitmapFactory.decodeResource(getResources(),
+					R.drawable.pingreen);
+			canvas.drawBitmap(bmp, screenPts.x, screenPts.y - 24, null);
+			return true;
+		}
+	}
 
-			public void onStatusChanged(String provider, int status,
-					Bundle extras) {
-				// TODO Auto-generated method stub
+	public void enableGPS() {
+		String provider = Settings.Secure.getString(getContentResolver(),
+				Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
 
-			}
-
-		};
-		locMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0,
-				locListener);
+		if (!provider.contains("gps")) {
+			// if gps is disabled
+			final Intent poke = new Intent();
+			poke.setClassName("com.android.settings",
+					"com.android.settings.widget.SettingsAppWidgetProvider");
+			// enable it
+			poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
+			poke.setData(Uri.parse("3"));
+			sendBroadcast(poke);
+		}
 	}
 }

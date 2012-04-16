@@ -23,6 +23,8 @@ package com.cura.Connection;
  * functions like executeCommand() which is used to execute a command at the terminal.
  */
 
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;

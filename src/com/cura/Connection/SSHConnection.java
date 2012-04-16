@@ -23,9 +23,11 @@ package com.cura.Connection;
  * activities can bind to it and..be connected via SSH to the server requested. We send it in an AsyncTask to establish that.
  */
 
+import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.cura.LoginScreenActivity;
 import com.cura.User;
 import com.cura.Terminal.Terminal;
 import com.jcraft.jsch.JSchException;
