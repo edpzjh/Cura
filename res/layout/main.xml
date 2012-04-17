@@ -1,201 +1,164 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/background"
->
-<LinearLayout
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-     >
+    android:background="@drawable/background" >
 
-    <TableLayout
-        android:id="@+id/tableLayout1"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_gravity="bottom"
-        >
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
 
-        <TableRow
-            android:id="@+id/TerminalRow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-             >
+        <TableLayout
+            android:id="@+id/tableLayout1"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_gravity="bottom" >
 
-            <ImageView
-                android:id="@+id/imageView1"
+            <TableRow
+                android:id="@+id/TerminalRow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/terminal" />
+                android:padding="10dp" >
 
-            <TextView
-                android:id="@+id/textView1"
+                <ImageView
+                    android:id="@+id/imageView1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/terminal" />
+
+                <TextView
+                    android:id="@+id/textView1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="30dp"
+                    android:text="@string/TerminalLabel"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="20dp"
+                    android:textStyle="normal|bold" />
+
+                <ImageView
+                    android:id="@+id/imageView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center|right"
+                    android:layout_marginLeft="15dp"
+                    android:src="@drawable/icon_right_arrow_2" />
+            </TableRow>
+
+            <View
+                android:layout_height="1dip"
+                android:background="#FF909090" />
+
+            <TableRow
+                android:id="@+id/SysMonitorRow"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:padding="10dp" >
+
+                <ImageView
+                    android:id="@+id/imageView3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/sysmonitor" />
+
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="30dp"
+                    android:text="@string/SysMonitorLabel"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="20dp"
+                    android:textStyle="normal|bold" />
+
+                <ImageView
+                    android:id="@+id/imageView4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center|right"
+                    android:layout_marginLeft="15dp"
+                    android:src="@drawable/icon_right_arrow_2" />
+            </TableRow>
+
+            <View
+                android:layout_height="1dip"
+                android:background="#FF909090" />
+
+            <TableRow
+                android:id="@+id/SysLogRow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="30dp"
-                android:text="@string/TerminalLabel"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textSize="20dp"
-                android:textStyle="normal|bold" />
+                android:padding="10dp" >
 
-            <ImageView
-                android:id="@+id/imageView2"
+                <ImageView
+                    android:id="@+id/imageView5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/syslog" />
+
+                <TextView
+                    android:id="@+id/textView3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="30dp"
+                    android:text="@string/SysLogLabel"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="20dp"
+                    android:textStyle="normal|bold" />
+
+                <ImageView
+                    android:id="@+id/imageView6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center|right"
+                    android:layout_marginLeft="15dp"
+                    android:src="@drawable/icon_right_arrow_2" />
+            </TableRow>
+
+            <View
+                android:layout_height="1dip"
+                android:background="#FF909090" />
+
+            <TableRow
+                android:id="@+id/NMapRow"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center|right"
-                android:layout_marginLeft="15dp"
-                android:src="@drawable/icon_right_arrow_2" />
-        </TableRow>
+                android:padding="10dp" >
 
-        <View
-            android:layout_height="1dip"
-            android:background="#FF909090" />
+                <ImageView
+                    android:id="@+id/imageView9"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/nmap" />
 
-        <TableRow
-            android:id="@+id/SysMonitorRow"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:padding="10dp" >
+                <TextView
+                    android:id="@+id/textView5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="30dp"
+                    android:text="@string/NMapLabel"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="20dp"
+                    android:textStyle="normal|bold" />
 
-            <ImageView
-                android:id="@+id/imageView3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/sysmonitor" />
+                <ImageView
+                    android:id="@+id/imageView10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center|right"
+                    android:layout_marginLeft="15dp"
+                    android:src="@drawable/icon_right_arrow_2" />
+            </TableRow>
 
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="30dp"
-                android:text="@string/SysMonitorLabel"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textSize="20dp"
-                android:textStyle="normal|bold" />
+            <View
+                android:layout_height="1dip"
+                android:background="#FF909090" />
 
-            <ImageView
-                android:id="@+id/imageView4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center|right"
-                android:layout_marginLeft="15dp"
-                android:src="@drawable/icon_right_arrow_2" />
-        </TableRow>
+        </TableLayout>
+    </LinearLayout>
 
-        <View
-            android:layout_height="1dip"
-            android:background="#FF909090" />
-
-        <TableRow
-            android:id="@+id/SysLogRow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="10dp" >
-
-            <ImageView
-                android:id="@+id/imageView5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/syslog" />
-
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="30dp"
-                android:text="@string/SysLogLabel"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textSize="20dp"
-                android:textStyle="normal|bold" />
-
-            <ImageView
-                android:id="@+id/imageView6"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center|right"
-                android:layout_marginLeft="15dp"
-                android:src="@drawable/icon_right_arrow_2" />
-        </TableRow>
-
-        <View
-            android:layout_height="1dip"
-            android:background="#FF909090" />
-
-
-        <TableRow
-            android:id="@+id/NMapRow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="10dp" >
-
-            <ImageView
-                android:id="@+id/imageView9"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/nmap" />
-
-            <TextView
-                android:id="@+id/textView5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="30dp"
-                android:text="@string/NMapLabel"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textSize="20dp"
-                android:textStyle="normal|bold" />
-
-            <ImageView
-                android:id="@+id/imageView10"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center|right"
-                android:layout_marginLeft="15dp"
-                android:src="@drawable/icon_right_arrow_2" />
-        </TableRow>
-
-        <View
-            android:layout_height="1dip"
-            android:background="#FF909090" />
-
-        <TableRow
-            android:id="@+id/MapsRow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="10dp" >
-
-            <ImageView
-                android:id="@+id/imageView11"
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:src="@drawable/mapsicon" />
-
-            <TextView
-                android:id="@+id/textView6"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="30dp"
-                android:text="@string/MapsLabel"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textSize="20dp"
-                android:textStyle="normal|bold" />
-
-            <ImageView
-                android:id="@+id/imageView12"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center|right"
-                android:layout_marginLeft="15dp"
-                android:src="@drawable/icon_right_arrow_2" />
-        </TableRow>
-
-
-    </TableLayout>
-
-</LinearLayout>
 </ScrollView>
