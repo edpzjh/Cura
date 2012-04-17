@@ -92,12 +92,10 @@
         </activity>
 
         <service android:name=".Connection.ConnectionService" />
-        <service android:name=".security.SMSService" >
             <intent-filter>
                 <action android:name="com.cura.security.SMSService" >
                 </action>
             </intent-filter>
-        </service>
 
         <receiver android:name=".security.BootReceiver" >
             <intent-filter>
