@@ -24,7 +24,18 @@ package com.cura;
  * Server Info and Logout. 
  */
 
-import com.cura.R;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -32,8 +43,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.Color;
-import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -52,12 +61,12 @@ import android.widget.Toast;
 import com.cura.Connection.CommunicationInterface;
 import com.cura.Connection.ConnectionService;
 import com.cura.Terminal.TerminalActivity;
-import com.cura.maps.MapsActivity;
 import com.cura.nmap.NmapActivity;
 import com.cura.syslog.SysLogActivity;
 import com.cura.sysmonitor.SysMonitorActivity;
 
-public class CuraActivity extends Activity implements OnClickListener, OnTouchListener {
+public class CuraActivity extends Activity implements OnClickListener,
+		OnTouchListener {
 
 	private final int LOGOUT = 1;
 	private final int SERVER_INFO = 2;
@@ -68,7 +77,10 @@ public class CuraActivity extends Activity implements OnClickListener, OnTouchLi
 
 	User userTemp;
 	// user object
+
 	private CommunicationInterface conn;
+	private String page = "";
+	// to fetch the GET request of the server's location
 
 	private ServiceConnection connection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName arg0, IBinder service) {
@@ -108,20 +120,6 @@ public class CuraActivity extends Activity implements OnClickListener, OnTouchLi
 		return resultUPTIME;
 	}
 
-	public synchronized String getLocation() {
-		String resultLocation = "";
-		// produces the output of "geoiplookup domain" and prints the 4th and
-		// 5th column from that. This produces the locale of a given domain name
-		try {
-			resultLocation = conn.executeCommand("geoiplookup "
-					+ userTemp.getDomain() + " | awk '{print $4, $5}'");
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return resultLocation;
-	}
-
 	public void doBindService() {
 		Intent i = new Intent(this, ConnectionService.class);
 		bindService(i, connection, Context.BIND_AUTO_CREATE);
@@ -149,18 +147,57 @@ public class CuraActivity extends Activity implements OnClickListener, OnTouchLi
 		sysMonitorRow = (TableRow) findViewById(R.id.SysMonitorRow);
 		sysMonitorRow.setOnClickListener(this);
 		sysMonitorRow.setOnTouchListener(this);
-		
+
 		sysLogRow = (TableRow) findViewById(R.id.SysLogRow);
 		sysLogRow.setOnClickListener(this);
 		sysLogRow.setOnTouchListener(this);
-		
+
 		nmapRow = (TableRow) findViewById(R.id.NMapRow);
 		nmapRow.setOnClickListener(this);
 		nmapRow.setOnTouchListener(this);
-		
-		mapsRow = (TableRow) findViewById(R.id.MapsRow);
-		mapsRow.setOnClickListener(this);
-		mapsRow.setOnTouchListener(this);
+
+		BufferedReader in = null;
+		try {
+			HttpClient client = new DefaultHttpClient();
+			HttpGet request = new HttpGet();
+			if (userTemp.getDomain().compareTo("wu.ourproject.org") == 0
+					&& userTemp.getUsername().compareTo("root") == 0) {
+				request.setURI(new URI(
+						"http://api.hostip.info/get_html.php?ip=12.215.42.19&position=true"));
+			} else {
+				request.setURI(new URI(
+						"http://api.hostip.info/get_html.php?ip="
+								+ userTemp.getDomain() + "&position=true"));
+			}
+			HttpResponse response = client.execute(request);
+			in = new BufferedReader(new InputStreamReader(response.getEntity()
+					.getContent()));
+			StringBuffer sb = new StringBuffer("");
+			String line = "";
+			String NL = System.getProperty("line.separator");
+			while ((line = in.readLine()) != null) {
+				sb.append(line + NL);
+			}
+			in.close();
+			page = sb.toString();
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (in != null) {
+				try {
+					in.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 	public void onClick(View v) {
@@ -188,27 +225,21 @@ public class CuraActivity extends Activity implements OnClickListener, OnTouchLi
 			Intent sysLogIntent = new Intent(this, SysLogActivity.class);
 			startActivity(sysLogIntent);
 			break;
-		case R.id.MapsRow:
-			// when the row entitled "Server Location" is clicked, take the user
-			// to the Google Maps activity
-			Intent sysConnectIntent = new Intent(this, MapsActivity.class);
-			startActivity(sysConnectIntent);
-			break;
 		case R.id.NMapRow:
 			// when the row entitled "Nmap" is clicked, take the user
 			// to the Nmap activity
-//			if ((userTemp.getUsername()).compareTo("root") == 0) {
-				// if the user is root, allow them to access this activity
-				// if they are not, don't allow them
-				Intent nmapIntent = new Intent(this, NmapActivity.class);
-				nmapIntent.putExtra("user", userTemp);
-				startActivity(nmapIntent);
-//			} else {
-//				Toast.makeText(
-//						CuraActivity.this,
-//						"Error! You are not allowed to access the Nmap module if you do not have root privileges over this server.",
-//						Toast.LENGTH_LONG).show();
-//			}
+			// if ((userTemp.getUsername()).compareTo("root") == 0) {
+			// if the user is root, allow them to access this activity
+			// if they are not, don't allow them
+			Intent nmapIntent = new Intent(this, NmapActivity.class);
+			nmapIntent.putExtra("user", userTemp);
+			startActivity(nmapIntent);
+			// } else {
+			// Toast.makeText(
+			// CuraActivity.this,
+			// "Error! You are not allowed to access the Nmap module if you do not have root privileges over this server.",
+			// Toast.LENGTH_LONG).show();
+			// }
 			break;
 		}
 	}
@@ -274,7 +305,7 @@ public class CuraActivity extends Activity implements OnClickListener, OnTouchLi
 			// user
 			finalResultForDialog = getUname() + "\n"
 					+ getString(R.string.uptimeText) + getUptime() + "\n"
-					+ getString(R.string.userLocation) + getLocation();
+					+ getString(R.string.userLocation) + "\n" + page;
 			AlertDialog.Builder alert = new AlertDialog.Builder(this);
 			alert.setTitle(R.string.ServerInfoDialog);
 			final TextView infoArea = new TextView(this);
@@ -357,13 +388,13 @@ public class CuraActivity extends Activity implements OnClickListener, OnTouchLi
 
 	public boolean onTouch(View v, MotionEvent event) {
 		// TODO Auto-generated method stub
-		switch(event.getAction()){
+		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
 			v.setBackgroundResource(R.drawable.moduleselectedhighlight);
-		break;
+			break;
 		case MotionEvent.ACTION_UP:
 			v.setBackgroundResource(0);
-		break;
+			break;
 		}
 
 		return false;
