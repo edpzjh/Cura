@@ -60,7 +60,6 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TableRow;
 import android.widget.Toast;
 
@@ -85,6 +84,7 @@ public class LoginScreenActivity extends ListActivity {
 	private SharedPreferences prefs;
 	private static final int DIALOG_YES_NO_LONG_MESSAGE = 99;
 	private regexValidator rv;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -94,7 +94,7 @@ public class LoginScreenActivity extends ListActivity {
 		rv = new regexValidator();
 		user = getUser();
 		// create the listView
-
+		
 		if (user.length == 1
 				&& user[0].getUsername().equalsIgnoreCase("username")
 				&& user[0].getDomain().equalsIgnoreCase("domain")) {
