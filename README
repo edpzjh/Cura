@@ -10,7 +10,7 @@ When in the hands of a sysadmin, Cura will provide:
 
 **Access to the port-scanning utility “Nmap”. (not until 2.0)
 
-**Google Maps access for determining the locations of all of the user's added servers.
+**Server Stats are general server information like its Vitals, Mounted Filesystems, Memory information, processes and so on.
 
 **Added to which, a security feature will be implemented that allows users to have Cura's database completely wiped upon them sending the compromised phone a secret pattern of their choosing. (ex: send an SMS message containing "phone has been stolen!" to your Android phone to wipe Cura's database and receive the location of the compromised phone as an SMS to your emergency phone number or as an e-mail to your emergency e-mail address).
 
