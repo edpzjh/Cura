@@ -65,6 +65,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 public class NmapActivity extends Activity {
+	
 	/* --- view resources --- */
 	private TextView mResults, mTarget;
 	private EditText mArguments;
@@ -127,10 +128,10 @@ public class NmapActivity extends Activity {
 		} catch (NameNotFoundException e) {
 			Log.d(tag, e.toString());
 		}
-
+		
 		if (!installationVerified && vTask == null
-				|| vTask.getStatus() == AsyncTask.Status.FINISHED
-				|| vTask.getStatus() == AsyncTask.Status.RUNNING) {
+				/*|| vTask.getStatus() == AsyncTask.Status.FINISHED
+				|| vTask.getStatus() == AsyncTask.Status.RUNNING*/) {
 			vTask = new verifyInstallation().execute();
 		}
 
@@ -804,5 +805,11 @@ public class NmapActivity extends Activity {
 		outState.putString("bindir", bindir);
 		outState.putString("outputArgs", outputArgs);
 		super.onSaveInstanceState(outState);
+	}
+	
+	@Override
+	protected void onStop() {
+		super.onStop();
+		finish();
 	}
 }

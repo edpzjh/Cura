@@ -15,7 +15,8 @@ android:background="@drawable/background">
     <EditText
         android:id="@+id/usernameTextField"
         android:layout_width="188dp"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:maxLines="1"/>
 		 <requestFocus />
     <TextView
         android:id="@+id/domainLabel"
@@ -29,7 +30,8 @@ android:background="@drawable/background">
         android:layout_width="182dp"
         android:layout_height="wrap_content"
         android:layout_gravity="fill_horizontal"
-        android:hint="@string/domainTextFieldHint">
+        android:hint="@string/domainTextFieldHint"
+        android:maxLines="1">
 
        
     </EditText>
@@ -45,7 +47,8 @@ android:background="@drawable/background">
         android:id="@+id/portTextField"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="number" />
+        android:inputType="number" 
+        android:maxLines="1"/>
 
     <Button
         android:id="@+id/button1"

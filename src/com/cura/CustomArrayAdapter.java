@@ -22,13 +22,21 @@ package com.cura;
  * Description: This class is used to automatically construct a list of user accounts for the Login Screen activity.
  */
 
+import java.util.List;
+import java.util.Vector;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
+import android.view.animation.TranslateAnimation;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 @SuppressWarnings("rawtypes")
@@ -57,8 +65,17 @@ public class CustomArrayAdapter extends ArrayAdapter {
 		userAndDomain.setText(user[position].getUsername() + "@"
 				+ user[position].getDomain());
 		port.setText("Connects through port " + user[position].getPort());
-
 		imageView.setImageResource(R.drawable.usersfoldericon);
+
+		if (userAndDomain.getText().length() > 24) {
+			int lengthDif = userAndDomain.getText().length() - 24;
+			Animation mAnimation = new TranslateAnimation(0f,
+					-(17f * lengthDif), 0.0f, 0.0f);
+			mAnimation.setDuration(1000 * lengthDif);
+			mAnimation.setRepeatCount(1/* Animation.INFINITE */);
+			mAnimation.setRepeatMode(Animation.REVERSE);
+			userAndDomain.setAnimation(mAnimation);
+		}
 		return rowView;
 	}
 }

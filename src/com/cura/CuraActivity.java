@@ -24,25 +24,16 @@ package com.cura;
  * Server Info and Logout. 
  */
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -60,6 +51,7 @@ import android.widget.Toast;
 
 import com.cura.Connection.CommunicationInterface;
 import com.cura.Connection.ConnectionService;
+import com.cura.ServerStats.ServerStatsActivity;
 import com.cura.Terminal.TerminalActivity;
 import com.cura.nmap.NmapActivity;
 import com.cura.syslog.SysLogActivity;
@@ -70,16 +62,21 @@ public class CuraActivity extends Activity implements OnClickListener,
 
 	private final int LOGOUT = 1;
 	private final int SERVER_INFO = 2;
-
+	private final int WAIT = 100;
 	TableRow terminalRow, sysMonitorRow, sysLogRow, nessusRow, nmapRow,
-			mapsRow;
+			serverStatsRow;
 	// menu buttons
 
 	User userTemp;
 	// user object
-
+	private String uname = "";
+	private String uptime = "";
+	private String location = "";
+	private String loader_message = "";
+	private String finalResultForDialog = "";
 	private CommunicationInterface conn;
 	private String page = "";
+	private ProgressDialog loader;
 	// to fetch the GET request of the server's location
 
 	private ServiceConnection connection = new ServiceConnection() {
@@ -120,6 +117,20 @@ public class CuraActivity extends Activity implements OnClickListener,
 		return resultUPTIME;
 	}
 
+	public synchronized String getLocation() {
+		String resultLocation = "";
+		// produces the output of "geoiplookup domain" and prints the 4th and
+		// 5th column from that. This produces the locale of a given domain name
+		try {
+			resultLocation = conn.executeCommand("geoiplookup "
+					+ userTemp.getDomain() + " | awk '{print $4, $5}'");
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return resultLocation;
+	}
+
 	public void doBindService() {
 		Intent i = new Intent(this, ConnectionService.class);
 		bindService(i, connection, Context.BIND_AUTO_CREATE);
@@ -130,12 +141,14 @@ public class CuraActivity extends Activity implements OnClickListener,
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		Bundle extras = getIntent().getExtras();
+		Log.d("Cura Activity", "finished");
 		doBindService();
+		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
 			userTemp = extras.getParcelable("user");
 			// gets the username on entry
 		}
+
 		this.setTitle(userTemp.getUsername() + "'s Control Box");
 		// welcoming the user in this activity's title.
 
@@ -156,48 +169,24 @@ public class CuraActivity extends Activity implements OnClickListener,
 		nmapRow.setOnClickListener(this);
 		nmapRow.setOnTouchListener(this);
 
-		BufferedReader in = null;
-		try {
-			HttpClient client = new DefaultHttpClient();
-			HttpGet request = new HttpGet();
-			if (userTemp.getDomain().compareTo("wu.ourproject.org") == 0
-					&& userTemp.getUsername().compareTo("root") == 0) {
-				request.setURI(new URI(
-						"http://api.hostip.info/get_html.php?ip=12.215.42.19&position=true"));
-			} else {
-				request.setURI(new URI(
-						"http://api.hostip.info/get_html.php?ip="
-								+ userTemp.getDomain() + "&position=true"));
-			}
-			HttpResponse response = client.execute(request);
-			in = new BufferedReader(new InputStreamReader(response.getEntity()
-					.getContent()));
-			StringBuffer sb = new StringBuffer("");
-			String line = "";
-			String NL = System.getProperty("line.separator");
-			while ((line = in.readLine()) != null) {
-				sb.append(line + NL);
-			}
-			in.close();
-			page = sb.toString();
-		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			if (in != null) {
-				try {
-					in.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
+		serverStatsRow = (TableRow) findViewById(R.id.ServerStatsRow);
+		serverStatsRow.setOnClickListener(this);
+		serverStatsRow.setOnTouchListener(this);
+
+		// get Server info after service binding
+		initServerInfo();
+	}
+
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		switch (id) {
+		case WAIT:
+			loader = new ProgressDialog(this);
+			loader.setMessage(loader_message);
+
+			return loader;
 		}
+		return super.onCreateDialog(id);
 	}
 
 	public void onClick(View v) {
@@ -240,6 +229,12 @@ public class CuraActivity extends Activity implements OnClickListener,
 			// "Error! You are not allowed to access the Nmap module if you do not have root privileges over this server.",
 			// Toast.LENGTH_LONG).show();
 			// }
+			break;
+		case R.id.ServerStatsRow:
+			Intent serverStatsIntent = new Intent(this,
+					ServerStatsActivity.class);
+			serverStatsIntent.putExtra("user", userTemp);
+			startActivity(serverStatsIntent);
 			break;
 		}
 	}
@@ -299,13 +294,15 @@ public class CuraActivity extends Activity implements OnClickListener,
 							}).show();
 			break;
 		case SERVER_INFO:
-			String finalResultForDialog = "";
 			// if "Server info" is selected, produce the output of Uptime and
 			// Uname, concatenate them into a paragraph and display it for the
 			// user
-			finalResultForDialog = getUname() + "\n"
-					+ getString(R.string.uptimeText) + getUptime() + "\n"
-					+ getString(R.string.userLocation) + "\n" + page;
+			if (location.equalsIgnoreCase("")) {
+				location = getString(R.string.unableToGetLocation);
+			}
+			finalResultForDialog = uname + "\n"
+					+ getString(R.string.uptimeText) + uptime + "\n"
+					+ getString(R.string.userLocation) + location;
 			AlertDialog.Builder alert = new AlertDialog.Builder(this);
 			alert.setTitle(R.string.ServerInfoDialog);
 			final TextView infoArea = new TextView(this);
@@ -398,6 +395,37 @@ public class CuraActivity extends Activity implements OnClickListener,
 		}
 
 		return false;
+	}
+
+	public void initServerInfo() {
+		new AsyncTask<String, String, String>() {
+
+			@Override
+			protected void onPreExecute() {
+				super.onPreExecute();
+				loader_message = getString(R.string.initializing);
+				showDialog(WAIT);
+			}
+
+			@Override
+			protected String doInBackground(String... arg0) {
+				while (true) {
+					if (conn != null) {
+						uptime = getUptime();
+						uname = getUname();
+						location = getLocation();
+						return null;
+					}
+				}
+			}
+
+			@Override
+			protected void onPostExecute(String result) {
+				super.onPostExecute(result);
+				loader.dismiss();
+			}
+
+		}.execute();
 	}
 
 }

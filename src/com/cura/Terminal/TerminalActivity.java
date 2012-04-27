@@ -18,6 +18,8 @@
  */
 package com.cura.Terminal;
 
+import org.jasypt.encryption.pbe.CleanablePasswordBased;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -63,7 +65,8 @@ import com.cura.Connection.ConnectionService;
 public class TerminalActivity extends Activity {
 
 	private final int FAVORITES = 1;
-
+	private final int CLEAR_EDITTEXT = 2;
+	
 	EditText result;
 	EditText commandLine;
 	Button execute;
@@ -208,6 +211,8 @@ public class TerminalActivity extends Activity {
 		// Add a button to menu
 		menu.add(0, FAVORITES, 0, R.string.addNewFavoriteCommand).setIcon(
 				android.R.drawable.ic_input_add);
+		menu.add(0, CLEAR_EDITTEXT, 0, R.string.clearTerminal).setIcon(
+				android.R.drawable.ic_notification_clear_all);
 		return result;
 	}
 
@@ -267,7 +272,20 @@ public class TerminalActivity extends Activity {
 			});
 			alert.getButton(Dialog.BUTTON1).setEnabled(false);
 			break;
-
+		case CLEAR_EDITTEXT:
+			result.setText("");
+			if (userTemp.getUsername().compareTo("root") == 0) {
+				// according to its username, if it's root, append the result with #
+				// to signifgy root privileges
+				username = userTemp.getUsername() + "@" + userTemp.getDomain()
+						+ ":~# ";
+			} else {
+				// otherwise a $ for non-privileged user
+				username = userTemp.getUsername() + "@" + userTemp.getDomain()
+						+ ":~$ ";
+			}
+			result.append(username);
+			break;
 		}
 		return super.onOptionsItemSelected(item);
 	}

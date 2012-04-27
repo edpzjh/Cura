@@ -170,7 +170,6 @@ public class SysMonitorActivity extends Activity {
 		timeSeriesCPU = new TimeSeries("CPU");
 		timeSeriesRAM = new TimeSeries("RAM");
 
-		startThread();
 	}
 
 	public void startThread() {
@@ -194,6 +193,8 @@ public class SysMonitorActivity extends Activity {
 	@Override
 	protected void onStart() {
 		super.onStart();
+
+		startThread();
 		// add all of the above variables to the chart and construct it
 		dataset.addSeries(timeSeriesCPU);
 		dataset.addSeries(timeSeriesRAM);
@@ -238,5 +239,10 @@ public class SysMonitorActivity extends Activity {
 		mThread = null;
 		unbindService(connection);
 		finish();
+	}
+	@Override
+	protected void onResume() {
+		super.onResume();
+		doBindService();
 	}
 }

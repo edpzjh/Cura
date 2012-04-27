@@ -33,7 +33,10 @@ package com.cura;
  */
 
 import android.app.ActivityManager;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ActivityManager.RunningServiceInfo;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -57,6 +60,7 @@ public class PreferenceScreen extends PreferenceActivity implements
 	private regexValidator rv;
 	private String email;
 	private SharedPreferences sharedPreferences;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -72,6 +76,18 @@ public class PreferenceScreen extends PreferenceActivity implements
 		if (preference.getKey().equalsIgnoreCase("enableSMS") && cp.isChecked()) {
 			// if the "enable SMS" checkbox is checked, enable the listening
 			// (for SMS) service
+
+			new AlertDialog.Builder(PreferenceScreen.this)
+					.setTitle(R.string.securityfeatureTitle)
+					.setMessage(R.string.securityfeaturetalk)
+					.setPositiveButton(R.string.firstTimeUseOKButton,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
+
+									/* User clicked OK so do some stuff */
+								}
+							}).create().show();
 			enableGps();
 			startService(new Intent(this, SMSService.class));
 			return true;
@@ -123,15 +139,15 @@ public class PreferenceScreen extends PreferenceActivity implements
 
 	}
 
-	public void onSharedPreferenceChanged(SharedPreferences sp,
-			String key) {
+	public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
 		if (key.equals("alternativeEmail")) {
-	        // email validation
-	        String value = sp.getString(key, null);
-	        if (!rv.validateEmail(value)) {
-	            Toast.makeText(this, R.string.emailNotValid, Toast.LENGTH_SHORT).show();
-	        }
-	    }
-		
+			// email validation
+			String value = sp.getString(key, null);
+			if (!rv.validateEmail(value)) {
+				Toast.makeText(this, R.string.emailNotValid, Toast.LENGTH_SHORT)
+						.show();
+			}
+		}
+
 	}
 }

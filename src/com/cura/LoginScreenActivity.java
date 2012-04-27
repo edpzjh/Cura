@@ -37,8 +37,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.drawable.GradientDrawable.Orientation;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -53,6 +56,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -61,12 +66,14 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cura.Connection.ConnectionService;
 import com.cura.validation.regexValidator;
 
 public class LoginScreenActivity extends ListActivity {
+
 	private final String connected = "cura.connected";
 	private final String notConnected = "cura.not.connected";
 	private final int ADD_USER = 1;
@@ -83,18 +90,21 @@ public class LoginScreenActivity extends ListActivity {
 	ProgressDialog loader;
 	private SharedPreferences prefs;
 	private static final int DIALOG_YES_NO_LONG_MESSAGE = 99;
+	private static final int WAIT = 100;
 	private regexValidator rv;
+	private String loader_message = "";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		this.setTitle(R.string.LoginScreenName);
+
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		rv = new regexValidator();
 		user = getUser();
 		// create the listView
-		
+
 		if (user.length == 1
 				&& user[0].getUsername().equalsIgnoreCase("username")
 				&& user[0].getDomain().equalsIgnoreCase("domain")) {
@@ -103,6 +113,7 @@ public class LoginScreenActivity extends ListActivity {
 
 		array = new CustomArrayAdapter(this, user);
 		setListAdapter(array);
+
 		// enable context menu
 		registerForContextMenu(getListView());
 		br = new BroadcastReceiver() {
@@ -118,13 +129,11 @@ public class LoginScreenActivity extends ListActivity {
 				if (intent.getAction().compareTo(connected) == 0) {
 					// if they are connected, take them to the main activity
 					// (CuraActivity)
-					loader.dismiss();
 					goToMainActivity = new Intent(LoginScreenActivity.this,
 							CuraActivity.class);
 					goToMainActivity.putExtra("user", userTemp);
 					startActivity(goToMainActivity);
 				} else {
-					loader.dismiss();
 					// else if they are not connected, meaning that the
 					// username/password combination was incorrect (or some
 					// other reason which will be dealt with later on) show this
@@ -134,6 +143,7 @@ public class LoginScreenActivity extends ListActivity {
 				}
 			}
 		};
+
 		IntentFilter intentFilter = new IntentFilter();
 		intentFilter.addAction(connected);
 		intentFilter.addAction(notConnected);
@@ -174,6 +184,7 @@ public class LoginScreenActivity extends ListActivity {
 			}
 		}
 		// close database
+		c.close();
 		db.close();
 		dbHelper.close();
 
@@ -182,29 +193,38 @@ public class LoginScreenActivity extends ListActivity {
 
 	@Override
 	protected Dialog onCreateDialog(int id) {
+		switch (id) {
+		case DIALOG_YES_NO_LONG_MESSAGE:
+			return new AlertDialog.Builder(LoginScreenActivity.this)
+					// this is the screen that shows up with the user installs
+					// Cura
+					// for the very first time
+					// .setIconAttribute(android.R.attr.alertDialogIcon)
+					.setTitle(R.string.firstTimeUseMessageTitle)
+					.setMessage(R.string.firstTimeUseMessage)
+					.setPositiveButton(R.string.firstTimeUseOKButton,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
 
-		return new AlertDialog.Builder(LoginScreenActivity.this)
-				// this is the screen that shows up with the user installs Cura
-				// for the very first time
-				// .setIconAttribute(android.R.attr.alertDialogIcon)
-				.setTitle(R.string.firstTimeUseMessageTitle)
-				.setMessage(R.string.firstTimeUseMessage)
-				.setPositiveButton(R.string.firstTimeUseOKButton,
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int whichButton) {
+									/* User clicked OK so do some stuff */
+								}
+							})
+					.setNegativeButton(R.string.firstTimeUseCancelButton,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog,
+										int whichButton) {
 
-								/* User clicked OK so do some stuff */
-							}
-						})
-				.setNegativeButton(R.string.firstTimeUseCancelButton,
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int whichButton) {
-
-								/* User clicked Cancel so do some stuff */
-							}
-						}).create();
+									/* User clicked Cancel so do some stuff */
+								}
+							}).create();
+		case WAIT:
+			loader = new ProgressDialog(this);
+			loader.setMessage(loader_message);
+			loader.show();
+			return loader;
+		}
+		return null;
 	}
 
 	@Override
@@ -262,10 +282,8 @@ public class LoginScreenActivity extends ListActivity {
 								@Override
 								protected void onPreExecute() {
 									dialog.dismiss();
-									loader = ProgressDialog.show(
-											LoginScreenActivity.this,
-											"Connecting...",
-											"Loading, please wait...", true);
+									loader_message = "Connecting, please wait...";
+									showDialog(WAIT);
 									// show this dialog to signify that the user
 									// is being connected to their server
 								}
@@ -297,6 +315,7 @@ public class LoginScreenActivity extends ListActivity {
 									// spinning
 									// starts the connection service
 									startService(passUserObjToService);
+									removeDialog(WAIT);
 								}
 							};
 							task.execute();
@@ -395,8 +414,9 @@ public class LoginScreenActivity extends ListActivity {
 					String username = usernameInput.getText().toString();
 					String domain = domainInput.getText().toString();
 					String port = portInput.getText().toString();
-					if (rv.validateUsername(username) && !domain.isEmpty()
-							&& !port.isEmpty())
+					if (/*rv.validateUsername(username)*/
+							 !domain.equalsIgnoreCase("")
+							&& !port.equalsIgnoreCase(""))
 						// if all the textfields are filled, enable the Add
 						// button
 						AddUserButton.setEnabled(true);
@@ -458,19 +478,17 @@ public class LoginScreenActivity extends ListActivity {
 			myDialog.show();
 			return true;
 		case SETTINGS:
-			AlertDialog.Builder alert = new AlertDialog.Builder(this);
+			final AlertDialog.Builder alert = new AlertDialog.Builder(this);
 			// set an alert dialog to prompt the user for their password to
 			// login.
 			alert.setTitle(R.string.settingsPassDialogTitle);
 			alert.setMessage(R.string.settignsScreenPasswordPrompt);
-
 			final EditText passField = new EditText(this);
 			passField.setTransformationMethod(PasswordTransformationMethod
 					.getInstance());
 			// make it turn into stars, as available from the API.
 			alert.setView(passField);
 			// show the alert.
-
 			alert.setPositiveButton(R.string.ok,
 					new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog,
@@ -503,7 +521,31 @@ public class LoginScreenActivity extends ListActivity {
 							return;
 						}
 					});
-			alert.show();
+			final AlertDialog settingsPassAlert = alert.create();
+			settingsPassAlert.show();
+			passField.addTextChangedListener(new TextWatcher() {
+
+				public void onTextChanged(CharSequence s, int start,
+						int before, int count) {
+					// TODO Auto-generated method stub
+					String pass = passField.getText().toString();
+					if (pass.length() > 0)
+						settingsPassAlert.getButton(Dialog.BUTTON1).setEnabled(
+								true);
+					else if (pass.length() == 0)
+						settingsPassAlert.getButton(Dialog.BUTTON1).setEnabled(
+								false);
+				}
+
+				public void beforeTextChanged(CharSequence s, int start,
+						int count, int after) {
+				}
+
+				public void afterTextChanged(Editable s) {
+				}
+			});
+			settingsPassAlert.getButton(Dialog.BUTTON_POSITIVE).setEnabled(
+					false);
 			return true;
 		case REFRESH:
 			// this button from the Login Screen's menu items is used to refresh
@@ -645,4 +687,15 @@ public class LoginScreenActivity extends ListActivity {
 		super.onDestroy();
 		unregisterReceiver(br);
 	}
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		// // Checks the orientation of the screen
+		// if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE){
+		// CustomArrayAdapter.stopAnimation();
+		//
+		// }
+	}
+
 }

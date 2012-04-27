@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    
+
         <EditText
         android:id="@+id/result"
         android:layout_width="match_parent"
@@ -15,6 +15,7 @@
         android:clickable="false" 
         android:editable="false" 
         android:autoText="false"
+        android:inputType="textMultiLine"
         android:background="@android:color/black"/>
         <EditText
 	        android:id="@+id/commandLine"

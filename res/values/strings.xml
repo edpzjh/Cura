@@ -23,7 +23,7 @@
     <string name="LoginScreenName">Welcome to Cura</string>
     <string name="ModifyUserInfo">Modify User Info</string>
     <string name="DeleteUser">Delete User</string>
-    <string name="msgProgressDialog">Please wait while the connection is being established&#8230;</string>
+    <string name="msgProgressDialog">Please wait while the connection is being established…</string>
     <string name="addNewFavoriteCommand">Add new command</string>
     <string name="modifyFavoriteCommand">Modify command</string>
     <string name="deleteFavoriteCommand">Delete</string>
@@ -42,12 +42,12 @@
     <string name="SysLogLineNumberprompt">Please enter the number of lines</string>
     <string name="SysLogNoLogsFoundprompt">No logs to be displayed here\n(There was either a permissions issue, or the logfile does not exist on your server)</string>
     <string name="addNewCommandToFavoritesprompt">Enter your command</string>
-	<string name="preferenceSettings">Settings</string>
+    <string name="preferenceSettings">Settings</string>
     <string name="languageCategory">Language</string>
     <string name="securityCategory">Security</string>
     <string name="language">Language</string>
     <string name="languagePrefsSummary">Choose your language</string>
-    <string name="security">Enable SMS security</string>
+    <string name="security">Enable security feature</string>
     <string name="securityPattern">Pattern</string>
     <string name="refresh">Refresh</string>
     <string name="curaPassword">Cura Password</string>
@@ -77,8 +77,22 @@
     <string name="loginBtn">Login</string>
     <string name="cancelBtn">Cancel</string>
     <string name="showPassword">Show password.</string>
-    <string name="noFavoritesFound">You have not added any favorite commands yet, press the Menu &gt; Add New Comand to start adding!</string>
+    <string name="noFavoritesFound">You have not added any favorite commands yet, press the Menu > Add New Comand to start adding!</string>
     <string name="Share">Share</string>
     <string name="Help">Help</string>
     <string name="emailNotValid">Email not valid</string>
+    <string name="ServerStatsLabel">Server Stats</string>
+    <string name="unableToGetLocation">Unable to get location</string>
+    <string name="fetchingLogs">Fetching logs...</string>
+    <string name="initializing">Initializing...</string>
+    <string name="clearTerminal">Clear Terminal</string>
+    <string name="loader_message">Please wait while stats are being fetched from server...</string>
+    <string name="syslogTalk">The Syslog module allows you to read logs directly from your server. Choose the manner in which you want to read from a file, you can either let it default to 10 lines (Head or Tail) or you can specify the number of lines.</string>
+    <string name="securityfeaturetalk">By selecting this checkbox, you are enabling a unique security feature allows you (in the case of an emergency) to have Cura\'s database completely wiped upon you sending the compromised phone a secret pattern of your choosing. (ex: send an SMS message containing "phone has been stolen!" to your Android phone to wipe Cura\'s database and receive the location of the compromised phone as an SMS to your emergency phone number or as an e-mail to your emergency e-mail address).</string>
+    <string name="securityfeatureTitle">Attention!</string>
+    <string name="sysmonitorActivityTitle">Cura System Monitor</string>
+    <string name="preferencescreenActivityTitle">Cura Preference Screen</string>
+    <string name="nmapActivityTitle">Nmap Port-scanner</string>
+    <string name="syslogactivityTitle">System Log Reader</string>
+
 </resources>

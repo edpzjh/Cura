@@ -5,7 +5,8 @@
     android:orientation="vertical">
     
     <TableRow android:layout_width="fill_parent"
-        	  android:layout_height="match_parent" >
+        	  android:layout_height="match_parent"
+        	  android:id="@+id/row" >
         	  
    	 <ImageView
         	android:id="@+id/icon"
@@ -28,7 +29,8 @@
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
 		        android:layout_marginTop="10dip"
-		        android:textSize="20dp" 
+		        android:textSize="20dip" 
+		        android:maxLines="1"
 		        android:text="username" />
 
         <TextView
