@@ -16,6 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with Cura.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.cura;
 
 /*
@@ -75,7 +76,7 @@ public class CuraActivity extends Activity implements OnClickListener,
 	private String loader_message = "";
 	private String finalResultForDialog = "";
 	private CommunicationInterface conn;
-	private String page = "";
+//	private String page = "";
 	private ProgressDialog loader;
 	// to fetch the GET request of the server's location
 
@@ -212,6 +213,7 @@ public class CuraActivity extends Activity implements OnClickListener,
 			// when the row entitled "SysLog" is clicked, take the user to
 			// the SysLog activity
 			Intent sysLogIntent = new Intent(this, SysLogActivity.class);
+			sysLogIntent.putExtra("user", userTemp);
 			startActivity(sysLogIntent);
 			break;
 		case R.id.NMapRow:
@@ -281,6 +283,8 @@ public class CuraActivity extends Activity implements OnClickListener,
 											.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 									CuraActivity.this
 											.startActivity(closeAllActivities);
+									stopService(new Intent(CuraActivity.this,
+											ConnectionService.class));
 								}
 							})
 					.setNegativeButton("No",
@@ -330,13 +334,7 @@ public class CuraActivity extends Activity implements OnClickListener,
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		// unbindService(connection);
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-		// unbindService(connection);
+		
 	}
 
 	@Override
@@ -355,8 +353,6 @@ public class CuraActivity extends Activity implements OnClickListener,
 									try {
 										// close connection
 										conn.close();
-										// unbind from the service
-										unbindService(connection);
 										Log.d("Connection", "connection closed");
 									} catch (RemoteException e) {
 										Log.d("Connection", e.toString());
@@ -369,6 +365,8 @@ public class CuraActivity extends Activity implements OnClickListener,
 											.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 									CuraActivity.this
 											.startActivity(closeAllActivities);
+									stopService(new Intent(CuraActivity.this,
+											ConnectionService.class));
 								}
 							}).setNegativeButton("No",
 					// if No is selected, dismiss the dialog
@@ -390,6 +388,9 @@ public class CuraActivity extends Activity implements OnClickListener,
 			v.setBackgroundResource(R.drawable.moduleselectedhighlight);
 			break;
 		case MotionEvent.ACTION_UP:
+			v.setBackgroundResource(0);
+			break;
+		case MotionEvent.ACTION_CANCEL:
 			v.setBackgroundResource(0);
 			break;
 		}

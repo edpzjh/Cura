@@ -16,27 +16,22 @@
     You should have received a copy of the GNU General Public License
     along with Cura.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.cura;
 
 /*
  * Description: This class is used to automatically construct a list of user accounts for the Login Screen activity.
  */
 
-import java.util.List;
-import java.util.Vector;
-
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
-import android.view.animation.RotateAnimation;
 import android.view.animation.TranslateAnimation;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.TableRow;
 import android.widget.TextView;
 
 @SuppressWarnings("rawtypes")

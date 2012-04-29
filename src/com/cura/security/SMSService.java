@@ -16,6 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with Cura.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.cura.security;
 
 /*
@@ -24,8 +25,6 @@ package com.cura.security;
  * it sends an SMS to the emergency phone number that the user specified in that same Settings menu item, containing the 
  * location of the compromised phone. We used GPS location to determine that.
  */
-
-import org.jasypt.util.text.BasicTextEncryptor;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;

@@ -16,6 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with Cura.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.cura.Terminal;
 
 /*
@@ -30,7 +31,6 @@ import java.io.StringWriter;
 
 import org.apache.commons.io.IOUtils;
 
-import android.os.AsyncTask;
 import android.util.Log;
 
 import com.cura.User;

@@ -16,12 +16,15 @@
     You should have received a copy of the GNU General Public License
     along with Cura.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.cura;
 
 /*
  * Description: This class is used to access the database and write to it the information about user accounts and their
  * preferences plus the Favorite commands from the Terminal.
  */
+
+import java.io.File;
 
 import org.jasypt.util.password.BasicPasswordEncryptor;
 
@@ -43,6 +46,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	public static final String C_COMMAND = "command";
 	private SharedPreferences prefs;
 	private BasicPasswordEncryptor passEncryptor ;
+	private File CuraDir;
 	Context context;
 
 	public DbHelper(Context context) {
@@ -66,6 +70,9 @@ public class DbHelper extends SQLiteOpenHelper {
 		SharedPreferences.Editor editor = prefs.edit();
 		editor.putString("myPass", passEncryptor.encryptPassword("default"));
 		editor.commit();
+		// Create Cura directory in sdcard
+		CuraDir = new File("/sdcard/Cura");
+		CuraDir.mkdir();
 	}
 
 	@Override

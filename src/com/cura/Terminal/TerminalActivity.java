@@ -16,9 +16,19 @@
     You should have received a copy of the GNU General Public License
     along with Cura.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.cura.Terminal;
 
-import org.jasypt.encryption.pbe.CleanablePasswordBased;
+/*
+ * Description: In this Activity, we implement the means of talking to the server in a custom Terminal emulator that allows
+ * the user to run any command that can be run on a live Linux command line screen. We also add a Favorites Screen here that 
+ * will allow the user to add any number of their favorite commands to be executed when they choose one of them from the list.
+ */
+
+/*
+ * TODO: Move the fetching of commands to onCreate instead of onClick
+ * 
+ */
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -51,22 +61,11 @@ import com.cura.User;
 import com.cura.Connection.CommunicationInterface;
 import com.cura.Connection.ConnectionService;
 
-/*
- * Description: In this Activity, we implement the means of talking to the server in a custom Terminal emulator that allows
- * the user to run any command that can be run on a live Linux command line screen. We also add a Favorites Screen here that 
- * will allow the user to add any number of their favorite commands to be executed when they choose one of them from the list.
- */
-
-/*
- * TODO: Move the fetching of commands to onCreate instead of onClick
- * 
- */
-
 public class TerminalActivity extends Activity {
 
 	private final int FAVORITES = 1;
 	private final int CLEAR_EDITTEXT = 2;
-	
+
 	EditText result;
 	EditText commandLine;
 	Button execute;
@@ -198,6 +197,7 @@ public class TerminalActivity extends Activity {
 							});
 					builder.show();
 				}
+				c.close();
 				db.close();
 				dbHelper.close();
 			}
@@ -275,7 +275,8 @@ public class TerminalActivity extends Activity {
 		case CLEAR_EDITTEXT:
 			result.setText("");
 			if (userTemp.getUsername().compareTo("root") == 0) {
-				// according to its username, if it's root, append the result with #
+				// according to its username, if it's root, append the result
+				// with #
 				// to signifgy root privileges
 				username = userTemp.getUsername() + "@" + userTemp.getDomain()
 						+ ":~# ";
@@ -322,13 +323,13 @@ public class TerminalActivity extends Activity {
 	@Override
 	protected void onStop() {
 		super.onStop();
-		unbindService(connection);
-		finish();
+		// unbindService(connection);
+		// finish();
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onStop();
-		// unbindService(connection);
+		unbindService(connection);
 	}
 }

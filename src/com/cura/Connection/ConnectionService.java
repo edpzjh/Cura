@@ -16,6 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with Cura.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.cura.Connection;
 
 /*
@@ -23,8 +24,6 @@ package com.cura.Connection;
  * functions like executeCommand() which is used to execute a command at the terminal.
  */
 
-import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
@@ -35,6 +34,9 @@ import com.cura.User;
 import com.cura.Terminal.Terminal;
 
 public class ConnectionService extends Service {
+
+	
+
 	User user;
 	SSHConnection sshconnection;
 	Terminal terminal;
@@ -69,9 +71,26 @@ public class ConnectionService extends Service {
 		super.onCreate();
 	}
 
+//	@Override
+//	public void onStart(Intent intent, int startId) {
+//		super.onStart(intent, startId);
+//		user = (User) intent.getParcelableExtra("user");
+//		String password = intent.getStringExtra("pass");
+//		user.setPassword(password);
+//		sshconnection = (SSHConnection) new SSHConnection().execute(user);
+//		try {
+//			i.setAction(sshconnection.get());
+//		} catch (Exception e) {
+//			Log.d("Connection", e.toString());
+//		}
+//		i.putExtra("user", user);
+//		sendBroadcast(i);
+//		
+//	}
+	
 	@Override
-	public void onStart(Intent intent, int startId) {
-		super.onStart(intent, startId);
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		super.onStartCommand(intent, flags, startId);
 		user = (User) intent.getParcelableExtra("user");
 		String password = intent.getStringExtra("pass");
 		user.setPassword(password);
@@ -83,8 +102,16 @@ public class ConnectionService extends Service {
 		}
 		i.putExtra("user", user);
 		sendBroadcast(i);
+		return START_STICKY;
 	}
-
+	
+	@Override
+	public void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		Log.d("Connection Service","connection stopped");
+	}
+	
 	@Override
 	public IBinder onBind(Intent intent) {
 		return mBinder;

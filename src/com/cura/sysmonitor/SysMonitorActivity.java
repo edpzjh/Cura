@@ -240,9 +240,11 @@ public class SysMonitorActivity extends Activity {
 		unbindService(connection);
 		finish();
 	}
+
 	@Override
 	protected void onResume() {
 		super.onResume();
 		doBindService();
 	}
+
 }
