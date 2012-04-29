@@ -94,5 +94,11 @@
     <string name="preferencescreenActivityTitle">Cura Preference Screen</string>
     <string name="nmapActivityTitle">Nmap Port-scanner</string>
     <string name="syslogactivityTitle">System Log Reader</string>
+    <string name="sysLogSaveLogsButtonText">Save logs to Cura directory</string>
+    <string name="logsSaved">Logs saved in Cura directory under </string>
+    <string name="logsNotSaved">No logs to be saved \n(There was either a permissions issue, or the logfile does not exist on your server)</string>
+    <string name="savingLogs">Saving logs...</string>
+    <string name="connectionTimeout">Connection timeout</string>
+    <string name="connectionTimeoutMessage">Connection timeout, please check your network or internet connectivity.\n You will be redirected to Cura\'s login screen.</string>
 
 </resources>
