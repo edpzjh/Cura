@@ -1,0 +1,68 @@
+/*
+ Copyright© 2010, 2011 Ahmad Balaa, Oday Maleh
+
+ This file is part of Cura.
+
+	Cura is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Cura is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Cura.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package com.cura;
+
+/*
+ * Description: This class is for use in detecting the availability of a connection while using Cura. When the phone loses
+ * connection to the Internet due to an error or a user choice, the user will be kicked back to the login screen and a popup
+ * dialog will appear informing the user that they have lost Internet connection.
+ */
+
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningServiceInfo;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.widget.Toast;
+
+import com.cura.Connection.ConnectionService;
+
+public class ConnectionBroadcastReceiver extends BroadcastReceiver {
+
+	@Override
+	public void onReceive(Context context, Intent intent) {
+		boolean noConnectivity = intent.getBooleanExtra(
+				ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);
+
+		if (noConnectivity && isMyServiceRunning(context)) {
+			context.stopService(new Intent(context, ConnectionService.class));
+			Toast.makeText(context, R.string.connectionTimeoutMessage, Toast.LENGTH_LONG).show();
+			
+			Intent closeAllActivities = new Intent(context.getApplicationContext(),
+					LoginScreenActivity.class);
+			closeAllActivities.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			closeAllActivities.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+//			closeAllActivities.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			context.getApplicationContext().startActivity(closeAllActivities);
+		}
+	}
+	private boolean isMyServiceRunning(Context context) {
+	    ActivityManager manager = (ActivityManager) context.getSystemService(context.ACTIVITY_SERVICE);
+	    for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+	 if ("com.cura.Connection.ConnectionService".equals(service.service.getClassName())) {
+	     return true;
+	 }
+	    }
+	    return false;
+	}
+
+}
