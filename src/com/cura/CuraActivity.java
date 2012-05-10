@@ -184,7 +184,7 @@ public class CuraActivity extends Activity implements OnClickListener,
 		case WAIT:
 			loader = new ProgressDialog(this);
 			loader.setMessage(loader_message);
-
+			loader.setCancelable(false);
 			return loader;
 		}
 		return super.onCreateDialog(id);
@@ -266,11 +266,9 @@ public class CuraActivity extends Activity implements OnClickListener,
 										int which) {
 									try {
 										// close the connection
-										conn.close();
-										// unbind the service
-										unbindService(connection);
+										//conn.close();
 										Log.d("Connection", "connection closed");
-									} catch (RemoteException e) {
+									} catch (Exception e) {
 										Log.d("Connection", e.toString());
 									}
 									Intent closeAllActivities = new Intent(
@@ -283,8 +281,7 @@ public class CuraActivity extends Activity implements OnClickListener,
 											.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 									CuraActivity.this
 											.startActivity(closeAllActivities);
-									stopService(new Intent(CuraActivity.this,
-											ConnectionService.class));
+//								
 								}
 							})
 					.setNegativeButton("No",
@@ -328,13 +325,16 @@ public class CuraActivity extends Activity implements OnClickListener,
 	@Override
 	protected void onResume() {
 		super.onResume();
-		doBindService();
+		//doBindService();
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		
+		stopService(new Intent(CuraActivity.this,
+				ConnectionService.class));
+		unbindService(connection);
+		Log.d("CuraActivity","Stop");
 	}
 
 	@Override
@@ -352,9 +352,9 @@ public class CuraActivity extends Activity implements OnClickListener,
 										int which) {
 									try {
 										// close connection
-										conn.close();
+										//conn.close();
 										Log.d("Connection", "connection closed");
-									} catch (RemoteException e) {
+									} catch (Exception e) {
 										Log.d("Connection", e.toString());
 									}
 									Intent closeAllActivities = new Intent(
@@ -365,8 +365,8 @@ public class CuraActivity extends Activity implements OnClickListener,
 											.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 									CuraActivity.this
 											.startActivity(closeAllActivities);
-									stopService(new Intent(CuraActivity.this,
-											ConnectionService.class));
+//									stopService(new Intent(CuraActivity.this,
+//											ConnectionService.class));
 								}
 							}).setNegativeButton("No",
 					// if No is selected, dismiss the dialog

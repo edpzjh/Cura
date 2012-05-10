@@ -46,7 +46,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	public static final String C_COMMAND = "command";
 	private SharedPreferences prefs;
 	private BasicPasswordEncryptor passEncryptor ;
-	private File CuraDir;
+	private File CuraDir, SyslogDir, NmapDir;
 	Context context;
 
 	public DbHelper(Context context) {
@@ -73,6 +73,10 @@ public class DbHelper extends SQLiteOpenHelper {
 		// Create Cura directory in sdcard
 		CuraDir = new File("/sdcard/Cura");
 		CuraDir.mkdir();
+		SyslogDir = new File("/sdcard/Cura/SysLog");
+		SyslogDir.mkdir();
+		NmapDir = new File("/sdcard/Cura/Nmap");
+		NmapDir.mkdir();
 	}
 
 	@Override

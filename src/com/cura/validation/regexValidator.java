@@ -89,4 +89,16 @@ public class regexValidator {
 		}
 		return true;
 	}
+	public boolean validateDomain(String domain){
+		 String ValidIP = 
+		        "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+		        "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+		        "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+		        "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
+		 String parts[] = domain.split("\\.");
+		 if (domain.compareTo("") == 0 || !domain.matches(ValidIP)) {
+				return true;
+		}
+		return true;
+	}
 }

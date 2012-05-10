@@ -58,17 +58,18 @@ public class Terminal extends Thread {
 	public Terminal(final User user) throws JSchException {
 		// TODO Auto-generated method stub
 		writer = new StringWriter();
-		jsch = new JSch();
 		username = user.getUsername();
 		host = user.getDomain();
 		password = user.getPassword();
 		port = user.getPort();
+		jsch = new JSch();
 		session = jsch.getSession(username, host, port);
 		session.setPassword(password);
 		session.setConfig("StrictHostKeyChecking", "no");
 		session.connect();
 		Log.i("Terminal", "connected");
 		channel = session.openChannel("exec");
+
 	}
 
 	public synchronized String ExecuteCommand(String command) {
@@ -98,11 +99,11 @@ public class Terminal extends Thread {
 	}
 
 	public void close() {
-		session.disconnect();
 		channel.disconnect();
+		session.disconnect();
 	}
 
 	public boolean connected() {
-		return true;
+		return session.isConnected();
 	}
 }

@@ -30,7 +30,6 @@ import org.jasypt.util.password.BasicPasswordEncryptor;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -38,11 +37,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -63,6 +62,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cura.Connection.ConnectionService;
@@ -72,9 +72,11 @@ public class LoginScreenActivity extends ListActivity {
 
 	private final String connected = "cura.connected";
 	private final String notConnected = "cura.not.connected";
+	private final String deleteDB = "database.delete";
 	private final int ADD_USER = 1;
 	private final int SETTINGS = 2;
-	private final int REFRESH = 3;
+	private final int MODIFY_USER = 4;
+	private final int DELETE_USER = 5;
 	TableRow AddUserRow;
 	DbHelper dbHelper;
 	SQLiteDatabase db;
@@ -82,8 +84,9 @@ public class LoginScreenActivity extends ListActivity {
 	User userTemp;
 	CustomArrayAdapter array;
 	Intent goToMainActivity;
-	BroadcastReceiver br;
-	ProgressDialog loader;
+	BroadcastReceiver br, databaseBR;
+	AlertDialog.Builder loader;
+	private Vibrator v;
 	private SharedPreferences prefs;
 	private static final int DIALOG_YES_NO_LONG_MESSAGE = 99;
 	private static final int WAIT = 100;
@@ -136,6 +139,8 @@ public class LoginScreenActivity extends ListActivity {
 					// the appropriate error dialog
 					Toast.makeText(context, R.string.credentialsWrong,
 							Toast.LENGTH_LONG).show();
+					stopService(new Intent(LoginScreenActivity.this,
+							ConnectionService.class));
 				}
 			}
 		};
@@ -144,6 +149,28 @@ public class LoginScreenActivity extends ListActivity {
 		intentFilter.addAction(connected);
 		intentFilter.addAction(notConnected);
 		registerReceiver(br, intentFilter);
+		
+		databaseBR = new BroadcastReceiver() {
+			
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				// this is used to refresh
+				// that specific screen in order to instantly see that Cura's
+				// database has been wiped due to an emergency SMS having been sent
+				// to the phone
+				user = getUser();
+				array = new CustomArrayAdapter(LoginScreenActivity.this, user);
+				setListAdapter(array);
+				Log.d("onResume","onResume");
+			}
+		};
+		
+		IntentFilter databaseIntentFilter = new IntentFilter();
+		databaseIntentFilter.addAction(deleteDB);
+		registerReceiver(databaseBR, databaseIntentFilter);
+		
+		// initializing the vibrator object
+		v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 	}
 
 	// new function that fetches users info from database, used in "onCreate()"
@@ -215,10 +242,11 @@ public class LoginScreenActivity extends ListActivity {
 								}
 							}).create();
 		case WAIT:
-			loader = new ProgressDialog(this);
+			loader = new AlertDialog.Builder(this);
 			loader.setMessage(loader_message);
-			loader.show();
-			return loader;
+			loader.setCancelable(false);
+			AlertDialog ad = loader.create();
+			return ad;
 		}
 		return null;
 	}
@@ -360,7 +388,6 @@ public class LoginScreenActivity extends ListActivity {
 				R.drawable.ic_menu_add);
 		menu.add(0, SETTINGS, 0, R.string.preferenceSettings).setIcon(
 				R.drawable.ic_menu_preferences);
-		menu.add(1, REFRESH, 1, "Refresh").setIcon(R.drawable.ic_menu_rotate);
 		return result;
 	}
 
@@ -392,6 +419,8 @@ public class LoginScreenActivity extends ListActivity {
 			final EditText portInput = (EditText) myDialog
 					.findViewById(R.id.portTextField);
 
+			final TextView userExists = (TextView) myDialog
+					.findViewById(R.id.userExists);
 			watcher = new TextWatcher() {
 
 				public void afterTextChanged(Editable s) {
@@ -410,8 +439,8 @@ public class LoginScreenActivity extends ListActivity {
 					String username = usernameInput.getText().toString();
 					String domain = domainInput.getText().toString();
 					String port = portInput.getText().toString();
-					if (/*rv.validateUsername(username)*/
-							 !domain.equalsIgnoreCase("")
+					if (rv.validateUsername(username)
+							&& !domain.equalsIgnoreCase("")
 							&& !port.equalsIgnoreCase(""))
 						// if all the textfields are filled, enable the Add
 						// button
@@ -434,34 +463,42 @@ public class LoginScreenActivity extends ListActivity {
 					String usern = usernameInput.getText().toString();
 					String domain = domainInput.getText().toString();
 					int port = Integer.parseInt(portInput.getText().toString());
+					if (!isFound(usern, domain)) {
+						// open writable database
+						DbHelper dbHelper = new DbHelper(
+								LoginScreenActivity.this);
+						SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-					// open writable database
-					DbHelper dbHelper = new DbHelper(LoginScreenActivity.this);
-					SQLiteDatabase db = dbHelper.getWritableDatabase();
+						ContentValues values = new ContentValues();
 
-					ContentValues values = new ContentValues();
+						values.put(dbHelper.C_USERNAME, usern);
+						values.put(dbHelper.C_DOMAIN, domain);
+						values.put(dbHelper.C_PORT, port);
 
-					values.put(dbHelper.C_USERNAME, usern);
-					values.put(dbHelper.C_DOMAIN, domain);
-					values.put(dbHelper.C_PORT, port);
+						try {
+							// insert into database a new user
+							db.insertOrThrow(dbHelper.userTableName, null,
+									values);
+						} catch (Exception e) {
+							Log.d("SQL", e.toString());
+						}
 
-					try {
-						// insert into database a new user
-						db.insertOrThrow(dbHelper.userTableName, null, values);
-					} catch (Exception e) {
-						Log.d("SQL", e.toString());
+						// close database
+						db.close();
+						dbHelper.close();
+
+						// CHANGED : refresh list view
+						user = getUser();
+						array = new CustomArrayAdapter(
+								LoginScreenActivity.this, user);
+						setListAdapter(array);
+						myDialog.cancel();
+					} else {
+						LoginScreenActivity.this.v.vibrate(300);
+						userExists.setText(R.string.userExists);
+						usernameInput.setText("");
+						domainInput.setText("");
 					}
-
-					// close database
-					db.close();
-					dbHelper.close();
-
-					// CHANGED : refresh list view
-					user = getUser();
-					array = new CustomArrayAdapter(LoginScreenActivity.this,
-							user);
-					setListAdapter(array);
-					myDialog.cancel();
 				}
 			});
 
@@ -543,15 +580,6 @@ public class LoginScreenActivity extends ListActivity {
 			settingsPassAlert.getButton(Dialog.BUTTON_POSITIVE).setEnabled(
 					false);
 			return true;
-		case REFRESH:
-			// this button from the Login Screen's menu items is used to refresh
-			// that specific screen in order to instantly see that Cura's
-			// database has been wiped due to an emergency SMS having been sent
-			// to the phone
-			user = getUser();
-			array = new CustomArrayAdapter(LoginScreenActivity.this, user);
-			setListAdapter(array);
-			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -562,9 +590,9 @@ public class LoginScreenActivity extends ListActivity {
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		// add to buttons to context menu "Modify user Info", "Delete User"
-		menu.add(0, Menu.FIRST + 1, 0, R.string.ModifyUserInfo).setIcon(
+		menu.add(0, MODIFY_USER, 0, R.string.ModifyUserInfo).setIcon(
 				R.drawable.ic_menu_edit);
-		menu.add(0, Menu.FIRST + 2, 0, R.string.DeleteUser).setIcon(
+		menu.add(0,DELETE_USER, 0, R.string.DeleteUser).setIcon(
 				R.drawable.ic_menu_delete);
 	}
 
@@ -581,7 +609,7 @@ public class LoginScreenActivity extends ListActivity {
 
 		switch (item.getItemId()) {
 		// modify button is pressed
-		case Menu.FIRST + 1:
+		case MODIFY_USER:
 			final Dialog myDialog;
 			myDialog = new Dialog(LoginScreenActivity.this);
 			myDialog.setContentView(R.layout.adduserscreen);
@@ -650,7 +678,7 @@ public class LoginScreenActivity extends ListActivity {
 			myDialog.show();
 			return true;
 
-		case Menu.FIRST + 2:
+		case DELETE_USER:
 			// Delete user
 			try {
 				String table_name = "user";
@@ -678,20 +706,22 @@ public class LoginScreenActivity extends ListActivity {
 		return super.onContextItemSelected(item);
 	}
 
+	public boolean isFound(String username, String domain) {
+		String u = "";
+		String d = "";
+		for (int i = 0; i < user.length; i++) {
+			u = user[i].getUsername();
+			d = user[i].getDomain();
+			if (u.compareTo(username) == 0 && d.compareTo(domain) == 0)
+				return true;
+		}
+		return false;
+	}
+	
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 		unregisterReceiver(br);
+		unregisterReceiver(databaseBR);
 	}
-
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
-		// // Checks the orientation of the screen
-		// if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE){
-		// CustomArrayAdapter.stopAnimation();
-		//
-		// }
-	}
-
 }

@@ -37,13 +37,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-
-import com.cura.R;
-import com.cura.User;
+import java.util.Date;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -64,14 +63,20 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.cura.R;
+import com.cura.User;
 
 public class NmapActivity extends Activity {
-	
+
 	/* --- view resources --- */
 	private TextView mResults, mTarget;
 	private EditText mArguments;
-	private Button mStart;// , mHelp, mShare, mExit;
+	private Button mStart, saveResults;// , mHelp, mShare, mExit;
 	private Spinner mCommandSpinner, mOutputSpinner;
+	private File NmapDir;
+	private FileWriter target;
 
 	/*
 	 * --- program variables - these need to be backed up for configuration
@@ -118,6 +123,8 @@ public class NmapActivity extends Activity {
 		mTarget = (TextView) findViewById(R.id.Target);
 		mTarget.setText(user.getDomain());
 		mStart = (Button) findViewById(R.id.Start);
+		saveResults = (Button) findViewById(R.id.saveNmapResults);
+		NmapDir = new File("/sdcard/Cura/Nmap");
 		// mHelp = (Button) findViewById(R.id.Help);
 		// mShare = (Button) findViewById(R.id.Share);
 		// mExit = (Button) findViewById(R.id.Exit);
@@ -129,10 +136,12 @@ public class NmapActivity extends Activity {
 		} catch (NameNotFoundException e) {
 			Log.d(tag, e.toString());
 		}
-		
+
 		if (!installationVerified && vTask == null
-				/*|| vTask.getStatus() == AsyncTask.Status.FINISHED
-				|| vTask.getStatus() == AsyncTask.Status.RUNNING*/) {
+		/*
+		 * || vTask.getStatus() == AsyncTask.Status.FINISHED ||
+		 * vTask.getStatus() == AsyncTask.Status.RUNNING
+		 */) {
 			vTask = new verifyInstallation().execute();
 		}
 
@@ -187,6 +196,7 @@ public class NmapActivity extends Activity {
 							int arg2, long arg3) {
 						if (hasRunOneScan) {
 							mResults.setText("");
+							saveResults.setVisibility(Button.INVISIBLE);
 							h.sendEmptyMessage(RUN_COMPLETE);
 						}
 					}
@@ -204,6 +214,7 @@ public class NmapActivity extends Activity {
 				// SCANTYPE_NMAP;
 
 				mResults.setText("");
+				saveResults.setVisibility(Button.INVISIBLE);
 				String s = mTarget.getText().toString() + " "
 						+ mArguments.getText().toString();
 				if (s == null || s.length() == 0)
@@ -220,6 +231,38 @@ public class NmapActivity extends Activity {
 			}
 		});
 
+		saveResults.setOnClickListener(new View.OnClickListener() {
+
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				if (!NmapDir.exists()) {
+					NmapDir.mkdir();
+				}
+				try {
+					Date date = new Date();
+					String dateString = date.getMonth() + "_" + date.getDay()
+							+ "_" + date.getHours() + "_" + date.getMinutes();
+					String fileName = user.getUsername() + "_"
+							+ mCommandSpinner.getSelectedItem().toString()
+							+ "_" + mOutputSpinner.getSelectedItem().toString()
+							+ "_" + dateString + ".txt";
+					Log.d("filename", fileName);
+					target = new FileWriter("/sdcard/Cura/Nmap/" + fileName);
+					target.append(mResults.getText());
+					target.flush();
+					target.close();
+					Toast.makeText(
+							NmapActivity.this,
+							getString(R.string.nmapResultsSaved) + " \"/Nmap/"
+									+ fileName + "\"", Toast.LENGTH_LONG)
+							.show();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					Toast.makeText(NmapActivity.this, R.string.resultsNotSaved,
+							Toast.LENGTH_LONG).show();
+				}
+			}
+		});
 		// mHelp.setOnClickListener(new View.OnClickListener() {
 		// // when the help menu is brought up and something is selected from
 		// // it
@@ -289,6 +332,7 @@ public class NmapActivity extends Activity {
 			// scanType = mCommandSpinner.getSelectedItemPosition() +
 			// SCANTYPE_NMAP;
 			mResults.setText("");
+			saveResults.setVisibility(Button.INVISIBLE);
 			if (sTask == null || sTask.getStatus() == AsyncTask.Status.FINISHED
 					|| sTask.getStatus() == AsyncTask.Status.RUNNING) {
 				sTask = new scan().execute("-h");
@@ -350,7 +394,6 @@ public class NmapActivity extends Activity {
 
 		@Override
 		protected Void doInBackground(String... params) {
-			// what the fuck is "Void"?!
 			for (int i = 0; i < params.length; i++)
 				Log.d(tag, "Execution Parameters [" + i + "]: " + params[i]);
 
@@ -466,9 +509,9 @@ public class NmapActivity extends Activity {
 				"nmap-mac-prefixes" };
 
 		protected void onPreExecute() {
-			pd = new ProgressDialog(NmapActivity.this);
-			pd.setMessage(progressMessage);
-			pd.show();
+//			pd = new ProgressDialog(NmapActivity.this);
+//			pd.setMessage(progressMessage);
+//			pd.show();
 
 			File su = new File("/system/bin/su");
 			canGetRoot = su.exists();
@@ -491,7 +534,7 @@ public class NmapActivity extends Activity {
 		}
 
 		protected void onPostExecute(Void v) {
-			pd.dismiss();
+//			pd.dismiss();
 			NmapActivity.installationVerified = true;
 		}
 
@@ -715,6 +758,7 @@ public class NmapActivity extends Activity {
 				break;
 			case RUN_LINE:
 				mResults.setText(mResults.getText() + "\n" + (String) msg.obj);
+				saveResults.setVisibility(Button.VISIBLE);
 				break;
 			case RUN_COMPLETE:
 				try {
@@ -739,6 +783,7 @@ public class NmapActivity extends Activity {
 					while ((l = b.readLine()) != null) {
 						mResults.setText(mResults.getText() + l + "\n");
 					}
+					saveResults.setVisibility(Button.VISIBLE);
 					b.close();
 				} catch (FileNotFoundException e) {
 					Message msg1 = Message.obtain();
@@ -807,7 +852,7 @@ public class NmapActivity extends Activity {
 		outState.putString("outputArgs", outputArgs);
 		super.onSaveInstanceState(outState);
 	}
-	
+
 	@Override
 	protected void onStop() {
 		super.onStop();

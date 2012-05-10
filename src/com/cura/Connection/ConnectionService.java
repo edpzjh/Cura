@@ -24,18 +24,24 @@ package com.cura.Connection;
  * functions like executeCommand() which is used to execute a command at the terminal.
  */
 
+import java.io.StringWriter;
+
+import android.app.ProgressDialog;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.provider.Settings.System;
 import android.util.Log;
 
 import com.cura.User;
 import com.cura.Terminal.Terminal;
+import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
 
 public class ConnectionService extends Service {
-
-	
 
 	User user;
 	SSHConnection sshconnection;
@@ -70,23 +76,6 @@ public class ConnectionService extends Service {
 	public void onCreate() {
 		super.onCreate();
 	}
-
-//	@Override
-//	public void onStart(Intent intent, int startId) {
-//		super.onStart(intent, startId);
-//		user = (User) intent.getParcelableExtra("user");
-//		String password = intent.getStringExtra("pass");
-//		user.setPassword(password);
-//		sshconnection = (SSHConnection) new SSHConnection().execute(user);
-//		try {
-//			i.setAction(sshconnection.get());
-//		} catch (Exception e) {
-//			Log.d("Connection", e.toString());
-//		}
-//		i.putExtra("user", user);
-//		sendBroadcast(i);
-//		
-//	}
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
@@ -107,9 +96,16 @@ public class ConnectionService extends Service {
 	
 	@Override
 	public void onDestroy() {
-		// TODO Auto-generated method stub
 		super.onDestroy();
-		Log.d("Connection Service","connection stopped");
+		try {
+			mBinder.close();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		sshconnection = null;
+		
+		Log.d("Connection Service","connection stopped ");
 	}
 	
 	@Override

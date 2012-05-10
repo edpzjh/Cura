@@ -24,6 +24,7 @@ package com.cura.Connection;
  * activities can bind to it and..be connected via SSH to the server requested. We send it in an AsyncTask to establish that.
  */
 
+import android.app.Application;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -31,7 +32,10 @@ import android.util.Log;
 import com.cura.LoginScreenActivity;
 import com.cura.User;
 import com.cura.Terminal.Terminal;
+import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
 
 public class SSHConnection extends AsyncTask<User, String, String> {
 
@@ -39,7 +43,7 @@ public class SSHConnection extends AsyncTask<User, String, String> {
 	private final String notConnected = "cura.not.connected";
 	String result;
 	Terminal terminal;
-
+	
 	@Override
 	protected String doInBackground(User... user) {
 		// TODO Auto-generated method stub
@@ -70,6 +74,7 @@ public class SSHConnection extends AsyncTask<User, String, String> {
 	}
 
 	public void closeConnection() {
+		if(terminal!=null)
 		terminal.close();
 	}
 }

@@ -29,7 +29,6 @@ package com.cura.syslog;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.util.Date;
 
 import android.app.Activity;
@@ -75,7 +74,7 @@ public class SysLogActivity extends Activity implements
 	private String loader_message = "";
 	private ProgressDialog loader;
 	private User user;
-	private File curaDir;
+	private File syslogDir;
 	private FileWriter target;
 	private CommunicationInterface conn;
 
@@ -125,7 +124,7 @@ public class SysLogActivity extends Activity implements
 		lineNumbers = (EditText) findViewById(R.id.LinesNumber);
 		lineNumbers.setEnabled(false);
 		// all of the above sets up the shape of this activity
-		curaDir = new File("/sdcard/Cura");
+		syslogDir = new File("/sdcard/Cura/Syslog");
 	}
 
 	@Override
@@ -134,6 +133,7 @@ public class SysLogActivity extends Activity implements
 		case WAIT:
 			loader = new ProgressDialog(this);
 			loader.setMessage(loader_message);
+			loader.setCancelable(false);
 			loader.show();
 			break;
 		}
@@ -259,27 +259,27 @@ public class SysLogActivity extends Activity implements
 						// start it
 						startActivity(res);
 					} else {
-						if (!curaDir.exists()) {
-							curaDir.mkdir();
+						if (!syslogDir.exists()) {
+							syslogDir.mkdir();
 						}
 						try {
 							if (!result
 									.equalsIgnoreCase(getString(R.string.SysLogNoLogsFoundprompt))) {
+								Date date = new Date();
+								String dateString = date.getMonth()+"_"+date.getDay()+"_"+date.getHours()+"_"+date.getMinutes(); 
 								String fileName = user.getUsername()
 										+ "_"
 										+ menu2[logFile
 												.getSelectedItemPosition()]
-										+ ".txt";
-								target = new FileWriter("/sdcard/Cura/"
+										+ "_"+dateString+".txt";
+								target = new FileWriter("/sdcard/Cura/SysLog/"
 										+ fileName);
-								target.append(new Timestamp(new Date()
-										.getTime()) + " : \n");
 								target.append(result);
 								target.flush();
 								target.close();
 								Toast.makeText(
 										SysLogActivity.this,
-										getString(R.string.logsSaved) + " \""
+										getString(R.string.logsSaved) + " \"/SysLog/"
 												+ fileName + "\"",
 										Toast.LENGTH_LONG).show();
 							} else

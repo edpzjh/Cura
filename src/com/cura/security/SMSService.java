@@ -50,6 +50,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.cura.DbHelper;
+import com.cura.security.MyLocation.LocationResult;
 
 public class SMSService extends Service implements
 		OnSharedPreferenceChangeListener {
@@ -69,9 +70,9 @@ public class SMSService extends Service implements
 	// variables for GPS
 	LocationManager locMgr;
 	LocationListener locListener;
-	Context c;
 	double latitude;
 	double longitude;
+	long time;
 	String securityMessageBody = "Click the link below to see the location of your device \n"
 			+ "http://maps.google.com/maps?q="
 			+ latitude
@@ -85,6 +86,19 @@ public class SMSService extends Service implements
 	public void onCreate() {
 		// TODO Auto-generated method stub
 		super.onCreate();
+		enableGps();
+		// enable the GPS if it has not already been enabled
+		LocationResult locationResult = new LocationResult(){
+		    @Override
+		    public void gotLocation(Location location){
+		    	latitude = location.getLatitude();
+				longitude = location.getLongitude();
+				Log.d("Location", latitude + " - " + longitude);
+		    }
+		};
+		MyLocation myLocation = new MyLocation();
+		myLocation.getLocation(this, locationResult);
+
 	}
 
 	@Override
@@ -95,13 +109,12 @@ public class SMSService extends Service implements
 		// register preference change listener
 		prefs.registerOnSharedPreferenceChangeListener(this);
 		// and set remembered preferences
-		gpsLocation();
 		pattern = prefs.getString("securityPattern", "");
 		alternativePhoneNo = prefs.getString("alternativePhoneNo", "");
 		alternativeEmail = prefs.getString("alternativeEmail", "");
 		// fetch the settings from the preferences screen
 		telMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-
+		
 		sms = new BroadcastReceiver() {
 
 			@Override
@@ -109,7 +122,6 @@ public class SMSService extends Service implements
 				// when the SMS is received by the phone
 				dbHelper = new DbHelper(context);
 				db = dbHelper.getWritableDatabase();
-				c = context;
 				// prepare the cursor to access the database
 				Bundle bundle = intent.getExtras();
 
@@ -128,14 +140,17 @@ public class SMSService extends Service implements
 					// compare it to what we have stored in the DB as
 					// "emergency pattern"
 					db.delete(DbHelper.userTableName, "", null);
+					// send broadcast message to notify login screen to refresh
+					Intent i = new Intent();
+					i.setAction("database.delete");
+					sendBroadcast(i);
 					// if it matches, delete the table userTable and show the
 					// message that it has been deleted
+					Log.d("SMSservice","received");
 					Toast.makeText(context,
 							"Cura's database has been deleted!",
 							Toast.LENGTH_LONG).show();
-					enableGps();
-					// enable the GPS if it has not already been enabled
-					getFirstLocation();
+					
 					if (telMgr.getSimState() == TelephonyManager.SIM_STATE_READY
 							&& latitude != 0.0 && longitude != 0.0) {
 						// if there is a SIM card available in the phone at the
@@ -147,15 +162,9 @@ public class SMSService extends Service implements
 										+ latitude + "," + longitude + "&t=k");
 						// show the user that this action has been taken
 						Toast.makeText(
-								c,
+								context,
 								"A message has been sent to the owner of this device informing them of your location.",
 								Toast.LENGTH_LONG).show();
-					}
-					if (!intent.getBooleanExtra(
-							ConnectivityManager.EXTRA_NO_CONNECTIVITY, false)) {
-						// if there is wifi connection available at the second
-						// that the SMS was received
-						sendEmail();
 					}
 					// internet broadcast receiver
 					internet = new BroadcastReceiver() {
@@ -203,38 +212,6 @@ public class SMSService extends Service implements
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
 		pattern = sharedPreferences.getString("securityPattern", "");
-	}
-
-	public void gpsLocation() {
-		locMgr = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-		locListener = new LocationListener() {
-			public void onLocationChanged(Location location) {
-				// gets the longitude and latitude positions
-				latitude = location.getLatitude();
-				longitude = location.getLongitude();
-				Log.d("Location", latitude + " - " + longitude);
-			}
-
-			public void onProviderDisabled(String provider) {
-				// TODO Auto-generated method stub
-
-			}
-
-			public void onProviderEnabled(String provider) {
-				// TODO Auto-generated method stub
-
-			}
-
-			public void onStatusChanged(String provider, int status,
-					Bundle extras) {
-				// TODO Auto-generated method stub
-
-			}
-
-		};
-		locMgr.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 1000,
-				locListener);
 	}
 
 	private void sendSMS(String phoneNumber, String message) {
@@ -287,5 +264,13 @@ public class SMSService extends Service implements
 			poke.setData(Uri.parse("3"));
 			sendBroadcast(poke);
 		}
+	}
+	
+	@Override
+	public void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		unregisterReceiver(sms);
+		
 	}
 }

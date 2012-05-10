@@ -31,27 +31,26 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
+import android.os.Vibrator;
 import android.widget.Toast;
 
 import com.cura.Connection.ConnectionService;
 
 public class ConnectionBroadcastReceiver extends BroadcastReceiver {
-
+	Vibrator v ;
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		boolean noConnectivity = intent.getBooleanExtra(
 				ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);
-
+		v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
 		if (noConnectivity && isMyServiceRunning(context)) {
 			context.stopService(new Intent(context, ConnectionService.class));
 			Toast.makeText(context, R.string.connectionTimeoutMessage, Toast.LENGTH_LONG).show();
-			
+			v.vibrate(300);
 			Intent closeAllActivities = new Intent(context.getApplicationContext(),
 					LoginScreenActivity.class);
 			closeAllActivities.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			closeAllActivities.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-//			closeAllActivities.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			context.getApplicationContext().startActivity(closeAllActivities);
 		}
 	}

@@ -137,6 +137,7 @@ public class TerminalActivity extends Activity {
 	public void sendAndReceive() {
 		execute.setOnClickListener(new OnClickListener() {
 			public void onClick(View arg0) {
+				execute.setEnabled(false);
 				String command = commandLine.getText().toString();
 				result.setTextColor(Color.GREEN);
 				// set the color
@@ -149,6 +150,7 @@ public class TerminalActivity extends Activity {
 				}
 				result.append(res);
 				result.append(username);
+				execute.setEnabled(true);
 			}
 
 		});

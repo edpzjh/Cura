@@ -90,6 +90,7 @@ public class PreferenceScreen extends PreferenceActivity implements
 							}).create().show();
 			enableGps();
 			startService(new Intent(this, SMSService.class));
+			Log.d("SMSservice","Started");
 			return true;
 		}
 		if (preference.getKey().equalsIgnoreCase("enableSMS")
@@ -98,6 +99,7 @@ public class PreferenceScreen extends PreferenceActivity implements
 			// checked, stop the listening (for SMS) service
 			disableGps();
 			stopService(new Intent(this, SMSService.class));
+			Log.d("SMSservice","Stopped");
 			return true;
 		}
 		return false;
