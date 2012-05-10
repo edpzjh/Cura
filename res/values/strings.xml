@@ -100,5 +100,9 @@
     <string name="savingLogs">Saving logs...</string>
     <string name="connectionTimeout">Connection timeout</string>
     <string name="connectionTimeoutMessage">Connection timeout, please check your network or internet connectivity.\n You will be redirected to Cura\'s login screen.</string>
+    <string name="userExists">User already exists...</string>
+    <string name="nmapSaveButtonText">Save Nmap results to Cura directory</string>
+    <string name="nmapResultsSaved">Results saved in Cura directory under </string>
+    <string name="resultsNotSaved">Results not saved</string>
 
 </resources>

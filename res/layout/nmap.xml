@@ -50,11 +50,14 @@
 		<TextView android:id="@+id/results"
 			android:inputType="text|textMultiLine" android:layout_width="fill_parent"
 			android:scrollbars="vertical" android:layout_height="wrap_content" android:text="Licensed by the GNU Public License.  Source code will be made available by request."></TextView>
-
-
+		
 	</ScrollView>
 
-
+<Button android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:text="@string/nmapSaveButtonText"
+	    android:id="@+id/saveNmapResults"
+	    android:visibility="invisible"/>
 
 
 </TableLayout>

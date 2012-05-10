@@ -100,13 +100,33 @@
                 android:gravity="center"
                 android:text="MEMORY USAGE"
                 android:textColor="@android:color/primary_text_light" />
-
             <TextView
                 android:id="@+id/memoryoutput"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_margin="5dp"
-                android:textColor="@android:color/white" />
+                android:layout_height="wrap_content" >
+            </TextView>
+            <TextView
+                android:id="@+id/totalMem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dip"
+                android:gravity="center"
+                android:text="Total: " />
+
+            <TextView
+                android:id="@+id/usedMem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dip"
+                android:gravity="center"
+                android:text="Used: " />
+
+            <TextView
+                android:id="@+id/freeMem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dip"
+                android:text="Free: " />
         </LinearLayout>
 
         <LinearLayout
