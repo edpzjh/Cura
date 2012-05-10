@@ -24,22 +24,14 @@ package com.cura.Connection;
  * functions like executeCommand() which is used to execute a command at the terminal.
  */
 
-import java.io.StringWriter;
-
-import android.app.ProgressDialog;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.provider.Settings.System;
 import android.util.Log;
 
 import com.cura.User;
 import com.cura.Terminal.Terminal;
-import com.jcraft.jsch.Channel;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
 
 public class ConnectionService extends Service {
 

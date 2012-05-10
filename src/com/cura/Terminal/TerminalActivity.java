@@ -25,11 +25,6 @@ package com.cura.Terminal;
  * will allow the user to add any number of their favorite commands to be executed when they choose one of them from the list.
  */
 
-/*
- * TODO: Move the fetching of commands to onCreate instead of onClick
- * 
- */
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
