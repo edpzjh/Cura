@@ -80,6 +80,8 @@ public class CuraActivity extends Activity implements OnClickListener,
 	private ProgressDialog loader;
 	// to fetch the GET request of the server's location
 
+	boolean connectionTrigger = true;
+
 	private ServiceConnection connection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName arg0, IBinder service) {
 			// TODO Auto-generated method stub
@@ -130,6 +132,17 @@ public class CuraActivity extends Activity implements OnClickListener,
 			e.printStackTrace();
 		}
 		return resultLocation;
+	}
+
+	public synchronized String getHostname() {
+		String resultHostname = "";
+		try {
+			resultHostname = conn.executeCommand("hostname");
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return resultHostname;
 	}
 
 	public void doBindService() {
@@ -409,13 +422,12 @@ public class CuraActivity extends Activity implements OnClickListener,
 
 			@Override
 			protected String doInBackground(String... arg0) {
-				boolean b = true;
-				while (b) {
+				while (connectionTrigger) {
 					if (conn != null) {
 						uptime = getUptime();
 						uname = getUname();
 						location = getLocation();
-						b = false;
+						connectionTrigger = false;
 					}
 				}
 				return null;
