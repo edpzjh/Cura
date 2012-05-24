@@ -25,6 +25,11 @@ package com.cura.Terminal;
  * will allow the user to add any number of their favorite commands to be executed when they choose one of them from the list.
  */
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.util.Date;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -36,36 +41,47 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.gesture.GestureOverlayView;
+import android.gesture.GestureOverlayView.OnGestureListener;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.IBinder;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.GestureDetector.OnDoubleTapListener;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.cura.DbHelper;
 import com.cura.R;
+import com.cura.ScreenCapture;
 import com.cura.User;
 import com.cura.Connection.CommunicationInterface;
 import com.cura.Connection.ConnectionService;
 
 public class TerminalActivity extends Activity {
-
 	private final int FAVORITES = 1;
 	private final int CLEAR_EDITTEXT = 2;
-
+	private final int SCREENCAPTURE = 3;
+	
 	EditText result;
 	EditText commandLine;
 	Button execute;
 	Button favoritesButton;
-
+	
 	Terminal terminal;
 	User userTemp;
 
@@ -75,6 +91,8 @@ public class TerminalActivity extends Activity {
 	String favoriteCommands[];
 	String username;
 
+	private GestureDetector gd;
+	
 	private CommunicationInterface conn;
 
 	private ServiceConnection connection = new ServiceConnection() {
@@ -105,7 +123,7 @@ public class TerminalActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.terminal);
 		doBindService();
-
+		
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
 			userTemp = extras.getParcelable("user");
@@ -127,6 +145,7 @@ public class TerminalActivity extends Activity {
 		result = (EditText) findViewById(R.id.result);
 		result.append(username);
 		result.setTextColor(Color.GREEN);
+	
 	}
 
 	public void sendAndReceive() {
@@ -210,6 +229,8 @@ public class TerminalActivity extends Activity {
 				android.R.drawable.ic_input_add);
 		menu.add(0, CLEAR_EDITTEXT, 0, R.string.clearTerminal).setIcon(
 				android.R.drawable.ic_notification_clear_all);
+		menu.add(0, SCREENCAPTURE, 0, R.string.menuSnapshot).setIcon(
+				android.R.drawable.ic_menu_camera);
 		return result;
 	}
 
@@ -284,6 +305,34 @@ public class TerminalActivity extends Activity {
 			}
 			result.append(username);
 			break;
+		case SCREENCAPTURE:
+			new AsyncTask<Void, Void, Boolean>(){
+				String title = "Terminal_Snap_";
+				@Override
+				protected Boolean doInBackground(Void... params) {
+					try
+					{
+					ScreenCapture sc = new ScreenCapture();
+					Date date = new Date();
+					String dateString = date.getMonth()+"_"+date.getDay()+"_"+date.getHours()+"_"+date.getMinutes()+"_"+date.getSeconds(); 
+					title+=dateString;
+					sc.capture(getWindow().getDecorView().findViewById(android.R.id.content), 
+							title, getContentResolver());
+					}catch(Exception ex)
+					{
+						return false;
+					}
+					return true;
+				}
+				
+				@Override
+				protected void onPostExecute(Boolean result) {
+					if(result)
+						Toast.makeText(TerminalActivity.this, title+" "+getString(R.string.screenCaptureSaved), Toast.LENGTH_LONG).show();
+					super.onPostExecute(result);
+				}
+			}.execute();
+			break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -328,5 +377,43 @@ public class TerminalActivity extends Activity {
 	protected void onDestroy() {
 		super.onStop();
 		unbindService(connection);
+	}
+
+	public boolean onDown(MotionEvent e) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+			float velocityY) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public void onLongPress(MotionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
+			float distanceY) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public void onShowPress(MotionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public boolean onSingleTapUp(MotionEvent e) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	@Override
+	public boolean onTouchEvent(MotionEvent event)
+	{
+		return gd.onTouchEvent(event);//return the double tap events
 	}
 }

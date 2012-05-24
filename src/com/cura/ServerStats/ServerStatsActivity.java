@@ -24,6 +24,8 @@ package com.cura.ServerStats;
  * Process Status and so on. The user will be able to refresh these stats while in the activity by going to Menu > Refresh. 
  */
 
+import java.util.Date;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -42,9 +44,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cura.R;
+import com.cura.ScreenCapture;
 import com.cura.User;
 import com.cura.Connection.CommunicationInterface;
 import com.cura.Connection.ConnectionService;
+import com.cura.sysmonitor.SysMonitorActivity;
 
 public class ServerStatsActivity extends Activity {
 
@@ -52,11 +56,11 @@ public class ServerStatsActivity extends Activity {
 	// the refresh interval
 	private final int WAIT = 2;
 	// the waiting interval
-
+	private final int SCREENCAPTURE = 3;
 	private ProgressDialog loader;
 	// appears upon creating the activity
 	private String loader_message = "";
-
+	
 	private String hostnameResult, listeningIPResult, kernelversionResult,
 			uptimeResult, lastbootResult, currentusersResult,
 			loadaveragesResult, memoryoutputResult, filesystemsoutputResult,
@@ -110,6 +114,7 @@ public class ServerStatsActivity extends Activity {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.serverstats);
+		this.setTitle(R.string.ServerStatsTitle);
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
 			userTemp = extras.getParcelable("user");
@@ -127,6 +132,8 @@ public class ServerStatsActivity extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add(0, REFRESH, 0, R.string.refresh).setIcon(
 				R.drawable.ic_menu_rotate);
+		menu.add(0, SCREENCAPTURE, 0, R.string.menuSnapshot).setIcon(
+				android.R.drawable.ic_menu_camera);
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -135,6 +142,34 @@ public class ServerStatsActivity extends Activity {
 		switch (item.getItemId()) {
 		case REFRESH:
 			getStats();
+			break;
+		case SCREENCAPTURE:
+			new AsyncTask<Void, Void, Boolean>(){
+				String title = "Terminal_Snap_";
+				@Override
+				protected Boolean doInBackground(Void... params) {
+					try
+					{
+					ScreenCapture sc = new ScreenCapture();
+					Date date = new Date();
+					String dateString = date.getMonth()+"_"+date.getDay()+"_"+date.getHours()+"_"+date.getMinutes()+"_"+date.getSeconds(); 
+					title+=dateString;
+					sc.capture(getWindow().getDecorView().findViewById(android.R.id.content), 
+							title, getContentResolver());
+					}catch(Exception ex)
+					{
+						return false;
+					}
+					return true;
+				}
+				
+				@Override
+				protected void onPostExecute(Boolean result) {
+					if(result)
+						Toast.makeText(ServerStatsActivity.this, title+" "+getString(R.string.screenCaptureSaved), Toast.LENGTH_LONG).show();
+					super.onPostExecute(result);
+				}
+			}.execute();
 			break;
 		}
 		return super.onOptionsItemSelected(item);
@@ -166,7 +201,7 @@ public class ServerStatsActivity extends Activity {
 				lastBoot.setText("Last boot: ");
 				currentUsers.setText("Current users: ");
 				loadAverages.setText("Load averages: ");
-//				memoryOutput.setText("");
+				// memoryOutput.setText("");
 				filesystemsOuput.setText("");
 				processStatusOutput.setText("");
 				super.onPreExecute();
@@ -176,7 +211,6 @@ public class ServerStatsActivity extends Activity {
 			protected Void doInBackground(Void... params) {
 				while (true) {
 					if (conn != null) {
-						hostnameResult = sendAndReceive("hostname");
 						listeningIPResult = userTemp.getDomain();
 						kernelversionResult = sendAndReceive("uname -mrsv");
 						uptimeResult = sendAndReceive("uptime | awk '{print $2 \"\t \" $3 \" \" $4 \" \" $5}'");
@@ -184,7 +218,7 @@ public class ServerStatsActivity extends Activity {
 						currentusersResult = sendAndReceive("who | wc -l");
 						loadaveragesResult = sendAndReceive("uptime | awk '{print $10 \" \" $11 \" \" $12}'");
 						memoryoutputResult = sendAndReceive("free | awk '{if (NR > 1) m = 4;else m = 3;l = $0;for (i = 1; i <= m; i++) {o[i] = index(l,$i) + length($i) - 1; l = substr(l,o[i] - 1)} for (i = 1; i <= m; i++) printf(\"%*s--\",o[i],$i);print \"\"}'");
-						//"free | awk '{if (NR > 1) m = 4;else m = 3;l = $0;for (i = 1; i <= m; i++) {o[i] = index(l,$i) + length($i) - 1; l = substr(l,o[i] - 1)} for (i = 1; i <= m; i++) printf(\"%*s--\",o[i],$i);print \"\"}'");
+						hostnameResult = sendAndReceive("hostname");
 						filesystemsoutputResult = sendAndReceive("df -h");
 						processstatusoutputResult = sendAndReceive("ps axo pid,user,pmem,pcpu,comm | { IFS= read -r header; echo \"$header\"; sort -k 3,3nr; } | head -7");
 						return null;
@@ -203,7 +237,7 @@ public class ServerStatsActivity extends Activity {
 				lastBoot.append(lastbootResult);
 				currentUsers.append(currentusersResult);
 				loadAverages.append(loadaveragesResult);
-				//memoryOutput.append(memoryoutputResult);
+				// memoryOutput.append(memoryoutputResult);
 				createTableLayout(memoryoutputResult);
 				filesystemsOuput.append(filesystemsoutputResult);
 				processStatusOutput.append(processstatusoutputResult);
@@ -224,20 +258,20 @@ public class ServerStatsActivity extends Activity {
 		filesystemsOuput = (TextView) findViewById(R.id.filesystemsoutput);
 		processStatusOutput = (TextView) findViewById(R.id.processstatusoutput);
 	}
-	
+
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 		unbindService(connection);
 	}
-	
-	public void createTableLayout(String s){
+
+	public void createTableLayout(String s) {
 		String data[] = s.split("--");
 		TextView tv = (TextView) findViewById(R.id.totalMem);
-		tv.setText("Total: "+data[4].replaceAll("\\s", ""));
+		tv.setText("Total: " + data[4].replaceAll("\\s", ""));
 		tv = (TextView) findViewById(R.id.usedMem);
-		tv.setText("Used: "+data[5].replaceAll("\\s", ""));
+		tv.setText("Used: " + data[5].replaceAll("\\s", ""));
 		tv = (TextView) findViewById(R.id.freeMem);
-		tv.setText("Free: "+data[6].replaceAll("\\s", ""));
+		tv.setText("Free: " + data[6].replaceAll("\\s", ""));
 	}
 }

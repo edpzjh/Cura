@@ -41,6 +41,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -50,14 +51,17 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.cura.R;
+import com.cura.ScreenCapture;
 import com.cura.Connection.CommunicationInterface;
 import com.cura.Connection.ConnectionService;
+import com.cura.Terminal.TerminalActivity;
 
 public class SysMonitorActivity extends Activity {
 
 	private final int PAUSE = 1;
 	private final int START = 2;
-
+	private final int SCREENCAPTURE = 3;
+	
 	private static TimeSeries timeSeriesCPU, timeSeriesRAM;
 	private static XYMultipleSeriesDataset dataset;
 	private static XYMultipleSeriesRenderer renderer;
@@ -213,6 +217,8 @@ public class SysMonitorActivity extends Activity {
 				android.R.drawable.ic_media_pause);
 		menu.add(0, START, 0, R.string.SysMonitorStart).setIcon(
 				android.R.drawable.ic_media_play);
+		menu.add(0, SCREENCAPTURE, 0, R.string.menuSnapshot).setIcon(
+				android.R.drawable.ic_menu_camera);
 		return result;
 	}
 
@@ -228,6 +234,34 @@ public class SysMonitorActivity extends Activity {
 			startThread();
 			return true;
 			// when resumed
+		case SCREENCAPTURE:
+			new AsyncTask<Void, Void, Boolean>(){
+				String title = "Terminal_Snap_";
+				@Override
+				protected Boolean doInBackground(Void... params) {
+					try
+					{
+					ScreenCapture sc = new ScreenCapture();
+					Date date = new Date();
+					String dateString = date.getMonth()+"_"+date.getDay()+"_"+date.getHours()+"_"+date.getMinutes()+"_"+date.getSeconds(); 
+					title+=dateString;
+					sc.capture(getWindow().getDecorView().findViewById(android.R.id.content), 
+							title, getContentResolver());
+					}catch(Exception ex)
+					{
+						return false;
+					}
+					return true;
+				}
+				
+				@Override
+				protected void onPostExecute(Boolean result) {
+					if(result)
+						Toast.makeText(SysMonitorActivity.this, title+" "+getString(R.string.screenCaptureSaved), Toast.LENGTH_LONG).show();
+					super.onPostExecute(result);
+				}
+			}.execute();
+			break;
 		}
 		return false;
 	}
