@@ -20,7 +20,7 @@
     <string name="DialogTitle">Enter the following credentials</string>
     <string name="DialogAddNewUserButton">Add new user</string>
     <string name="DialogCancelButton">Cancel</string>
-    <string name="LoginScreenName">Welcome to Cura</string>
+    <string name="LoginScreenName">SSH Accounts list</string>
     <string name="ModifyUserInfo">Modify User Info</string>
     <string name="DeleteUser">Delete User</string>
     <string name="msgProgressDialog">Please wait while the connection is being established…</string>
@@ -72,7 +72,7 @@
     <string name="SysMonitorStart">Start</string>
     <string name="alternativeEmail">Alternative Email</string>
     <string name="alternativePhoneNo">Alternative Phone No.</string>
-    <string name="smsSecurityError">Please make sure that email, phone no. and pattern are filled...</string>
+    <string name="smsSecurityError">Please make sure that the e-mail, phone number and pattern fields are not empty...</string>
     <string name="userLocation">Location: </string>
     <string name="loginBtn">Login</string>
     <string name="cancelBtn">Cancel</string>
@@ -100,9 +100,12 @@
     <string name="savingLogs">Saving logs...</string>
     <string name="connectionTimeout">Connection timeout</string>
     <string name="connectionTimeoutMessage">Connection timeout, please check your network or internet connectivity.\n You will be redirected to Cura\'s login screen.</string>
-    <string name="userExists">User already exists...</string>
+    <string name="userExists">User already exists!</string>
     <string name="nmapSaveButtonText">Save Nmap results to Cura directory</string>
     <string name="nmapResultsSaved">Results saved in Cura directory under </string>
     <string name="resultsNotSaved">Results not saved</string>
+    <string name="ServerStatsTitle">Server\'s Statistics</string>
+    <string name="screenCaptureSaved">saved to Cura/Snapshots</string>
+    <string name="menuSnapshot">Snapshot</string>
 
 </resources>
