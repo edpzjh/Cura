@@ -149,26 +149,27 @@ public class LoginScreenActivity extends ListActivity {
 		intentFilter.addAction(connected);
 		intentFilter.addAction(notConnected);
 		registerReceiver(br, intentFilter);
-		
+
 		databaseBR = new BroadcastReceiver() {
-			
+
 			@Override
 			public void onReceive(Context context, Intent intent) {
 				// this is used to refresh
 				// that specific screen in order to instantly see that Cura's
-				// database has been wiped due to an emergency SMS having been sent
+				// database has been wiped due to an emergency SMS having been
+				// sent
 				// to the phone
 				user = getUser();
 				array = new CustomArrayAdapter(LoginScreenActivity.this, user);
 				setListAdapter(array);
-				Log.d("onResume","onResume");
+				Log.d("onResume", "onResume");
 			}
 		};
-		
+
 		IntentFilter databaseIntentFilter = new IntentFilter();
 		databaseIntentFilter.addAction(deleteDB);
 		registerReceiver(databaseBR, databaseIntentFilter);
-		
+
 		// initializing the vibrator object
 		v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 	}
@@ -592,7 +593,7 @@ public class LoginScreenActivity extends ListActivity {
 		// add to buttons to context menu "Modify user Info", "Delete User"
 		menu.add(0, MODIFY_USER, 0, R.string.ModifyUserInfo).setIcon(
 				R.drawable.ic_menu_edit);
-		menu.add(0,DELETE_USER, 0, R.string.DeleteUser).setIcon(
+		menu.add(0, DELETE_USER, 0, R.string.DeleteUser).setIcon(
 				R.drawable.ic_menu_delete);
 	}
 
@@ -717,7 +718,7 @@ public class LoginScreenActivity extends ListActivity {
 		}
 		return false;
 	}
-	
+
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();

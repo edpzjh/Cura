@@ -54,14 +54,13 @@ import com.cura.R;
 import com.cura.ScreenCapture;
 import com.cura.Connection.CommunicationInterface;
 import com.cura.Connection.ConnectionService;
-import com.cura.Terminal.TerminalActivity;
 
 public class SysMonitorActivity extends Activity {
 
 	private final int PAUSE = 1;
 	private final int START = 2;
 	private final int SCREENCAPTURE = 3;
-	
+
 	private static TimeSeries timeSeriesCPU, timeSeriesRAM;
 	private static XYMultipleSeriesDataset dataset;
 	private static XYMultipleSeriesRenderer renderer;
@@ -235,29 +234,37 @@ public class SysMonitorActivity extends Activity {
 			return true;
 			// when resumed
 		case SCREENCAPTURE:
-			new AsyncTask<Void, Void, Boolean>(){
+			new AsyncTask<Void, Void, Boolean>() {
 				String title = "Terminal_Snap_";
+
 				@Override
 				protected Boolean doInBackground(Void... params) {
-					try
-					{
-					ScreenCapture sc = new ScreenCapture();
-					Date date = new Date();
-					String dateString = date.getMonth()+"_"+date.getDay()+"_"+date.getHours()+"_"+date.getMinutes()+"_"+date.getSeconds(); 
-					title+=dateString;
-					sc.capture(getWindow().getDecorView().findViewById(android.R.id.content), 
-							title, getContentResolver());
-					}catch(Exception ex)
-					{
+					try {
+						ScreenCapture sc = new ScreenCapture();
+						Date date = new Date();
+						String dateString = date.getMonth() + "_"
+								+ date.getDay() + "_" + date.getHours() + "_"
+								+ date.getMinutes() + "_" + date.getSeconds();
+						title += dateString;
+						sc.capture(
+								getWindow().getDecorView().findViewById(
+										android.R.id.content), title,
+								getContentResolver());
+					} catch (Exception ex) {
 						return false;
 					}
 					return true;
 				}
-				
+
 				@Override
 				protected void onPostExecute(Boolean result) {
-					if(result)
-						Toast.makeText(SysMonitorActivity.this, title+" "+getString(R.string.screenCaptureSaved), Toast.LENGTH_LONG).show();
+					if (result)
+						Toast.makeText(
+								SysMonitorActivity.this,
+								title
+										+ " "
+										+ getString(R.string.screenCaptureSaved),
+								Toast.LENGTH_LONG).show();
 					super.onPostExecute(result);
 				}
 			}.execute();

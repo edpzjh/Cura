@@ -48,7 +48,6 @@ import com.cura.ScreenCapture;
 import com.cura.User;
 import com.cura.Connection.CommunicationInterface;
 import com.cura.Connection.ConnectionService;
-import com.cura.sysmonitor.SysMonitorActivity;
 
 public class ServerStatsActivity extends Activity {
 
@@ -60,7 +59,7 @@ public class ServerStatsActivity extends Activity {
 	private ProgressDialog loader;
 	// appears upon creating the activity
 	private String loader_message = "";
-	
+
 	private String hostnameResult, listeningIPResult, kernelversionResult,
 			uptimeResult, lastbootResult, currentusersResult,
 			loadaveragesResult, memoryoutputResult, filesystemsoutputResult,
@@ -144,29 +143,37 @@ public class ServerStatsActivity extends Activity {
 			getStats();
 			break;
 		case SCREENCAPTURE:
-			new AsyncTask<Void, Void, Boolean>(){
+			new AsyncTask<Void, Void, Boolean>() {
 				String title = "Terminal_Snap_";
+
 				@Override
 				protected Boolean doInBackground(Void... params) {
-					try
-					{
-					ScreenCapture sc = new ScreenCapture();
-					Date date = new Date();
-					String dateString = date.getMonth()+"_"+date.getDay()+"_"+date.getHours()+"_"+date.getMinutes()+"_"+date.getSeconds(); 
-					title+=dateString;
-					sc.capture(getWindow().getDecorView().findViewById(android.R.id.content), 
-							title, getContentResolver());
-					}catch(Exception ex)
-					{
+					try {
+						ScreenCapture sc = new ScreenCapture();
+						Date date = new Date();
+						String dateString = date.getMonth() + "_"
+								+ date.getDay() + "_" + date.getHours() + "_"
+								+ date.getMinutes() + "_" + date.getSeconds();
+						title += dateString;
+						sc.capture(
+								getWindow().getDecorView().findViewById(
+										android.R.id.content), title,
+								getContentResolver());
+					} catch (Exception ex) {
 						return false;
 					}
 					return true;
 				}
-				
+
 				@Override
 				protected void onPostExecute(Boolean result) {
-					if(result)
-						Toast.makeText(ServerStatsActivity.this, title+" "+getString(R.string.screenCaptureSaved), Toast.LENGTH_LONG).show();
+					if (result)
+						Toast.makeText(
+								ServerStatsActivity.this,
+								title
+										+ " "
+										+ getString(R.string.screenCaptureSaved),
+								Toast.LENGTH_LONG).show();
 					super.onPostExecute(result);
 				}
 			}.execute();
