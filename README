@@ -8,7 +8,7 @@ When in the hands of a sysadmin, Cura will provide:
 
 **The SysMonitor module that visually graphs CPU and RAM usage percentages.
 
-**Access to the port-scanning utility “Nmap”. (not until 2.0)
+**Access to the port-scanning utility “Nmap”.
 
 **Server Stats are general server information like its Vitals, Mounted Filesystems, Memory information, processes and so on.
 
