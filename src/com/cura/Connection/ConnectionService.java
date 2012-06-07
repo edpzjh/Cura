@@ -68,7 +68,7 @@ public class ConnectionService extends Service {
 	public void onCreate() {
 		super.onCreate();
 	}
-	
+
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		super.onStartCommand(intent, flags, startId);
@@ -85,7 +85,7 @@ public class ConnectionService extends Service {
 		sendBroadcast(i);
 		return START_STICKY;
 	}
-	
+
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
@@ -96,10 +96,10 @@ public class ConnectionService extends Service {
 			e.printStackTrace();
 		}
 		sshconnection = null;
-		
-		Log.d("Connection Service","connection stopped ");
+
+		Log.d("Connection Service", "connection stopped ");
 	}
-	
+
 	@Override
 	public IBinder onBind(Intent intent) {
 		return mBinder;

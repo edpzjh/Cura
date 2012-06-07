@@ -211,13 +211,15 @@ public class SysMonitorActivity extends Activity {
 
 	public boolean onCreateOptionsMenu(Menu menu) {
 		boolean result = super.onCreateOptionsMenu(menu);
-		// Add a button to menu
 		menu.add(0, PAUSE, 0, R.string.SysMonitorPause).setIcon(
 				android.R.drawable.ic_media_pause);
+		// Pause item
 		menu.add(0, START, 0, R.string.SysMonitorStart).setIcon(
 				android.R.drawable.ic_media_play);
+		// Start item
 		menu.add(0, SCREENCAPTURE, 0, R.string.menuSnapshot).setIcon(
 				android.R.drawable.ic_menu_camera);
+		// take Snapshot item
 		return result;
 	}
 
@@ -235,7 +237,7 @@ public class SysMonitorActivity extends Activity {
 			// when resumed
 		case SCREENCAPTURE:
 			new AsyncTask<Void, Void, Boolean>() {
-				String title = "Terminal_Snap_";
+				String title = "SysMonitor_Snap_";
 
 				@Override
 				protected Boolean doInBackground(Void... params) {
@@ -246,6 +248,9 @@ public class SysMonitorActivity extends Activity {
 								+ date.getDay() + "_" + date.getHours() + "_"
 								+ date.getMinutes() + "_" + date.getSeconds();
 						title += dateString;
+						// concatenate the constructed date string to the above
+						// title and you now have the name that will be used to
+						// store the image file of the snapshot
 						sc.capture(
 								getWindow().getDecorView().findViewById(
 										android.R.id.content), title,
@@ -288,5 +293,4 @@ public class SysMonitorActivity extends Activity {
 		super.onResume();
 		doBindService();
 	}
-
 }

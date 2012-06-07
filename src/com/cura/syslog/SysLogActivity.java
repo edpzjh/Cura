@@ -266,12 +266,14 @@ public class SysLogActivity extends Activity implements
 							if (!result
 									.equalsIgnoreCase(getString(R.string.SysLogNoLogsFoundprompt))) {
 								Date date = new Date();
-								String dateString = date.getMonth()+"_"+date.getDay()+"_"+date.getHours()+"_"+date.getMinutes(); 
+								String dateString = date.getMonth() + "_"
+										+ date.getDay() + "_" + date.getHours()
+										+ "_" + date.getMinutes();
 								String fileName = user.getUsername()
 										+ "_"
 										+ menu2[logFile
 												.getSelectedItemPosition()]
-										+ "_"+dateString+".txt";
+										+ "_" + dateString + ".txt";
 								target = new FileWriter("/sdcard/Cura/SysLog/"
 										+ fileName);
 								target.append(result);
@@ -279,9 +281,10 @@ public class SysLogActivity extends Activity implements
 								target.close();
 								Toast.makeText(
 										SysLogActivity.this,
-										getString(R.string.logsSaved) + " \"/SysLog/"
-												+ fileName + "\"",
-										Toast.LENGTH_LONG).show();
+										getString(R.string.logsSaved)
+												+ " \"/SysLog/" + fileName
+												+ "\"", Toast.LENGTH_LONG)
+										.show();
 							} else
 								Toast.makeText(
 										SysLogActivity.this,

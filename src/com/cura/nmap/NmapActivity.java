@@ -509,9 +509,9 @@ public class NmapActivity extends Activity {
 				"nmap-mac-prefixes" };
 
 		protected void onPreExecute() {
-//			pd = new ProgressDialog(NmapActivity.this);
-//			pd.setMessage(progressMessage);
-//			pd.show();
+			// pd = new ProgressDialog(NmapActivity.this);
+			// pd.setMessage(progressMessage);
+			// pd.show();
 
 			File su = new File("/system/bin/su");
 			canGetRoot = su.exists();
@@ -534,7 +534,7 @@ public class NmapActivity extends Activity {
 		}
 
 		protected void onPostExecute(Void v) {
-//			pd.dismiss();
+			// pd.dismiss();
 			NmapActivity.installationVerified = true;
 		}
 

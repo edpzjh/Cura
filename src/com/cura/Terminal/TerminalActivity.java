@@ -66,12 +66,12 @@ public class TerminalActivity extends Activity {
 	private final int FAVORITES = 1;
 	private final int CLEAR_EDITTEXT = 2;
 	private final int SCREENCAPTURE = 3;
-	
+
 	EditText result;
 	EditText commandLine;
 	Button execute;
 	Button favoritesButton;
-	
+
 	Terminal terminal;
 	User userTemp;
 
@@ -82,7 +82,7 @@ public class TerminalActivity extends Activity {
 	String username;
 
 	private GestureDetector gd;
-	
+
 	private CommunicationInterface conn;
 
 	private ServiceConnection connection = new ServiceConnection() {
@@ -113,7 +113,7 @@ public class TerminalActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.terminal);
 		doBindService();
-		
+
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
 			userTemp = extras.getParcelable("user");
@@ -135,7 +135,7 @@ public class TerminalActivity extends Activity {
 		result = (EditText) findViewById(R.id.result);
 		result.append(username);
 		result.setTextColor(Color.GREEN);
-	
+
 	}
 
 	public void sendAndReceive() {
@@ -296,29 +296,37 @@ public class TerminalActivity extends Activity {
 			result.append(username);
 			break;
 		case SCREENCAPTURE:
-			new AsyncTask<Void, Void, Boolean>(){
+			new AsyncTask<Void, Void, Boolean>() {
 				String title = "Terminal_Snap_";
+
 				@Override
 				protected Boolean doInBackground(Void... params) {
-					try
-					{
-					ScreenCapture sc = new ScreenCapture();
-					Date date = new Date();
-					String dateString = date.getMonth()+"_"+date.getDay()+"_"+date.getHours()+"_"+date.getMinutes()+"_"+date.getSeconds(); 
-					title+=dateString;
-					sc.capture(getWindow().getDecorView().findViewById(android.R.id.content), 
-							title, getContentResolver());
-					}catch(Exception ex)
-					{
+					try {
+						ScreenCapture sc = new ScreenCapture();
+						Date date = new Date();
+						String dateString = date.getMonth() + "_"
+								+ date.getDay() + "_" + date.getHours() + "_"
+								+ date.getMinutes() + "_" + date.getSeconds();
+						title += dateString;
+						sc.capture(
+								getWindow().getDecorView().findViewById(
+										android.R.id.content), title,
+								getContentResolver());
+					} catch (Exception ex) {
 						return false;
 					}
 					return true;
 				}
-				
+
 				@Override
 				protected void onPostExecute(Boolean result) {
-					if(result)
-						Toast.makeText(TerminalActivity.this, title+" "+getString(R.string.screenCaptureSaved), Toast.LENGTH_LONG).show();
+					if (result)
+						Toast.makeText(
+								TerminalActivity.this,
+								title
+										+ " "
+										+ getString(R.string.screenCaptureSaved),
+								Toast.LENGTH_LONG).show();
 					super.onPostExecute(result);
 				}
 			}.execute();
@@ -382,7 +390,7 @@ public class TerminalActivity extends Activity {
 
 	public void onLongPress(MotionEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
@@ -393,17 +401,16 @@ public class TerminalActivity extends Activity {
 
 	public void onShowPress(MotionEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public boolean onSingleTapUp(MotionEvent e) {
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
+
 	@Override
-	public boolean onTouchEvent(MotionEvent event)
-	{
-		return gd.onTouchEvent(event);//return the double tap events
+	public boolean onTouchEvent(MotionEvent event) {
+		return gd.onTouchEvent(event);// return the double tap events
 	}
 }

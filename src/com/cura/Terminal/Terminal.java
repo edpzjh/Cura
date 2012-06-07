@@ -63,6 +63,7 @@ public class Terminal extends Thread {
 		password = user.getPassword();
 		port = user.getPort();
 		jsch = new JSch();
+		// the JSch object that we use to establish SSH connectivity
 		session = jsch.getSession(username, host, port);
 		session.setPassword(password);
 		session.setConfig("StrictHostKeyChecking", "no");

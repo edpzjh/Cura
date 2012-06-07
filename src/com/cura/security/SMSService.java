@@ -88,13 +88,13 @@ public class SMSService extends Service implements
 		super.onCreate();
 		enableGps();
 		// enable the GPS if it has not already been enabled
-		LocationResult locationResult = new LocationResult(){
-		    @Override
-		    public void gotLocation(Location location){
-		    	latitude = location.getLatitude();
+		LocationResult locationResult = new LocationResult() {
+			@Override
+			public void gotLocation(Location location) {
+				latitude = location.getLatitude();
 				longitude = location.getLongitude();
 				Log.d("Location", latitude + " - " + longitude);
-		    }
+			}
 		};
 		MyLocation myLocation = new MyLocation();
 		myLocation.getLocation(this, locationResult);
@@ -114,7 +114,7 @@ public class SMSService extends Service implements
 		alternativeEmail = prefs.getString("alternativeEmail", "");
 		// fetch the settings from the preferences screen
 		telMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-		
+
 		sms = new BroadcastReceiver() {
 
 			@Override
@@ -146,11 +146,11 @@ public class SMSService extends Service implements
 					sendBroadcast(i);
 					// if it matches, delete the table userTable and show the
 					// message that it has been deleted
-					Log.d("SMSservice","received");
+					Log.d("SMSservice", "received");
 					Toast.makeText(context,
 							"Cura's database has been deleted!",
 							Toast.LENGTH_LONG).show();
-					
+
 					if (telMgr.getSimState() == TelephonyManager.SIM_STATE_READY
 							&& latitude != 0.0 && longitude != 0.0) {
 						// if there is a SIM card available in the phone at the
@@ -265,12 +265,12 @@ public class SMSService extends Service implements
 			sendBroadcast(poke);
 		}
 	}
-	
+
 	@Override
 	public void onDestroy() {
 		// TODO Auto-generated method stub
 		super.onDestroy();
 		unregisterReceiver(sms);
-		
+
 	}
 }

@@ -86,7 +86,7 @@ public class LoginScreenActivity extends ListActivity {
 	Intent goToMainActivity;
 	BroadcastReceiver br, databaseBR;
 	AlertDialog.Builder loader;
-	private Vibrator v;
+	private Vibrator vibrator;
 	private SharedPreferences prefs;
 	private static final int DIALOG_YES_NO_LONG_MESSAGE = 99;
 	private static final int WAIT = 100;
@@ -171,7 +171,7 @@ public class LoginScreenActivity extends ListActivity {
 		registerReceiver(databaseBR, databaseIntentFilter);
 
 		// initializing the vibrator object
-		v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+		vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 	}
 
 	// new function that fetches users info from database, used in "onCreate()"
@@ -406,6 +406,7 @@ public class LoginScreenActivity extends ListActivity {
 			myDialog.setCancelable(true);
 			myDialog.setCanceledOnTouchOutside(true);
 
+			// constructed out of all the fields below
 			final Button AddUserButton = (Button) myDialog
 					.findViewById(R.id.button1);
 			AddUserButton.setEnabled(false);
@@ -495,7 +496,7 @@ public class LoginScreenActivity extends ListActivity {
 						setListAdapter(array);
 						myDialog.cancel();
 					} else {
-						LoginScreenActivity.this.v.vibrate(300);
+						LoginScreenActivity.this.vibrator.vibrate(300);
 						userExists.setText(R.string.userExists);
 						usernameInput.setText("");
 						domainInput.setText("");
@@ -708,12 +709,16 @@ public class LoginScreenActivity extends ListActivity {
 	}
 
 	public boolean isFound(String username, String domain) {
-		String u = "";
-		String d = "";
+		String userValue = "";
+		String dom = "";
+		// if the same username and domain are found and have already been
+		// added, return the result here so that the device can vibrate and
+		// display an error to the user
 		for (int i = 0; i < user.length; i++) {
-			u = user[i].getUsername();
-			d = user[i].getDomain();
-			if (u.compareTo(username) == 0 && d.compareTo(domain) == 0)
+			userValue = user[i].getUsername();
+			dom = user[i].getDomain();
+			if (userValue.compareTo(username) == 0
+					&& dom.compareTo(domain) == 0)
 				return true;
 		}
 		return false;

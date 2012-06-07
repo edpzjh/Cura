@@ -198,6 +198,9 @@ public class CuraActivity extends Activity implements OnClickListener,
 			loader = new ProgressDialog(this);
 			loader.setMessage(loader_message);
 			loader.setCancelable(false);
+			// this shows up when the user is logged in and at the main screen;
+			// it is used to make the user wait a second while we fetch
+			// information that appears in Menu > Server Info
 			return loader;
 		}
 		return super.onCreateDialog(id);
@@ -246,6 +249,8 @@ public class CuraActivity extends Activity implements OnClickListener,
 			// }
 			break;
 		case R.id.ServerStatsRow:
+			// when the row entitled "Server Stats" is clicked, take the user
+			// the Server Stats activity.
 			Intent serverStatsIntent = new Intent(this,
 					ServerStatsActivity.class);
 			serverStatsIntent.putExtra("user", userTemp);
@@ -265,6 +270,7 @@ public class CuraActivity extends Activity implements OnClickListener,
 		return result;
 	}
 
+	// actions for the above menu list
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case LOGOUT:
@@ -288,13 +294,11 @@ public class CuraActivity extends Activity implements OnClickListener,
 											CuraActivity.this,
 											LoginScreenActivity.class);
 									// return the user to the login screen
-									// activity
-									// just close everything
+									// activity just close everything
 									closeAllActivities
 											.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 									CuraActivity.this
 											.startActivity(closeAllActivities);
-									//
 								}
 							})
 					.setNegativeButton("No",
@@ -318,6 +322,7 @@ public class CuraActivity extends Activity implements OnClickListener,
 					+ getString(R.string.uptimeText) + uptime + "\n"
 					+ getString(R.string.userLocation) + location;
 			AlertDialog.Builder alert = new AlertDialog.Builder(this);
+			// build the above information into a dialog and display it
 			alert.setTitle(R.string.ServerInfoDialog);
 			final TextView infoArea = new TextView(this);
 			infoArea.setText(finalResultForDialog);
@@ -395,6 +400,9 @@ public class CuraActivity extends Activity implements OnClickListener,
 
 	public boolean onTouch(View v, MotionEvent event) {
 		// TODO Auto-generated method stub
+		// this is for when the user touches the row of one of the modules; this
+		// is for highlighting that row and removing the highlighting when the
+		// user touches away from it
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
 			v.setBackgroundResource(R.drawable.moduleselectedhighlight);
@@ -411,6 +419,8 @@ public class CuraActivity extends Activity implements OnClickListener,
 	}
 
 	public void initServerInfo() {
+		// This asyncTask is for the server info that are going to be fetched
+		// upon having the user log in and arrive at the main screen
 		new AsyncTask<String, String, String>() {
 
 			@Override
@@ -427,6 +437,8 @@ public class CuraActivity extends Activity implements OnClickListener,
 						uptime = getUptime();
 						uname = getUname();
 						location = getLocation();
+						
+						// just a safe-hold value
 						connectionTrigger = false;
 					}
 				}
@@ -438,8 +450,6 @@ public class CuraActivity extends Activity implements OnClickListener,
 				super.onPostExecute(result);
 				loader.dismiss();
 			}
-
 		}.execute();
 	}
-
 }

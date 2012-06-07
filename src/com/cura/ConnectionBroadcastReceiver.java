@@ -37,23 +37,31 @@ import android.widget.Toast;
 import com.cura.Connection.ConnectionService;
 
 public class ConnectionBroadcastReceiver extends BroadcastReceiver {
-	Vibrator v;
+	Vibrator vibrator;
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		boolean noConnectivity = intent.getBooleanExtra(
 				ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);
-		v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+		// initialize the noConnectivity flag
+		vibrator = (Vibrator) context
+				.getSystemService(Context.VIBRATOR_SERVICE);
+		// initialize the vibrator
 		if (noConnectivity && isMyServiceRunning(context)) {
 			context.stopService(new Intent(context, ConnectionService.class));
+			// if connection is lost while the user is still inside Cura
 			Toast.makeText(context, R.string.connectionTimeoutMessage,
 					Toast.LENGTH_LONG).show();
-			v.vibrate(300);
+			// pop-up a message saying that the connection was lost
+			vibrator.vibrate(300);
+			// vibrate for this much time
 			Intent closeAllActivities = new Intent(
 					context.getApplicationContext(), LoginScreenActivity.class);
+			// close all activities
 			closeAllActivities.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			closeAllActivities.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			context.getApplicationContext().startActivity(closeAllActivities);
+			// and logout.
 		}
 	}
 
@@ -69,5 +77,4 @@ public class ConnectionBroadcastReceiver extends BroadcastReceiver {
 		}
 		return false;
 	}
-
 }

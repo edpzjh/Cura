@@ -1,5 +1,5 @@
 /*
- Copyright© 2010, 2011 AWJHolden
+ Copyright© 2010, 2011 WJHolden
 
  This file is part of Cura.
 
