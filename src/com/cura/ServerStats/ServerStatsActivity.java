@@ -66,8 +66,8 @@ public class ServerStatsActivity extends Activity {
 
 	private String hostnameResult, listeningIPResult, kernelversionResult,
 			uptimeResult, lastbootResult, currentusersResult,
-			loadaveragesResult, memoryoutputResult, filesystemsoutputResult,
-			processstatusoutputResult;
+			nameOfUsersResult, loadaveragesResult, memoryoutputResult,
+			filesystemsoutputResult, processstatusoutputResult;
 	private String[] processIDs;
 	private String processIDsingular;
 
@@ -277,7 +277,8 @@ public class ServerStatsActivity extends Activity {
 						kernelversionResult = sendAndReceive("uname -mrsv");
 						uptimeResult = sendAndReceive("uptime | awk '{print $2 \"\t \" $3 \" \" $4 \" \" $5}'");
 						lastbootResult = sendAndReceive("last reboot | head -1 | awk '{print $5 \" \" $6 \" \" $7 \" \" $8 \" \" $9 \" \" $10 \" \" $11}'");
-						currentusersResult = sendAndReceive("who | wc -l");
+						currentusersResult = sendAndReceive("who | awk '{print $1}' | uniq | wc -l | xargs /bin/echo -n");
+						nameOfUsersResult = sendAndReceive("who | awk '{print $1}' | uniq | xargs /bin/echo -n");
 						loadaveragesResult = sendAndReceive("uptime | awk '{print $10 \" \" $11 \" \" $12}'");
 						memoryoutputResult = sendAndReceive("free | awk '{if (NR > 1) m = 4;else m = 3;l = $0;for (i = 1; i <= m; i++) {o[i] = index(l,$i) + length($i) - 1; l = substr(l,o[i] - 1)} for (i = 1; i <= m; i++) printf(\"%*s--\",o[i],$i);print \"\"}'");
 						// some of these commands are pretty complicated and
@@ -304,7 +305,9 @@ public class ServerStatsActivity extends Activity {
 				kernelVersion.append(kernelversionResult);
 				uptime.append(uptimeResult);
 				lastBoot.append(lastbootResult);
-				currentUsers.append(currentusersResult);
+				String usersResultsForAppending = currentusersResult + " ( "
+						+ nameOfUsersResult + " )";
+				currentUsers.append(usersResultsForAppending);
 				loadAverages.append(loadaveragesResult);
 				// memoryOutput.append(memoryoutputResult);
 				createTableLayout(memoryoutputResult);
