@@ -63,7 +63,5 @@ public class LogsDialog extends Activity implements OnClickListener {
 			this.finish();
 			break;
 		}
-
 	}
-
 }
