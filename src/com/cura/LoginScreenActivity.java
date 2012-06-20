@@ -61,11 +61,11 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cura.Connection.ConnectionService;
+import com.cura.about.aboutActivity;
 import com.cura.validation.regexValidator;
 
 public class LoginScreenActivity extends ListActivity {
@@ -75,9 +75,9 @@ public class LoginScreenActivity extends ListActivity {
 	private final String deleteDB = "database.delete";
 	private final int ADD_USER = 1;
 	private final int SETTINGS = 2;
+	private final int ABOUT = 3;
 	private final int MODIFY_USER = 4;
 	private final int DELETE_USER = 5;
-	TableRow AddUserRow;
 	DbHelper dbHelper;
 	SQLiteDatabase db;
 	User user[];
@@ -389,6 +389,8 @@ public class LoginScreenActivity extends ListActivity {
 				R.drawable.ic_menu_add);
 		menu.add(0, SETTINGS, 0, R.string.preferenceSettings).setIcon(
 				R.drawable.ic_menu_preferences);
+		menu.add(0, ABOUT, 0, R.string.aboutString).setIcon(
+				android.R.drawable.ic_dialog_info);
 		return result;
 	}
 
@@ -581,6 +583,11 @@ public class LoginScreenActivity extends ListActivity {
 			});
 			settingsPassAlert.getButton(Dialog.BUTTON_POSITIVE).setEnabled(
 					false);
+			return true;
+		case ABOUT:
+			Intent aboutIntent = new Intent(LoginScreenActivity.this,
+					aboutActivity.class);
+			startActivity(aboutIntent);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
