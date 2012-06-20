@@ -107,5 +107,24 @@
     <string name="ServerStatsTitle">Server\'s Statistics</string>
     <string name="screenCaptureSaved">saved to Cura/Snapshots</string>
     <string name="menuSnapshot">Snapshot</string>
+    <string name="aboutString">About</string>
+    <string name="notificationCategory">Notifications</string>
+    <string name="agplv3_license">Copyright© 2010, 2011 Ahmad Balaa, Oday Maleh
 
+ This file is part of Cura.
+
+	Cura is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Cura is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Cura.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</string>
+	
+    <string name="license_information">License Information</string>
 </resources>
