@@ -27,10 +27,12 @@ package com.cura.ServerStats;
 import java.util.Date;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.AsyncTask;
@@ -40,6 +42,8 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -64,6 +68,9 @@ public class ServerStatsActivity extends Activity {
 			uptimeResult, lastbootResult, currentusersResult,
 			loadaveragesResult, memoryoutputResult, filesystemsoutputResult,
 			processstatusoutputResult;
+	private String[] processIDs;
+	private String processIDsingular;
+
 	// these values will hold the result of their corresponding commands
 
 	private User userTemp;
@@ -77,6 +84,8 @@ public class ServerStatsActivity extends Activity {
 			filesystemsOuput, processStatusOutput;
 	// these are the textviews that will appear before the actual values that
 	// correspond to them
+
+	Button killProcessesButton;
 
 	private ServiceConnection connection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName arg0, IBinder service) {
@@ -131,6 +140,26 @@ public class ServerStatsActivity extends Activity {
 		// bind to the Connection service
 		getStats();
 		// get the stats
+		killProcessesButton.setOnClickListener(new View.OnClickListener() {
+
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				AlertDialog.Builder builder = new AlertDialog.Builder(
+						ServerStatsActivity.this);
+				builder.setTitle("Pick a process");
+				builder.setItems(processIDs,
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int item) {
+								// commandLine.append(favoriteCommands[item]);
+								sendAndReceive("kill `pidof "
+										+ processIDs[item] + "`");
+								getStats();
+							}
+
+						});
+				builder.show();
+			}
+		});
 	}
 
 	@Override
@@ -258,6 +287,8 @@ public class ServerStatsActivity extends Activity {
 						hostnameResult = sendAndReceive("hostname");
 						filesystemsoutputResult = sendAndReceive("df -h");
 						processstatusoutputResult = sendAndReceive("ps axo pid,user,pmem,pcpu,comm | { IFS= read -r header; echo \"$header\"; sort -k 3,3nr; } | head -7");
+						processIDsingular = sendAndReceive("ps axo pid,user,pmem,pcpu,comm | { IFS= read -r header; sort -k 3,3nr; } | head -7 | awk '{print $5}'");
+
 						return null;
 					}
 				}
@@ -279,6 +310,7 @@ public class ServerStatsActivity extends Activity {
 				createTableLayout(memoryoutputResult);
 				filesystemsOuput.append(filesystemsoutputResult);
 				processStatusOutput.append(processstatusoutputResult);
+				processIDs = processIDsingular.split("\n");
 				super.onPostExecute(result);
 			}
 		}.execute();
@@ -296,6 +328,7 @@ public class ServerStatsActivity extends Activity {
 		memoryOutput = (TextView) findViewById(R.id.memoryoutput);
 		filesystemsOuput = (TextView) findViewById(R.id.filesystemsoutput);
 		processStatusOutput = (TextView) findViewById(R.id.processstatusoutput);
+		killProcessesButton = (Button) findViewById(R.id.killprocessbutton);
 	}
 
 	@Override
