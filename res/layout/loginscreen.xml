@@ -2,43 +2,44 @@
 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical">
-    
-    <TableRow android:layout_width="fill_parent"
-        	  android:layout_height="match_parent"
-        	  android:id="@+id/row" >
-        	  
-   	 <ImageView
-        	android:id="@+id/icon"
-	        android:layout_width="48dip"
-	        android:layout_height="48dip"
-	        android:layout_column="0"
-	        android:layout_marginLeft="4dip"
-	        android:layout_marginRight="5dip"
-	        android:layout_marginTop="10dip"
-	        android:layout_marginBottom="10dip"
-	        android:src="@drawable/ic_launcher" />
+    android:orientation="vertical" >
 
-        <LinearLayout android:orientation="vertical"
-					  android:layout_width="match_parent"
-					  android:layout_height="fill_parent">
+    <TableRow
+        android:id="@+id/row"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent" >
 
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="48dip"
+            android:layout_height="48dip"
+            android:layout_column="0"
+            android:layout_marginBottom="10dip"
+            android:layout_marginLeft="4dip"
+            android:layout_marginRight="5dip"
+            android:layout_marginTop="10dip"
+            android:src="@drawable/ic_launcher" />
 
-        <TextView
-		        android:id="@+id/label"
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content"
-		        android:layout_marginTop="10dip"
-		        android:textSize="20dip" 
-		        android:maxLines="1"
-		        android:text="username" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical" >
 
-        <TextView
-	            android:id="@+id/label2"
-	            android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:text="port"/>
-        
+            <TextView
+                android:id="@+id/label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dip"
+                android:maxLines="1"
+                android:text="username"
+                android:textSize="20dip" />
+
+            <TextView
+                android:id="@+id/label2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="port" />
         </LinearLayout>
     </TableRow>
+
 </TableLayout>

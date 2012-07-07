@@ -6,12 +6,13 @@
             android:defaultValue="false"
             android:key="enableSMS"
             android:title="@string/security" />
-		<EditTextPreference
+
+        <EditTextPreference
             android:defaultValue=""
             android:key="alternativeEmail"
             android:summary=""
             android:title="@string/alternativeEmail" />
-		<EditTextPreference
+        <EditTextPreference
             android:defaultValue=""
             android:key="alternativePhoneNo"
             android:summary=""
@@ -22,6 +23,15 @@
             android:summary=""
             android:title="@string/securityPattern" />
     </PreferenceCategory>
+    
+    <PreferenceCategory android:title="@string/notificationCategory" >
+        <ListPreference android:entries="@array/timeIntervals"
+            android:entryValues="@array/timeIntervalsValues"
+            android:title="Refresh time intervals"
+            android:key="minutes"
+            android:defaultValue="0" />
+    </PreferenceCategory>
+    
     <PreferenceCategory android:title="@string/curaPassword" >
         <com.cura.PassDialogPreference
             android:dialogLayout="@layout/prefpassdialog"
