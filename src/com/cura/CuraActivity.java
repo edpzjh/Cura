@@ -28,6 +28,7 @@ package com.cura;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -79,7 +80,7 @@ public class CuraActivity extends Activity implements OnClickListener,
 	// private String page = "";
 	private ProgressDialog loader;
 	// to fetch the GET request of the server's location
-
+	private NotificationManager mNotificationManager;
 	boolean connectionTrigger = true;
 
 	private ServiceConnection connection = new ServiceConnection() {
@@ -189,6 +190,8 @@ public class CuraActivity extends Activity implements OnClickListener,
 
 		// get Server info after service binding
 		initServerInfo();
+		
+		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 	}
 
 	@Override
@@ -299,6 +302,7 @@ public class CuraActivity extends Activity implements OnClickListener,
 											.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 									CuraActivity.this
 											.startActivity(closeAllActivities);
+									mNotificationManager.cancelAll();
 								}
 							})
 					.setNegativeButton("No",
@@ -343,9 +347,9 @@ public class CuraActivity extends Activity implements OnClickListener,
 	@Override
 	protected void onResume() {
 		super.onResume();
-		// doBindService();
+		//doBindService();
 	}
-
+	
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
@@ -382,6 +386,8 @@ public class CuraActivity extends Activity implements OnClickListener,
 											.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 									CuraActivity.this
 											.startActivity(closeAllActivities);
+								
+									mNotificationManager.cancelAll();
 									// stopService(new Intent(CuraActivity.this,
 									// ConnectionService.class));
 								}
