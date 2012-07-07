@@ -24,22 +24,42 @@ package com.cura.Connection;
  * functions like executeCommand() which is used to execute a command at the terminal.
  */
 
+import android.R.bool;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.cura.CuraActivity;
+import com.cura.R;
 import com.cura.User;
 import com.cura.Terminal.Terminal;
 
 public class ConnectionService extends Service {
 
-	User user;
-	SSHConnection sshconnection;
-	Terminal terminal;
-	Intent i = new Intent();
-
+	private User user;
+	private SSHConnection sshconnection;
+	private Terminal terminal;
+	private Intent i = new Intent();
+	private Handler mHandler = new Handler();
+	private boolean run = true;
+	private int usersNo = 0;
+	private NotificationManager mNotificationManager;
+	private Notification notification;
+	private CharSequence contentTitle;
+	private CharSequence contentText;
+	private Context context;
+	private int icon;
+	private SharedPreferences prefs ;
+	private long timeInterval;
 	// turning the SSH connection into a Service that other activities can bind
 	// to
 
@@ -63,7 +83,7 @@ public class ConnectionService extends Service {
 			return terminal.connected();
 		}
 	};
-
+	
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -83,6 +103,83 @@ public class ConnectionService extends Service {
 		}
 		i.putExtra("user", user);
 		sendBroadcast(i);
+		// Notification
+		new Thread(new Runnable(){
+
+			public void run() {
+				// TODO Auto-generated method stub
+				prefs = PreferenceManager.getDefaultSharedPreferences(ConnectionService.this);
+				timeInterval = Long.parseLong(prefs.getString("minutes", "0"));
+				if(timeInterval!=0){
+				try {
+					usersNo = Integer.parseInt(mBinder.executeCommand("who | awk '{print $1}' | uniq | wc -l | xargs /bin/echo -n"));
+					
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				while (run) {
+	                try {
+	                    //Thread.sleep(timeInterval);
+	                	Thread.sleep(3000);
+	                    if(run){
+	                    mHandler.post(new Runnable() {
+
+	                        public void run() {
+	                            // TODO Auto-generated method stub
+	                            try {
+	                            	int users = usersNo;
+	                            	try{
+									users = Integer.parseInt(mBinder.executeCommand("who | awk '{print $1}' | uniq | wc -l | xargs /bin/echo -n"));
+	                            	}catch(NumberFormatException e){}
+									if(users>usersNo)
+									{
+										Log.d("Notification",""+users);
+										int newUsers = users - usersNo;
+										usersNo = users;
+										mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+										icon = R.drawable.iconcura;
+										CharSequence tickerText = "Login Notification";
+										long when = System.currentTimeMillis();
+											
+										notification = new Notification(icon, tickerText, when);
+										context = getApplicationContext();
+										contentTitle = "Cura";
+										String msg ;
+										if (newUsers==1)
+											msg = "1 user has just logged in to "+user.getDomain();
+										else
+											msg = newUsers+" users has just logged in to "+user.getDomain();
+										contentText = msg;
+
+										Intent notificationIntent = new Intent(ConnectionService.this, CuraActivity.class);
+										notificationIntent.putExtra("user", user);
+										notificationIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+										PendingIntent contentIntent = PendingIntent.getActivity(ConnectionService.this, 0, notificationIntent, 0);
+
+										notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
+										//private static final int HELLO_ID = 1;
+										notification.defaults = Notification.DEFAULT_SOUND;
+										notification.flags = Notification.FLAG_AUTO_CANCEL;
+										mNotificationManager.notify(1, notification);
+										System.gc();
+									}
+									else
+										usersNo = users;
+								} catch (RemoteException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+	                        }
+	                    });
+	                }
+	                } catch (Exception e) {
+	                    // TODO: handle exception
+	                }
+	            }
+        }
+		}
+		}).start();
 		return START_STICKY;
 	}
 
@@ -90,6 +187,7 @@ public class ConnectionService extends Service {
 	public void onDestroy() {
 		super.onDestroy();
 		try {
+			run = false;
 			mBinder.close();
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
