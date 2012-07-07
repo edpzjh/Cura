@@ -155,8 +155,8 @@ public class TerminalActivity extends Activity {
 				result.append(res);
 				result.append(username);
 				execute.setEnabled(true);
+				commandLine.setText ("");
 			}
-
 		});
 
 		favoritesButton = (Button) findViewById(R.id.favoritesButton);
@@ -409,8 +409,4 @@ public class TerminalActivity extends Activity {
 		return false;
 	}
 
-	@Override
-	public boolean onTouchEvent(MotionEvent event) {
-		return gd.onTouchEvent(event);// return the double tap events
-	}
 }
