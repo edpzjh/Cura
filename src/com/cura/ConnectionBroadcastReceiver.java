@@ -70,6 +70,7 @@ public class ConnectionBroadcastReceiver extends BroadcastReceiver {
 				.getSystemService(context.ACTIVITY_SERVICE);
 		for (RunningServiceInfo service : manager
 				.getRunningServices(Integer.MAX_VALUE)) {
+			//function to check if a given Service is running
 			if ("com.cura.Connection.ConnectionService".equals(service.service
 					.getClassName())) {
 				return true;
