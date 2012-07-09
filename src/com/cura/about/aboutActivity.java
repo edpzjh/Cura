@@ -80,7 +80,7 @@ public class aboutActivity extends ListActivity {
 					startActivity(emailIntent);
 					break;
 				case WEBSITE:
-					Uri uriUrl = Uri.parse("http://freecode.com/projects/cura");
+					Uri uriUrl = Uri.parse("http://odaym.github.com/Cura/");
 					Intent launchBrowser = new Intent(Intent.ACTION_VIEW,
 							uriUrl);
 					startActivity(launchBrowser);
