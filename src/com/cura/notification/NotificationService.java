@@ -36,6 +36,7 @@ public class NotificationService extends Service {
 
 	private CommunicationInterface conn;
 	SSHConnection sshconnection;
+	// initialize objects needed for the connection
 
 	private ServiceConnection connection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName arg0, IBinder service) {
@@ -50,7 +51,8 @@ public class NotificationService extends Service {
 
 	public String sendAndReceive(String command) {
 		String result = "";
-
+		// define the usual sendAndReceive function that we use to communicate
+		// with the Server, for the time being
 		try {
 			result = conn.executeCommand(command);
 		} catch (RemoteException e) {
@@ -62,6 +64,7 @@ public class NotificationService extends Service {
 	public void doBindService() {
 		Intent i = new Intent(this, ConnectionService.class);
 		bindService(i, connection, Context.BIND_AUTO_CREATE);
+		// bind to the Service
 	}
 
 	private final NotificationInterface.Stub mBinder = new NotificationInterface.Stub() {
@@ -69,6 +72,9 @@ public class NotificationService extends Service {
 				throws RemoteException {
 			String result = "";
 			try {
+				// inside the service, add this function that we use to
+				// communicate with the Service, we will soon be sending it the
+				// command to check for new logins
 				result = sshconnection.messageSender(command);
 			} catch (Exception e) {
 				Log.d("ConnectionService", e.toString());
@@ -87,5 +93,4 @@ public class NotificationService extends Service {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 }
