@@ -363,6 +363,11 @@ public class ServerStatsActivity extends Activity {
 			tv.setText("Used: " + usedMem);
 			tv = (TextView) findViewById(R.id.freeMem);
 			tv.setText("Free: " + freeMem);
+			// the try-catch clause in this function is used because sometimes
+			// when Refreshing the Server Stats, Cura hangs up because of an
+			// ArrayIndexOutOfBounds exception while constructing the table. So
+			// what we're doing here is telling it to keep the old values and
+			// not refresh if a crash is about to happen
 		}
 	}
 }
