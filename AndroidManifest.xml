@@ -31,12 +31,12 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
-        android:icon="@drawable/iconcura"
+        android:icon="@drawable/curalogo"
         android:label="@string/app_name" >
         <uses-library android:name="com.google.android.maps" />
 
         <activity
-            android:name=".SplashScreen"
+            android:name=".LoginScreenActivity"
             android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -45,8 +45,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".LoginScreenActivity"
-            android:configChanges="orientation" >
+            android:name=".AccountsListActivity"
+            android:configChanges="orientation"
+            android:theme="@android:style/Theme.Dialog" >
             <intent-filter>
                 <action android:name="cura.connected" />
                 <action android:name="cura.notConnected" />
@@ -100,12 +101,11 @@
             android:name=".about.aboutActivity"
             android:label="@string/app_name" >
         </activity>
-        
         <activity
             android:name=".about.LicenseActivity"
             android:label="@string/app_name" >
         </activity>
-        
+
         <service android:name=".Connection.ConnectionService" />
         <service android:name=".security.SMSService" >
             <intent-filter>
