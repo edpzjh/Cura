@@ -20,20 +20,20 @@
 package com.cura;
 
 /*
- * Description: This is the Login Screen, the very first activity that the user is dropped into. 
- * This is where they can begin added new user accounts as well as modify or delete them. 
- * They can also access Cura's settings from this activity's menu options.  
+ * Description: This activity includes the splash screen that will show up upon entering Cura. The picture displayed there
+ * lasts for 1.5 seconds.
  */
 
 import org.jasypt.util.password.BasicPasswordEncryptor;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ListActivity;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -47,20 +47,20 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TableLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -68,53 +68,40 @@ import com.cura.Connection.ConnectionService;
 import com.cura.about.aboutActivity;
 import com.cura.validation.regexValidator;
 
-public class LoginScreenActivity extends ListActivity {
-
+public class LoginScreenActivity extends Activity implements android.view.View.OnClickListener{
+	
 	private final String connected = "cura.connected";
 	private final String notConnected = "cura.not.connected";
-	private final String deleteDB = "database.delete";
 	private final int ADD_USER = 1;
 	private final int SETTINGS = 2;
 	private final int ABOUT = 3;
-	private final int MODIFY_USER = 4;
-	private final int DELETE_USER = 5;
-	DbHelper dbHelper;
-	SQLiteDatabase db;
+	CustomArrayAdapter array;
+	BroadcastReceiver br;
+	Intent goToMainActivity;
+	Button selectUser, newUser, modifyUsers;
 	User user[];
 	User userTemp;
-	CustomArrayAdapter array;
-	Intent goToMainActivity;
-	BroadcastReceiver br, databaseBR;
-	AlertDialog.Builder loader;
+	DbHelper dbHelper;
+	SQLiteDatabase db;
+	int position;
 	private Vibrator vibrator;
 	private SharedPreferences prefs;
-	private static final int DIALOG_YES_NO_LONG_MESSAGE = 99;
-	private static final int WAIT = 100;
 	private regexValidator rv;
-	private String loader_message = "";
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		this.setTitle(R.string.LoginScreenName);
-
+		setContentView(R.layout.loginscreen);
+		
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		rv = new regexValidator();
-		user = getUser();
-		// create the listView
-
-		if (user.length == 1
-				&& user[0].getUsername().equalsIgnoreCase("username")
-				&& user[0].getDomain().equalsIgnoreCase("domain")) {
-			showDialog(DIALOG_YES_NO_LONG_MESSAGE);
-		}
-
-		array = new CustomArrayAdapter(this, user);
-		setListAdapter(array);
-
-		// enable context menu
-		registerForContextMenu(getListView());
+		
+		selectUser = (Button) findViewById(R.id.selectUser);
+		newUser = (Button) findViewById(R.id.newUser);
+		modifyUsers = (Button) findViewById(R.id.modifyUsers);
+		selectUser.setOnClickListener(this);
+		newUser.setOnClickListener(this);
+		modifyUsers.setOnClickListener(this);
+		
 		br = new BroadcastReceiver() {
 
 			@Override
@@ -139,6 +126,8 @@ public class LoginScreenActivity extends ListActivity {
 					// the appropriate error dialog
 					Toast.makeText(context, R.string.credentialsWrong,
 							Toast.LENGTH_LONG).show();
+					((ImageView)findViewById(R.id.server)).setImageResource(R.drawable.serveroffline);
+					((TextView)findViewById(R.id.connecting)).setVisibility(View.GONE);
 					stopService(new Intent(LoginScreenActivity.this,
 							ConnectionService.class));
 				}
@@ -149,33 +138,170 @@ public class LoginScreenActivity extends ListActivity {
 		intentFilter.addAction(connected);
 		intentFilter.addAction(notConnected);
 		registerReceiver(br, intentFilter);
-
-		databaseBR = new BroadcastReceiver() {
-
-			@Override
-			public void onReceive(Context context, Intent intent) {
-				// this is used to refresh
-				// that specific screen in order to instantly see that Cura's
-				// database has been wiped due to an emergency SMS having been
-				// sent
-				// to the phone
-				user = getUser();
-				array = new CustomArrayAdapter(LoginScreenActivity.this, user);
-				setListAdapter(array);
-				Log.d("onResume", "onResume");
-			}
-		};
-
-		IntentFilter databaseIntentFilter = new IntentFilter();
-		databaseIntentFilter.addAction(deleteDB);
-		registerReceiver(databaseBR, databaseIntentFilter);
-
-		// initializing the vibrator object
-		vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 	}
+	@Override
+	public void onClick(View arg0) {
+		// TODO Auto-generated method stub
+		switch(arg0.getId())
+		{
+			case R.id.selectUser:
+				final Dialog accounts = new Dialog(this);
+				accounts.setContentView(R.layout.list);
+				accounts.setTitle("Select Server");
+				user = getUser();
+				array = new CustomArrayAdapter(this, user);
+				ListView mlistView = new ListView(this);
+				mlistView.setOnItemClickListener(new OnItemClickListener() {
+					@Override
+					public void onItemClick(AdapterView<?> arg0, View arg1,
+							int arg2, long arg3) {
+						// TODO Auto-generated method stub
+						accounts.dismiss();
+						position = arg2;
+						if (user.length == 1
+								&& user[0].getUsername().equalsIgnoreCase("username")
+								&& user[0].getDomain().equalsIgnoreCase("domain")) {
+							Toast.makeText(LoginScreenActivity.this, R.string.addUserHint, Toast.LENGTH_LONG)
+									.show();
+						} else {
+							AlertDialog.Builder passwordAlert = new AlertDialog.Builder(LoginScreenActivity.this);
 
-	// new function that fetches users info from database, used in "onCreate()"
-	// and to refresh activity
+							// set an alert dialog to prompt the user for their password to
+							// login.
+							passwordAlert.setTitle("Login");
+
+							LayoutInflater li = LayoutInflater.from(LoginScreenActivity.this);
+							View view = li.inflate(R.layout.password_dialog, null);
+							passwordAlert.setView(view);
+							final EditText passField = (EditText) view
+									.findViewById(R.id.passwordprompt);
+
+							CheckBox showPass = (CheckBox) view.findViewById(R.id.showPassword);
+							// this is for the "Show password" checkbox that allows the user to
+							// see their password in the clear
+							showPass.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+								public void onCheckedChanged(CompoundButton buttonView,
+										boolean isChecked) {
+									// TODO Auto-generated method stub
+									if (isChecked)
+										passField.setTransformationMethod(null);
+									// if that checkbox is checked, do the transformation
+									else
+										passField
+												.setTransformationMethod(PasswordTransformationMethod
+														.getInstance());
+									// if it isn't, leave it as is
+
+								}
+							});
+							passwordAlert.setPositiveButton("Connect",
+									new DialogInterface.OnClickListener() {
+										// if the textfield is now filled with a password, allow
+										// the "Connect button" to be clickable
+										public void onClick(final DialogInterface dialog,
+												int whichButton) {
+											// UPON CLICKING "OK" IN THE DIALOG BOX (ALERT)
+											AsyncTask<String, String, String> task = new AsyncTask<String, String, String>() {
+												Intent passUserObjToService;
+
+												@Override
+												protected void onPreExecute() {
+													dialog.dismiss();
+													((ImageView)findViewById(R.id.server)).setImageResource(R.drawable.serverconnecting);
+													((TextView)findViewById(R.id.connecting)).setVisibility(View.VISIBLE);
+													//loader_message = "Connecting, please wait...";
+													//showDialog(WAIT);
+													// show this dialog to signify that the user
+													// is being connected to their server
+												}
+
+												@Override
+												protected String doInBackground(
+														String... params) {
+													String pass = passField.getText()
+															.toString();
+													user[position].setPassword(pass);
+													// store the user's password according to
+													// their determined position
+													userTemp = user[position];
+													passUserObjToService = new Intent(
+															LoginScreenActivity.this,
+															ConnectionService.class);
+													// initiate the Connection intent and send
+													// the user's password and the user object
+													// along with it
+													passUserObjToService.putExtra("user",
+															userTemp);
+													passUserObjToService.putExtra("pass", pass);
+													return null;
+												}
+
+												@Override
+												protected void onPostExecute(String result) {
+													// causing the loader circle to stop
+													// spinning
+													// starts the connection service
+													startService(passUserObjToService);
+													//removeDialog(WAIT);
+												}
+											};
+											task.execute();
+										}
+									});
+							passwordAlert.setNegativeButton("Cancel",
+									new DialogInterface.OnClickListener() {
+										// UPON CLICKING "CANCEL" IN THE DIALOG BOX (ALERT)
+										public void onClick(DialogInterface dialog, int which) {
+											return;
+										}
+									});
+							final AlertDialog alert = passwordAlert.create();
+							alert.show();
+							passField.addTextChangedListener(new TextWatcher() {
+
+								public void onTextChanged(CharSequence s, int start,
+										int before, int count) {
+									// TODO Auto-generated method stub
+									String pass = passField.getText().toString();
+									if (pass.length() > 0)
+										alert.getButton(Dialog.BUTTON1).setEnabled(true);
+									else if (pass.length() == 0)
+										alert.getButton(Dialog.BUTTON1).setEnabled(false);
+								}
+
+								public void beforeTextChanged(CharSequence s, int start,
+										int count, int after) {
+								}
+
+								public void afterTextChanged(Editable s) {
+								}
+							});
+							alert.getButton(Dialog.BUTTON1).setEnabled(false);
+						}
+					}
+				});
+				mlistView.setAdapter(array);
+				accounts.addContentView(mlistView, new LayoutParams());
+				accounts.setOnCancelListener(new OnCancelListener() {
+					
+					@Override
+					public void onCancel(DialogInterface arg0) {
+						// TODO Auto-generated method stub
+						accounts.dismiss();
+					}
+				});
+				accounts.show();
+				break;
+			case R.id.newUser:
+				addUser();
+				break;
+			case R.id.modifyUsers:
+				Intent startModify = new Intent (LoginScreenActivity.this,AccountsListActivity.class);
+				startActivity(startModify);
+				break;
+		}
+	}
 	public User[] getUser() {
 		dbHelper = new DbHelper(this);
 		db = dbHelper.getReadableDatabase();
@@ -215,169 +341,6 @@ public class LoginScreenActivity extends ListActivity {
 		return user;
 	}
 
-	@Override
-	protected Dialog onCreateDialog(int id) {
-		switch (id) {
-		case DIALOG_YES_NO_LONG_MESSAGE:
-			return new AlertDialog.Builder(LoginScreenActivity.this)
-					// this is the screen that shows up with the user installs
-					// Cura
-					// for the very first time
-					// .setIconAttribute(android.R.attr.alertDialogIcon)
-					.setTitle(R.string.firstTimeUseMessageTitle)
-					.setMessage(R.string.firstTimeUseMessage)
-					.setPositiveButton(R.string.firstTimeUseOKButton,
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
-
-									/* User clicked OK so do some stuff */
-								}
-							})
-					.setNegativeButton(R.string.firstTimeUseCancelButton,
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int whichButton) {
-
-									/* User clicked Cancel so do some stuff */
-								}
-							}).create();
-		case WAIT:
-			loader = new AlertDialog.Builder(this);
-			loader.setMessage(loader_message);
-			loader.setCancelable(false);
-			AlertDialog ad = loader.create();
-			return ad;
-		}
-		return null;
-	}
-
-	@Override
-	// UPON CLICKING A USER ITEM FROM THE LIST OF USERS AVAILABLE.
-	protected void onListItemClick(ListView l, View v, final int position,
-			long id) {
-		super.onListItemClick(l, v, position, id);
-		if (user.length == 1
-				&& user[0].getUsername().equalsIgnoreCase("username")
-				&& user[0].getDomain().equalsIgnoreCase("domain")) {
-			Toast.makeText(this, R.string.addUserHint, Toast.LENGTH_LONG)
-					.show();
-		} else {
-			AlertDialog.Builder passwordAlert = new AlertDialog.Builder(this);
-
-			// set an alert dialog to prompt the user for their password to
-			// login.
-			passwordAlert.setTitle("Login");
-
-			LayoutInflater li = LayoutInflater.from(this);
-			View view = li.inflate(R.layout.password_dialog, null);
-			passwordAlert.setView(view);
-			final EditText passField = (EditText) view
-					.findViewById(R.id.passwordprompt);
-
-			CheckBox showPass = (CheckBox) view.findViewById(R.id.showPassword);
-			// this is for the "Show password" checkbox that allows the user to
-			// see their password in the clear
-			showPass.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-
-				public void onCheckedChanged(CompoundButton buttonView,
-						boolean isChecked) {
-					// TODO Auto-generated method stub
-					if (isChecked)
-						passField.setTransformationMethod(null);
-					// if that checkbox is checked, do the transformation
-					else
-						passField
-								.setTransformationMethod(PasswordTransformationMethod
-										.getInstance());
-					// if it isn't, leave it as is
-
-				}
-			});
-			passwordAlert.setPositiveButton("Connect",
-					new DialogInterface.OnClickListener() {
-						// if the textfield is now filled with a password, allow
-						// the "Connect button" to be clickable
-						public void onClick(final DialogInterface dialog,
-								int whichButton) {
-							// UPON CLICKING "OK" IN THE DIALOG BOX (ALERT)
-							AsyncTask<String, String, String> task = new AsyncTask<String, String, String>() {
-								Intent passUserObjToService;
-
-								@Override
-								protected void onPreExecute() {
-									dialog.dismiss();
-									loader_message = "Connecting, please wait...";
-									showDialog(WAIT);
-									// show this dialog to signify that the user
-									// is being connected to their server
-								}
-
-								@Override
-								protected String doInBackground(
-										String... params) {
-									String pass = passField.getText()
-											.toString();
-									user[position].setPassword(pass);
-									// store the user's password according to
-									// their determined position
-									userTemp = user[position];
-									passUserObjToService = new Intent(
-											LoginScreenActivity.this,
-											ConnectionService.class);
-									// initiate the Connection intent and send
-									// the user's password and the user object
-									// along with it
-									passUserObjToService.putExtra("user",
-											userTemp);
-									passUserObjToService.putExtra("pass", pass);
-									return null;
-								}
-
-								@Override
-								protected void onPostExecute(String result) {
-									// causing the loader circle to stop
-									// spinning
-									// starts the connection service
-									startService(passUserObjToService);
-									removeDialog(WAIT);
-								}
-							};
-							task.execute();
-						}
-					});
-			passwordAlert.setNegativeButton("Cancel",
-					new DialogInterface.OnClickListener() {
-						// UPON CLICKING "CANCEL" IN THE DIALOG BOX (ALERT)
-						public void onClick(DialogInterface dialog, int which) {
-							return;
-						}
-					});
-			final AlertDialog alert = passwordAlert.create();
-			alert.show();
-			passField.addTextChangedListener(new TextWatcher() {
-
-				public void onTextChanged(CharSequence s, int start,
-						int before, int count) {
-					// TODO Auto-generated method stub
-					String pass = passField.getText().toString();
-					if (pass.length() > 0)
-						alert.getButton(Dialog.BUTTON1).setEnabled(true);
-					else if (pass.length() == 0)
-						alert.getButton(Dialog.BUTTON1).setEnabled(false);
-				}
-
-				public void beforeTextChanged(CharSequence s, int start,
-						int count, int after) {
-				}
-
-				public void afterTextChanged(Editable s) {
-				}
-			});
-			alert.getButton(Dialog.BUTTON1).setEnabled(false);
-		}
-	}
-
 	// MENU STUFF IS IMPLEMENTED BELOW, FIRST THE REGULAR MENU THAT APPEARS WHEN
 	// A USER CLICKS ON THE MENU BUTTON, THEN THE CONTEXT MENU WHEN A USER
 	// LONG-CLICKS ON ONE OF THE USERS IN THE LIST
@@ -385,8 +348,6 @@ public class LoginScreenActivity extends ListActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		boolean result = super.onCreateOptionsMenu(menu);
 		// Add a button to menu
-		menu.add(0, ADD_USER, 0, R.string.no_users).setIcon(
-				R.drawable.ic_menu_add);
 		menu.add(0, SETTINGS, 0, R.string.preferenceSettings).setIcon(
 				R.drawable.ic_menu_preferences);
 		menu.add(0, ABOUT, 0, R.string.aboutString).setIcon(
@@ -400,119 +361,7 @@ public class LoginScreenActivity extends ListActivity {
 		switch (item.getItemId()) {
 		// if "Add new user" button is pressed from the menu
 		case ADD_USER:
-			// display dialog box
-			final Dialog myDialog;
-			myDialog = new Dialog(LoginScreenActivity.this);
-			myDialog.setContentView(R.layout.adduserscreen);
-			myDialog.setTitle(R.string.DialogTitle);
-			myDialog.setCancelable(true);
-			myDialog.setCanceledOnTouchOutside(true);
-
-			// constructed out of all the fields below
-			final Button AddUserButton = (Button) myDialog
-					.findViewById(R.id.button1);
-			AddUserButton.setEnabled(false);
-			Button cancelButton = (Button) myDialog.findViewById(R.id.button2);
-			TextWatcher watcher = null;
-			final EditText usernameInput = (EditText) myDialog
-					.findViewById(R.id.usernameTextField);
-
-			final EditText domainInput = (EditText) myDialog
-					.findViewById(R.id.domainTextField);
-
-			final EditText portInput = (EditText) myDialog
-					.findViewById(R.id.portTextField);
-
-			final TextView userExists = (TextView) myDialog
-					.findViewById(R.id.userExists);
-			watcher = new TextWatcher() {
-
-				public void afterTextChanged(Editable s) {
-					// TODO Auto-generated method stub
-				}
-
-				public void beforeTextChanged(CharSequence s, int start,
-						int count, int after) {
-					// TODO Auto-generated method stub
-
-				}
-
-				public void onTextChanged(CharSequence s, int start,
-						int before, int count) {
-					// TODO Auto-generated method stub
-					String username = usernameInput.getText().toString();
-					String domain = domainInput.getText().toString();
-					String port = portInput.getText().toString();
-					if (rv.validateUsername(username)
-							&& !domain.equalsIgnoreCase("")
-							&& !port.equalsIgnoreCase(""))
-						// if all the textfields are filled, enable the Add
-						// button
-						AddUserButton.setEnabled(true);
-					else
-						// else, disable it
-						AddUserButton.setEnabled(false);
-				}
-
-			};
-			usernameInput.addTextChangedListener(watcher);
-			// adding listeners
-			domainInput.addTextChangedListener(watcher);
-			portInput.addTextChangedListener(watcher);
-			// cannot click "Add" if all of the above textfields are empty
-
-			AddUserButton.setOnClickListener(new OnClickListener() {
-				public void onClick(View v) {
-					// get username, domain and port from EditText
-					String usern = usernameInput.getText().toString();
-					String domain = domainInput.getText().toString();
-					int port = Integer.parseInt(portInput.getText().toString());
-					if (!isFound(usern, domain)) {
-						// open writable database
-						DbHelper dbHelper = new DbHelper(
-								LoginScreenActivity.this);
-						SQLiteDatabase db = dbHelper.getWritableDatabase();
-
-						ContentValues values = new ContentValues();
-
-						values.put(dbHelper.C_USERNAME, usern);
-						values.put(dbHelper.C_DOMAIN, domain);
-						values.put(dbHelper.C_PORT, port);
-
-						try {
-							// insert into database a new user
-							db.insertOrThrow(dbHelper.userTableName, null,
-									values);
-						} catch (Exception e) {
-							Log.d("SQL", e.toString());
-						}
-
-						// close database
-						db.close();
-						dbHelper.close();
-
-						// CHANGED : refresh list view
-						user = getUser();
-						array = new CustomArrayAdapter(
-								LoginScreenActivity.this, user);
-						setListAdapter(array);
-						myDialog.cancel();
-					} else {
-						LoginScreenActivity.this.vibrator.vibrate(300);
-						userExists.setText(R.string.userExists);
-						usernameInput.setText("");
-						domainInput.setText("");
-					}
-				}
-			});
-
-			cancelButton.setOnClickListener(new OnClickListener() {
-				public void onClick(View v) {
-					// close dialog box
-					myDialog.cancel();
-				}
-			});
-			myDialog.show();
+			addUser();
 			return true;
 		case SETTINGS:
 			final AlertDialog.Builder alert = new AlertDialog.Builder(this);
@@ -592,129 +441,119 @@ public class LoginScreenActivity extends ListActivity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	protected void addUser()
+	{
+		// display dialog box
+					final Dialog myDialog;
+					myDialog = new Dialog(LoginScreenActivity.this);
+					myDialog.setContentView(R.layout.adduserscreen);
+					myDialog.setTitle(R.string.DialogTitle);
+					myDialog.setCancelable(true);
+					myDialog.setCanceledOnTouchOutside(true);
 
-	// THE SECOND MENU
-	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v,
-			ContextMenuInfo menuInfo) {
-		super.onCreateContextMenu(menu, v, menuInfo);
-		// add to buttons to context menu "Modify user Info", "Delete User"
-		menu.add(0, MODIFY_USER, 0, R.string.ModifyUserInfo).setIcon(
-				R.drawable.ic_menu_edit);
-		menu.add(0, DELETE_USER, 0, R.string.DeleteUser).setIcon(
-				R.drawable.ic_menu_delete);
+					// constructed out of all the fields below
+					final Button AddUserButton = (Button) myDialog
+							.findViewById(R.id.button1);
+					AddUserButton.setEnabled(false);
+					Button cancelButton = (Button) myDialog.findViewById(R.id.button2);
+					TextWatcher watcher = null;
+					final EditText usernameInput = (EditText) myDialog
+							.findViewById(R.id.usernameTextField);
+
+					final EditText domainInput = (EditText) myDialog
+							.findViewById(R.id.domainTextField);
+
+					final EditText portInput = (EditText) myDialog
+							.findViewById(R.id.portTextField);
+
+					final TextView userExists = (TextView) myDialog
+							.findViewById(R.id.userExists);
+					watcher = new TextWatcher() {
+
+						public void afterTextChanged(Editable s) {
+							// TODO Auto-generated method stub
+						}
+
+						public void beforeTextChanged(CharSequence s, int start,
+								int count, int after) {
+							// TODO Auto-generated method stub
+
+						}
+
+						public void onTextChanged(CharSequence s, int start,
+								int before, int count) {
+							// TODO Auto-generated method stub
+							String username = usernameInput.getText().toString();
+							String domain = domainInput.getText().toString();
+							String port = portInput.getText().toString();
+							if (rv.validateUsername(username)
+									&& !domain.equalsIgnoreCase("")
+									&& !port.equalsIgnoreCase(""))
+								// if all the textfields are filled, enable the Add
+								// button
+								AddUserButton.setEnabled(true);
+							else
+								// else, disable it
+								AddUserButton.setEnabled(false);
+						}
+
+					};
+					usernameInput.addTextChangedListener(watcher);
+					// adding listeners
+					domainInput.addTextChangedListener(watcher);
+					portInput.addTextChangedListener(watcher);
+					// cannot click "Add" if all of the above textfields are empty
+
+					AddUserButton.setOnClickListener(new View.OnClickListener() {
+						public void onClick(View v) {
+							// get username, domain and port from EditText
+							String usern = usernameInput.getText().toString();
+							String domain = domainInput.getText().toString();
+							int port = Integer.parseInt(portInput.getText().toString());
+							if (!isFound(usern, domain)) {
+								// open writable database
+								DbHelper dbHelper = new DbHelper(
+										LoginScreenActivity.this);
+								SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+								ContentValues values = new ContentValues();
+
+								values.put(dbHelper.C_USERNAME, usern);
+								values.put(dbHelper.C_DOMAIN, domain);
+								values.put(dbHelper.C_PORT, port);
+
+								try {
+									// insert into database a new user
+									db.insertOrThrow(dbHelper.userTableName, null,
+											values);
+								} catch (Exception e) {
+									Log.d("SQL", e.toString());
+								}
+
+								// close database
+								db.close();
+								dbHelper.close();
+
+								myDialog.cancel();
+							} else {
+								LoginScreenActivity.this.vibrator.vibrate(300);
+								userExists.setText(R.string.userExists);
+								usernameInput.setText("");
+								domainInput.setText("");
+							}
+						}
+					});
+
+					cancelButton.setOnClickListener(new View.OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							// close dialog box
+							myDialog.cancel();
+						}
+					});
+					myDialog.show();
 	}
-
-	@Override
-	public boolean onContextItemSelected(MenuItem item) {
-		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
-				.getMenuInfo();
-		int userIDint = (int) info.id;
-		final String usernameCode = user[userIDint].getUsername();
-		final String domainCode = user[userIDint].getDomain();
-
-		dbHelper = new DbHelper(LoginScreenActivity.this);
-		db = dbHelper.getWritableDatabase();
-
-		switch (item.getItemId()) {
-		// modify button is pressed
-		case MODIFY_USER:
-			final Dialog myDialog;
-			myDialog = new Dialog(LoginScreenActivity.this);
-			myDialog.setContentView(R.layout.adduserscreen);
-			myDialog.setTitle(R.string.DialogTitle);
-			myDialog.setCancelable(true);
-			myDialog.setCanceledOnTouchOutside(true);
-
-			Button modifyUserInfo = (Button) myDialog
-					.findViewById(R.id.button1);
-			modifyUserInfo.setText(R.string.ModifyUserInfo);
-			Button cancelButton = (Button) myDialog.findViewById(R.id.button2);
-
-			final EditText usernameInput = (EditText) myDialog
-					.findViewById(R.id.usernameTextField);
-			final EditText domainInput = (EditText) myDialog
-					.findViewById(R.id.domainTextField);
-			final EditText portInput = (EditText) myDialog
-					.findViewById(R.id.portTextField);
-			// display the initial info to be replaced by the user
-			usernameInput.setText(user[userIDint].getUsername());
-			domainInput.setText(user[userIDint].getDomain());
-			portInput.setText("" + user[userIDint].getPort());
-
-			modifyUserInfo.setOnClickListener(new OnClickListener() {
-				public void onClick(View v) {
-					// update user info
-					String usern = usernameInput.getText().toString();
-					String domain = domainInput.getText().toString();
-					int port = Integer.parseInt(portInput.getText().toString());
-
-					ContentValues values = new ContentValues();
-
-					values.put(dbHelper.C_USERNAME, usern);
-					values.put(dbHelper.C_DOMAIN, domain);
-					values.put(dbHelper.C_PORT, port);
-
-					String where = "username = ? AND domain = ?";
-					String[] whereArgs = { usernameCode, domainCode };
-					try {
-						db.update(DbHelper.userTableName, values, where,
-								whereArgs);
-					} catch (Exception e) {
-						Log.d("SQL", e.toString());
-					}
-
-					// close database
-					db.close();
-					dbHelper.close();
-
-					// CHANGED : refresh list view
-					user = getUser();
-					array = new CustomArrayAdapter(LoginScreenActivity.this,
-							user);
-					setListAdapter(array);
-
-					myDialog.cancel();
-				}
-			});
-
-			cancelButton.setOnClickListener(new OnClickListener() {
-				public void onClick(View v) {
-					// close dialog box
-					myDialog.cancel();
-				}
-			});
-			myDialog.show();
-			return true;
-
-		case DELETE_USER:
-			// Delete user
-			try {
-				String table_name = "user";
-				String where = "username = ? AND domain = ?";
-				String[] whereArgs = { usernameCode, domainCode };
-				// prepare the query.
-				db.delete(table_name, where, whereArgs);
-				// execute it.
-
-			} catch (Exception e) {
-				Log.d("SQL", e.toString());
-				// so that we can know where to follow the errors (if any).
-			}
-			// close database
-			db.close();
-			dbHelper.close();
-
-			// CHANGED : refresh list view
-			user = getUser();
-			array = new CustomArrayAdapter(LoginScreenActivity.this, user);
-			setListAdapter(array);
-
-			return true;
-		}
-		return super.onContextItemSelected(item);
-	}
-
+	
 	public boolean isFound(String username, String domain) {
 		String userValue = "";
 		String dom = "";
@@ -730,11 +569,16 @@ public class LoginScreenActivity extends ListActivity {
 		}
 		return false;
 	}
+	
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
 
+	}
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 		unregisterReceiver(br);
-		unregisterReceiver(databaseBR);
 	}
 }

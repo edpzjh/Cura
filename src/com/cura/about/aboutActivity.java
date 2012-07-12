@@ -98,7 +98,7 @@ public class aboutActivity extends ListActivity {
 		ab = new AboutClass("Author", "TTCO Development Team");
 		info.add(ab);
 		// VERSION NUMBER
-		ab = new AboutClass("Version", "1.2");
+		ab = new AboutClass("Version", "1.3");
 		info.add(ab);
 		// LAST UPDATE
 		ab = new AboutClass("Last Update", "20/06/2012");

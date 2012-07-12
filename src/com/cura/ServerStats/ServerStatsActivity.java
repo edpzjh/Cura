@@ -70,9 +70,7 @@ public class ServerStatsActivity extends Activity {
 			filesystemsoutputResult, processstatusoutputResult;
 	private String[] processIDs;
 	private String processIDsingular;
-
-	private String totalMem, freeMem, usedMem;
-
+	private String totalMem, freeMem, usedMem; 
 	// these values will hold the result of their corresponding commands
 
 	private User userTemp;
@@ -277,7 +275,7 @@ public class ServerStatsActivity extends Activity {
 						// already logged into, that's the server that we're
 						// fetching the information from
 						kernelversionResult = sendAndReceive("uname -mrsv");
-						uptimeResult = sendAndReceive("uptime | awk '{print $3 \" \" $4 \" \" $5 \" \" $6}'");
+						uptimeResult = sendAndReceive("uptime | awk '{print $2 \"\t \" $3 \" \" $4 \" \" $5}'");
 						lastbootResult = sendAndReceive("last reboot | head -1 | awk '{print $5 \" \" $6 \" \" $7 \" \" $8 \" \" $9 \" \" $10 \" \" $11}'");
 						currentusersResult = sendAndReceive("who | awk '{print $1}' | uniq | wc -l | xargs /bin/echo -n");
 						nameOfUsersResult = sendAndReceive("who | awk '{print $1}' | uniq | xargs /bin/echo -n");
@@ -286,7 +284,7 @@ public class ServerStatsActivity extends Activity {
 						// some of these commands are pretty complicated and
 						// obscure; however, all of them were written with the
 						// help of people like e36freak and others in #Bash and
-						// #Awk on the Freenode IRC network
+						// #Awk on the Freenode network
 						hostnameResult = sendAndReceive("hostname");
 						filesystemsoutputResult = sendAndReceive("df -h");
 						processstatusoutputResult = sendAndReceive("ps axo pid,user,pmem,pcpu,comm | { IFS= read -r header; echo \"$header\"; sort -k 3,3nr; } | head -7");
@@ -345,29 +343,25 @@ public class ServerStatsActivity extends Activity {
 	public void createTableLayout(String s) {
 		// this table layout is for the result of the memory information section
 		// (free, used, total, etc..); all placed in a table kind of layout
-		try {
-			String data[] = s.split("--");
-			TextView tv = (TextView) findViewById(R.id.totalMem);
-			tv.setText("Total: " + data[4].replaceAll("\\s", ""));
-			tv = (TextView) findViewById(R.id.usedMem);
-			tv.setText("Used: " + data[5].replaceAll("\\s", ""));
-			tv = (TextView) findViewById(R.id.freeMem);
-			tv.setText("Free: " + data[6].replaceAll("\\s", ""));
-			totalMem = data[4].replaceAll("\\s", "");
-			usedMem = data[5].replaceAll("\\s", "");
-			freeMem = data[6].replaceAll("\\s", "");
-		} catch (ArrayIndexOutOfBoundsException e) {
+		try{
+		String data[] = s.split("--");
+		TextView tv = (TextView) findViewById(R.id.totalMem);
+		tv.setText("Total: " + data[4].replaceAll("\\s", ""));
+		tv = (TextView) findViewById(R.id.usedMem);
+		tv.setText("Used: " + data[5].replaceAll("\\s", ""));
+		tv = (TextView) findViewById(R.id.freeMem);
+		tv.setText("Free: " + data[6].replaceAll("\\s", ""));
+		totalMem = data[4].replaceAll("\\s", "");
+		usedMem = data[5].replaceAll("\\s", "");
+		freeMem = data[6].replaceAll("\\s", "");
+		}catch(ArrayIndexOutOfBoundsException e)
+		{
 			TextView tv = (TextView) findViewById(R.id.totalMem);
 			tv.setText("Total: " + totalMem);
 			tv = (TextView) findViewById(R.id.usedMem);
 			tv.setText("Used: " + usedMem);
 			tv = (TextView) findViewById(R.id.freeMem);
 			tv.setText("Free: " + freeMem);
-			// the try-catch clause in this function is used because sometimes
-			// when Refreshing the Server Stats, Cura hangs up because of an
-			// ArrayIndexOutOfBounds exception while constructing the table. So
-			// what we're doing here is telling it to keep the old values and
-			// not refresh if a crash is about to happen
 		}
 	}
 }

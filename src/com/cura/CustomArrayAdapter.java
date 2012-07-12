@@ -43,7 +43,7 @@ public class CustomArrayAdapter extends ArrayAdapter {
 
 	@SuppressWarnings("unchecked")
 	public CustomArrayAdapter(Context context, User user[]) {
-		super(context, R.layout.loginscreen, user);
+		super(context, R.layout.accountslist, user);
 		this.context = context;
 		this.user = user;
 	}
@@ -52,15 +52,13 @@ public class CustomArrayAdapter extends ArrayAdapter {
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View rowView = inflater.inflate(R.layout.loginscreen, parent, false);
+		View rowView = inflater.inflate(R.layout.accountslist, parent, false);
 
 		TextView userAndDomain = (TextView) rowView.findViewById(R.id.label);
 		TextView port = (TextView) rowView.findViewById(R.id.label2);
-		ImageView imageView = (ImageView) rowView.findViewById(R.id.icon);
 		userAndDomain.setText(user[position].getUsername() + "@"
 				+ user[position].getDomain());
 		port.setText("Connects through port " + user[position].getPort());
-		imageView.setImageResource(R.drawable.usersfoldericon);
 
 		if (userAndDomain.getText().length() > 24) {
 			int lengthDif = userAndDomain.getText().length() - 24;

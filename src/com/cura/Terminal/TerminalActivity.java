@@ -135,7 +135,6 @@ public class TerminalActivity extends Activity {
 		result = (EditText) findViewById(R.id.result);
 		result.append(username);
 		result.setTextColor(Color.GREEN);
-
 	}
 
 	public void sendAndReceive() {
