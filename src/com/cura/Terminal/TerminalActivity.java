@@ -30,6 +30,7 @@ import java.util.Date;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
@@ -46,6 +47,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -56,11 +58,13 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.cura.DbHelper;
+import com.cura.LoginScreenActivity;
 import com.cura.R;
 import com.cura.ScreenCapture;
 import com.cura.User;
 import com.cura.Connection.CommunicationInterface;
 import com.cura.Connection.ConnectionService;
+import com.cura.ServerStats.ServerStatsActivity;
 
 public class TerminalActivity extends Activity {
 	private final int FAVORITES = 1;
@@ -82,7 +86,7 @@ public class TerminalActivity extends Activity {
 	String username;
 
 	private GestureDetector gd;
-
+	private NotificationManager mNotificationManager;
 	private CommunicationInterface conn;
 
 	private ServiceConnection connection = new ServiceConnection() {
@@ -105,7 +109,8 @@ public class TerminalActivity extends Activity {
 
 	public void doBindService() {
 		Intent i = new Intent(this, ConnectionService.class);
-		bindService(i, connection, Context.BIND_AUTO_CREATE);
+		getApplicationContext().bindService(i, connection,
+				Context.BIND_AUTO_CREATE);
 		// function for binding to the Connection service
 	}
 
@@ -135,6 +140,8 @@ public class TerminalActivity extends Activity {
 		result = (EditText) findViewById(R.id.result);
 		result.append(username);
 		result.setTextColor(Color.GREEN);
+		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
 	}
 
 	public void sendAndReceive() {
@@ -154,7 +161,7 @@ public class TerminalActivity extends Activity {
 				result.append(res);
 				result.append(username);
 				execute.setEnabled(true);
-				commandLine.setText ("");
+				commandLine.setText("");
 			}
 		});
 
@@ -373,7 +380,7 @@ public class TerminalActivity extends Activity {
 	@Override
 	protected void onDestroy() {
 		super.onStop();
-		unbindService(connection);
+		// unbindService(connection);
 	}
 
 	public boolean onDown(MotionEvent e) {
@@ -408,4 +415,49 @@ public class TerminalActivity extends Activity {
 		return false;
 	}
 
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+			// if the back button is pressed when the user is in this (Cura
+			// Activity)
+			new AlertDialog.Builder(this).setTitle("Logout Confirmation")
+					// confirm logout
+					.setMessage(R.string.logoutConfirmationDialog)
+					.setPositiveButton("Yes",
+							new DialogInterface.OnClickListener() {
+
+								public void onClick(DialogInterface dialog,
+										int which) {
+									try {
+										// close connection
+										// conn.close();
+										Log.d("Connection", "connection closed");
+									} catch (Exception e) {
+										Log.d("Connection", e.toString());
+									}
+									Intent closeAllActivities = new Intent(
+											TerminalActivity.this,
+											LoginScreenActivity.class);
+									// just close everything
+									closeAllActivities
+											.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+									TerminalActivity.this
+											.startActivity(closeAllActivities);
+
+									mNotificationManager.cancelAll();
+									// stopService(new Intent(CuraActivity.this,
+									// ConnectionService.class));
+								}
+							}).setNegativeButton("No",
+					// if No is selected, dismiss the dialog
+							new DialogInterface.OnClickListener() {
+
+								public void onClick(DialogInterface dialog,
+										int which) {
+									dialog.dismiss();
+								}
+							}).show();
+		}
+		return super.onKeyDown(keyCode, event);
+	}
 }

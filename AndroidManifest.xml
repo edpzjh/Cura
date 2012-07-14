@@ -47,7 +47,8 @@
         <activity
             android:name=".AccountsListActivity"
             android:configChanges="orientation"
-            android:theme="@android:style/Theme.Dialog" >
+            android:theme="@android:style/Theme.Dialog"
+             >
             <intent-filter>
                 <action android:name="cura.connected" />
                 <action android:name="cura.notConnected" />
@@ -101,11 +102,12 @@
             android:name=".about.aboutActivity"
             android:label="@string/app_name" >
         </activity>
+        
         <activity
             android:name=".about.LicenseActivity"
             android:label="@string/app_name" >
         </activity>
-
+        
         <service android:name=".Connection.ConnectionService" />
         <service android:name=".security.SMSService" >
             <intent-filter>

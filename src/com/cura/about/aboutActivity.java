@@ -37,7 +37,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 public class aboutActivity extends ListActivity {
-	
+
 	private final int LICENSE = 5;
 	private final int EMAIL = 7;
 	private final int WEBSITE = 8;

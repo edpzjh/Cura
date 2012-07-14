@@ -36,8 +36,11 @@ import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Color;
@@ -46,14 +49,17 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.cura.LoginScreenActivity;
 import com.cura.R;
 import com.cura.ScreenCapture;
 import com.cura.Connection.CommunicationInterface;
 import com.cura.Connection.ConnectionService;
+import com.cura.ServerStats.ServerStatsActivity;
 
 public class SysMonitorActivity extends Activity {
 
@@ -69,6 +75,7 @@ public class SysMonitorActivity extends Activity {
 
 	private static Thread mThread;
 	private static boolean state = true;
+	private NotificationManager mNotificationManager;
 	private CommunicationInterface conn;
 
 	private ServiceConnection connection = new ServiceConnection() {
@@ -124,7 +131,7 @@ public class SysMonitorActivity extends Activity {
 	public void doBindService() {
 		Intent i = new Intent(this, ConnectionService.class);
 		// connect to the SSH service (Connection)
-		bindService(i, connection, Context.BIND_AUTO_CREATE);
+		getApplicationContext().bindService(i, connection, Context.BIND_AUTO_CREATE);
 	}
 
 	@Override
@@ -173,6 +180,8 @@ public class SysMonitorActivity extends Activity {
 		// add these values to the graph
 		timeSeriesCPU = new TimeSeries("CPU");
 		timeSeriesRAM = new TimeSeries("RAM");
+		
+		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
 	}
 
@@ -284,7 +293,7 @@ public class SysMonitorActivity extends Activity {
 		// unbind and set state to false
 		state = false;
 		mThread = null;
-		unbindService(connection);
+		//unbindService(connection);
 		finish();
 	}
 
@@ -292,5 +301,50 @@ public class SysMonitorActivity extends Activity {
 	protected void onResume() {
 		super.onResume();
 		doBindService();
+	}
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+			// if the back button is pressed when the user is in this (Cura
+			// Activity)
+			new AlertDialog.Builder(this).setTitle("Logout Confirmation")
+					// confirm logout
+					.setMessage(R.string.logoutConfirmationDialog)
+					.setPositiveButton("Yes",
+							new DialogInterface.OnClickListener() {
+
+								public void onClick(DialogInterface dialog,
+										int which) {
+									try {
+										// close connection
+										// conn.close();
+										Log.d("Connection", "connection closed");
+									} catch (Exception e) {
+										Log.d("Connection", e.toString());
+									}
+									Intent closeAllActivities = new Intent(
+											SysMonitorActivity.this,
+											LoginScreenActivity.class);
+									// just close everything
+									closeAllActivities
+											.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+									SysMonitorActivity.this
+											.startActivity(closeAllActivities);
+								
+									mNotificationManager.cancelAll();
+									// stopService(new Intent(CuraActivity.this,
+									// ConnectionService.class));
+								}
+							}).setNegativeButton("No",
+					// if No is selected, dismiss the dialog
+							new DialogInterface.OnClickListener() {
+
+								public void onClick(DialogInterface dialog,
+										int which) {
+									dialog.dismiss();
+								}
+							}).show();
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 }

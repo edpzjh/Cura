@@ -9,7 +9,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:src="@drawable/curalogod"/>
+        android:layout_marginBottom="20dip"
+        android:src="@drawable/curalogo" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -25,6 +26,8 @@
         android:id="@+id/server"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="20dip"
         android:src="@drawable/serveroffline" />
 
     <TextView

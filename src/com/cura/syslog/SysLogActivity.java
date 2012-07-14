@@ -32,10 +32,13 @@ import java.io.IOException;
 import java.util.Date;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.AsyncTask;
@@ -43,6 +46,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -51,10 +55,12 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.cura.LoginScreenActivity;
 import com.cura.R;
 import com.cura.User;
 import com.cura.Connection.CommunicationInterface;
 import com.cura.Connection.ConnectionService;
+import com.cura.ServerStats.ServerStatsActivity;
 
 public class SysLogActivity extends Activity implements
 		android.view.View.OnClickListener {
@@ -76,6 +82,7 @@ public class SysLogActivity extends Activity implements
 	private User user;
 	private File syslogDir;
 	private FileWriter target;
+	private NotificationManager mNotificationManager;
 	private CommunicationInterface conn;
 
 	private ServiceConnection connection = new ServiceConnection() {
@@ -102,7 +109,7 @@ public class SysLogActivity extends Activity implements
 
 	public void doBindService() {
 		Intent i = new Intent(this, ConnectionService.class);
-		bindService(i, connection, Context.BIND_AUTO_CREATE);
+		getApplicationContext().bindService(i, connection, Context.BIND_AUTO_CREATE);
 	}
 
 	@Override
@@ -125,6 +132,8 @@ public class SysLogActivity extends Activity implements
 		lineNumbers.setEnabled(false);
 		// all of the above sets up the shape of this activity
 		syslogDir = new File("/sdcard/Cura/Syslog");
+		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
 	}
 
 	@Override
@@ -307,6 +316,52 @@ public class SysLogActivity extends Activity implements
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		unbindService(connection);
+		//unbindService(connection);
+	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+			// if the back button is pressed when the user is in this (Cura
+			// Activity)
+			new AlertDialog.Builder(this).setTitle("Logout Confirmation")
+					// confirm logout
+					.setMessage(R.string.logoutConfirmationDialog)
+					.setPositiveButton("Yes",
+							new DialogInterface.OnClickListener() {
+
+								public void onClick(DialogInterface dialog,
+										int which) {
+									try {
+										// close connection
+										// conn.close();
+										Log.d("Connection", "connection closed");
+									} catch (Exception e) {
+										Log.d("Connection", e.toString());
+									}
+									Intent closeAllActivities = new Intent(
+											SysLogActivity.this,
+											LoginScreenActivity.class);
+									// just close everything
+									closeAllActivities
+											.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+									SysLogActivity.this
+											.startActivity(closeAllActivities);
+								
+									mNotificationManager.cancelAll();
+									// stopService(new Intent(CuraActivity.this,
+									// ConnectionService.class));
+								}
+							}).setNegativeButton("No",
+					// if No is selected, dismiss the dialog
+							new DialogInterface.OnClickListener() {
+
+								public void onClick(DialogInterface dialog,
+										int which) {
+									dialog.dismiss();
+								}
+							}).show();
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 }

@@ -24,23 +24,39 @@ package com.cura;
  * lasts for 1.5 seconds.
  */
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 import org.jasypt.util.password.BasicPasswordEncryptor;
 
+import com.cura.Connection.ConnectionService;
+import com.cura.about.aboutActivity;
+import com.cura.validation.regexValidator;
+
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.app.Dialog;
+import android.app.ActivityManager.RunningServiceInfo;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.DialogInterface.OnCancelListener;
+import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.opengl.Visibility;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.text.Editable;
@@ -51,24 +67,23 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 import android.widget.TableLayout.LayoutParams;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.cura.Connection.ConnectionService;
-import com.cura.about.aboutActivity;
-import com.cura.validation.regexValidator;
 
 public class LoginScreenActivity extends Activity implements android.view.View.OnClickListener{
+	
 	
 	private final String connected = "cura.connected";
 	private final String notConnected = "cura.not.connected";
@@ -87,9 +102,11 @@ public class LoginScreenActivity extends Activity implements android.view.View.O
 	private Vibrator vibrator;
 	private SharedPreferences prefs;
 	private regexValidator rv;
+	private boolean isConnected = false;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(R.layout.loginscreen);
 		
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -108,6 +125,7 @@ public class LoginScreenActivity extends Activity implements android.view.View.O
 			public void onReceive(Context context, Intent intent) {
 				// TODO Auto-generated method stub
 				Bundle extras = intent.getExtras();
+				setProgressBarIndeterminateVisibility(false);
 				if (extras != null) {
 					userTemp = extras.getParcelable("user");
 					// find out who the user is
@@ -115,8 +133,10 @@ public class LoginScreenActivity extends Activity implements android.view.View.O
 				if (intent.getAction().compareTo(connected) == 0) {
 					// if they are connected, take them to the main activity
 					// (CuraActivity)
+					isConnected = true;
 					goToMainActivity = new Intent(LoginScreenActivity.this,
 							CuraActivity.class);
+					goToMainActivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 					goToMainActivity.putExtra("user", userTemp);
 					startActivity(goToMainActivity);
 				} else {
@@ -124,6 +144,7 @@ public class LoginScreenActivity extends Activity implements android.view.View.O
 					// username/password combination was incorrect (or some
 					// other reason which will be dealt with later on) show this
 					// the appropriate error dialog
+					isConnected = false;
 					Toast.makeText(context, R.string.credentialsWrong,
 							Toast.LENGTH_LONG).show();
 					((ImageView)findViewById(R.id.server)).setImageResource(R.drawable.serveroffline);
@@ -138,7 +159,24 @@ public class LoginScreenActivity extends Activity implements android.view.View.O
 		intentFilter.addAction(connected);
 		intentFilter.addAction(notConnected);
 		registerReceiver(br, intentFilter);
+		vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
 	}
+	
+	@Override
+	protected void onStart() {
+		// TODO Auto-generated method stub
+		super.onStart();
+		if(isConnected)
+		{
+			goToMainActivity = new Intent(LoginScreenActivity.this,
+					CuraActivity.class);
+			goToMainActivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			goToMainActivity.putExtra("user", userTemp);
+			startActivity(goToMainActivity);
+		}
+	}
+	
 	@Override
 	public void onClick(View arg0) {
 		// TODO Auto-generated method stub
@@ -147,7 +185,7 @@ public class LoginScreenActivity extends Activity implements android.view.View.O
 			case R.id.selectUser:
 				final Dialog accounts = new Dialog(this);
 				accounts.setContentView(R.layout.list);
-				accounts.setTitle("Select Server");
+				accounts.setTitle("Select User");
 				user = getUser();
 				array = new CustomArrayAdapter(this, user);
 				ListView mlistView = new ListView(this);
@@ -208,6 +246,7 @@ public class LoginScreenActivity extends Activity implements android.view.View.O
 												@Override
 												protected void onPreExecute() {
 													dialog.dismiss();
+													setProgressBarIndeterminateVisibility(true);
 													((ImageView)findViewById(R.id.server)).setImageResource(R.drawable.serverconnecting);
 													((TextView)findViewById(R.id.connecting)).setVisibility(View.VISIBLE);
 													//loader_message = "Connecting, please wait...";
@@ -215,7 +254,6 @@ public class LoginScreenActivity extends Activity implements android.view.View.O
 													// show this dialog to signify that the user
 													// is being connected to their server
 												}
-
 												@Override
 												protected String doInBackground(
 														String... params) {
@@ -297,8 +335,7 @@ public class LoginScreenActivity extends Activity implements android.view.View.O
 				addUser();
 				break;
 			case R.id.modifyUsers:
-				Intent startModify = new Intent (LoginScreenActivity.this,AccountsListActivity.class);
-				startActivity(startModify);
+				startActivity(new Intent(this,AccountsListActivity.class));
 				break;
 		}
 	}
@@ -560,6 +597,7 @@ public class LoginScreenActivity extends Activity implements android.view.View.O
 		// if the same username and domain are found and have already been
 		// added, return the result here so that the device can vibrate and
 		// display an error to the user
+		user = getUser();
 		for (int i = 0; i < user.length; i++) {
 			userValue = user[i].getUsername();
 			dom = user[i].getDomain();
@@ -574,7 +612,7 @@ public class LoginScreenActivity extends Activity implements android.view.View.O
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-
+		
 	}
 	@Override
 	protected void onDestroy() {

@@ -1,4 +1,17 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<TabHost xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@android:id/tabhost" android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+	<LinearLayout android:orientation="vertical"
+		android:layout_width="fill_parent" android:layout_height="fill_parent">
+		<TabWidget android:id="@android:id/tabs"
+			android:layout_width="fill_parent" android:layout_height="wrap_content" />
+		<FrameLayout android:id="@android:id/tabcontent"
+			android:layout_width="fill_parent" android:layout_height="fill_parent">
+		</FrameLayout>
+	</LinearLayout>
+</TabHost>
+<!-- <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="@drawable/background" >
@@ -27,31 +40,29 @@
                     android:src="@drawable/terminal" />
 
                 <LinearLayout
-                    android:layout_width="fill_parent"
+			        android:layout_width="fill_parent"
+			        android:layout_height="wrap_content"
+			        android:layout_weight="2"
+			        android:layout_gravity="center"
+			        android:orientation="vertical">
+			        
+                <TextView
+                    android:id="@+id/textView1"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_weight="2"
-                    android:orientation="vertical" >
-
-                    <TextView
-                        android:id="@+id/textView1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="@string/TerminalLabel"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:textSize="20dp"
-                        android:textStyle="normal|bold" />
-                </LinearLayout>
-                <!--
-                     <ImageView
+                    android:text="@string/TerminalLabel"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="20dp"
+                    android:textStyle="normal|bold" />
+				</LinearLayout>
+                <ImageView
                     android:id="@+id/imageView2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center|right"
                     android:layout_marginLeft="30dp"
                     android:src="@drawable/icon_right_arrow_2" />
-                -->
             </TableRow>
 
             <View
@@ -70,32 +81,29 @@
                     android:layout_height="wrap_content"
                     android:src="@drawable/sysmonitor" />
 
-                <LinearLayout
-                    android:layout_width="fill_parent"
+                 <LinearLayout
+			        android:layout_width="fill_parent"
+			        android:layout_height="wrap_content"
+			        android:layout_weight="2"
+			        android:layout_gravity="center"
+			        android:orientation="vertical">
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_weight="2"
-                    android:orientation="vertical" >
-
-                    <TextView
-                        android:id="@+id/textView2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="@string/SysMonitorLabel"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:textSize="20dp"
-                        android:textStyle="normal|bold" />
-                </LinearLayout>
-                <!--
-                     <ImageView
+                    android:text="@string/SysMonitorLabel"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="20dp"
+                    android:textStyle="normal|bold" />
+				</LinearLayout>
+                <ImageView
                     android:id="@+id/imageView4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center|right"
                     android:layout_marginLeft="30dp"
                     android:src="@drawable/icon_right_arrow_2" />
-                -->
             </TableRow>
 
             <View
@@ -114,32 +122,29 @@
                     android:layout_height="wrap_content"
                     android:src="@drawable/syslog" />
 
-                <LinearLayout
-                    android:layout_width="fill_parent"
+                 <LinearLayout
+			        android:layout_width="fill_parent"
+			        android:layout_height="wrap_content"
+			        android:layout_weight="2"
+			        android:layout_gravity="center"
+			        android:orientation="vertical">
+                <TextView
+                    android:id="@+id/textView3"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_weight="2"
-                    android:orientation="vertical" >
-
-                    <TextView
-                        android:id="@+id/textView3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="@string/SysLogLabel"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:textSize="20dp"
-                        android:textStyle="normal|bold" />
-                </LinearLayout>
-                <!--
-                     <ImageView
+                    android:text="@string/SysLogLabel"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="20dp"
+                    android:textStyle="normal|bold" />
+				</LinearLayout>
+                <ImageView
                     android:id="@+id/imageView6"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center|right"
                     android:layout_marginLeft="30dp"
                     android:src="@drawable/icon_right_arrow_2" />
-                -->
             </TableRow>
 
             <View
@@ -158,32 +163,29 @@
                     android:layout_height="wrap_content"
                     android:src="@drawable/nmap" />
 
-                <LinearLayout
-                    android:layout_width="fill_parent"
+                 <LinearLayout
+			        android:layout_width="fill_parent"
+			        android:layout_height="wrap_content"
+			        android:layout_weight="2"
+			        android:layout_gravity="center"
+			        android:orientation="vertical">
+                <TextView
+                    android:id="@+id/textView5"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_weight="2"
-                    android:orientation="vertical" >
-
-                    <TextView
-                        android:id="@+id/textView5"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="@string/NMapLabel"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:textSize="20dp"
-                        android:textStyle="normal|bold" />
-                </LinearLayout>
-                <!--
-                     <ImageView
+                    android:text="@string/NMapLabel"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="20dp"
+                    android:textStyle="normal|bold" />
+				</LinearLayout>
+                <ImageView
                     android:id="@+id/imageView10"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center|right"
                     android:layout_marginLeft="30dp"
                     android:src="@drawable/icon_right_arrow_2" />
-                -->
             </TableRow>
 
             <View
@@ -202,34 +204,31 @@
                     android:layout_height="wrap_content"
                     android:src="@drawable/serverstats" />
 
-                <LinearLayout
-                    android:layout_width="fill_parent"
+                 <LinearLayout
+			        android:layout_width="fill_parent"
+			        android:layout_height="wrap_content"
+			        android:layout_weight="2"
+			        android:layout_gravity="center"
+			        android:orientation="vertical">
+                <TextView
+                    android:id="@+id/textView6"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_weight="2"
-                    android:orientation="vertical" >
-
-                    <TextView
-                        android:id="@+id/textView6"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="@string/ServerStatsLabel"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:textSize="20dp"
-                        android:textStyle="normal|bold" />
-                </LinearLayout>
-                <!--
-                     <ImageView
+                    android:text="@string/ServerStatsLabel"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textSize="20dp"
+                    android:textStyle="normal|bold" />
+				</LinearLayout>
+                <ImageView
                     android:id="@+id/imageView12"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center|right"
                     android:layout_marginLeft="30dp"
                     android:src="@drawable/icon_right_arrow_2" />
-                -->
             </TableRow>
         </TableLayout>
     </LinearLayout>
 
-</ScrollView>
+</ScrollView> -->

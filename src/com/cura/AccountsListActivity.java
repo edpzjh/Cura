@@ -81,7 +81,7 @@ public class AccountsListActivity extends ListActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		this.setTitle(R.string.loginscreenname);
+		this.setTitle(R.string.LoginScreenName);
 
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		rv = new regexValidator();
@@ -345,5 +345,5 @@ public class AccountsListActivity extends ListActivity {
 		super.onDestroy();
 		unregisterReceiver(databaseBR);
 	}
-
+	
 }

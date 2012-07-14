@@ -1,65 +1,121 @@
 <?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/TableLayout01"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content" >
 
-<TableLayout android:id="@+id/TableLayout01"
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="fill_parent" android:layout_height="wrap_content">
+    <LinearLayout
+        android:id="@+id/LinearLayout01"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp" >
 
-<LinearLayout android:id="@+id/LinearLayout01"
-		android:layout_height="wrap_content" android:layout_width="fill_parent" android:padding="5dp">
+        <TextView
+            android:id="@+id/TextView03"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Target:" >
+        </TextView>
 
-		<TextView android:id="@+id/TextView03" android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:text="Target:"></TextView>
-		<TextView android:layout_width="fill_parent"
-			android:layout_height="wrap_content" android:inputType="text" android:gravity="center" android:id="@+id/Target"/>
+        <TextView
+            android:id="@+id/Target"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:inputType="text" />
+    </LinearLayout>
 
-	</LinearLayout>
+    <LinearLayout
+        android:id="@+id/LinearLayout02"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp" >
 
-	<LinearLayout android:id="@+id/LinearLayout02"
-		android:layout_height="wrap_content" android:layout_width="fill_parent" android:padding="5dp" >
+        <TextView
+            android:id="@+id/TextView02"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Arguments:" >
+        </TextView>
 
-		<TextView android:id="@+id/TextView02" android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:text="Arguments:"></TextView>
-		<EditText android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:id="@+id/Arguments"
-			android:lines="1" android:inputType="text" android:layout_weight="1"></EditText>
+        <EditText
+            android:id="@+id/Arguments"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="text"
+            android:lines="1" >
+        </EditText>
+    </LinearLayout>
 
-	</LinearLayout>
+    <LinearLayout
+        android:id="@+id/LinearLayout03"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
 
-	<LinearLayout android:id="@+id/LinearLayout03"
-		android:layout_height="wrap_content" android:layout_width="fill_parent">
-		<Spinner android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="1" android:id="@+id/CommandSpinner"/>
-		
-		<!-- <Button android:layout_width="wrap_content"
+        <Spinner
+            android:id="@+id/CommandSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <!--
+             <Button android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:text="Help" android:id="@+id/Help"
-			android:layout_weight="2"></Button> -->
-		<Spinner android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/OutputSpinner"></Spinner>
-		<Button android:layout_width="wrap_content"
-			android:layout_height="wrap_content" android:id="@+id/Start"
-			android:text="Start" android:layout_weight="2"/>
-<!-- 		<Button android:layout_width="wrap_content"
+			android:layout_weight="2"></Button>
+        -->
+
+        <Spinner
+            android:id="@+id/OutputSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+        </Spinner>
+
+        <Button
+            android:id="@+id/Start"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="Start" />
+        <!--
+     		<Button android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:id="@+id/Share"
-			android:text="Share" android:layout_weight="2"></Button> -->
-<!-- 		<Button android:layout_width="wrap_content"
+			android:text="Share" android:layout_weight="2"></Button>
+        -->
+        <!--
+     		<Button android:layout_width="wrap_content"
 			android:layout_height="wrap_content" android:text="Exit" android:id="@+id/Exit"
-			android:layout_weight="2"></Button> -->
+			android:layout_weight="2"></Button>
+        -->
 
-	
-</LinearLayout>
-	<ScrollView android:id="@+id/ScrollView01"
-		android:layout_height="wrap_content" android:layout_width="fill_parent">
-		<LinearLayout android:layout_width="fill_parent"
-		    android:layout_height="wrap_content"
-		    android:orientation="vertical">
-		<TextView android:id="@+id/results"
-			android:inputType="text|textMultiLine" android:layout_width="fill_parent"
-			android:scrollbars="vertical" android:layout_height="wrap_content" android:text="Licensed by the GNU Public License.  Source code will be made available by request."></TextView>
-		<Button android:layout_width="fill_parent"
-			    android:layout_height="wrap_content"
-			    android:text="@string/nmapSaveButtonText"
-			    android:id="@+id/saveNmapResults"
-			    android:visibility="invisible"/>
-		</LinearLayout>
-	</ScrollView>
+    </LinearLayout>
 
-		
+    <ScrollView
+        android:id="@+id/ScrollView01"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/results"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text|textMultiLine"
+                android:scrollbars="vertical"
+                android:text="Licensed by the GNU Public License.  Source code will be made available by request." >
+            </TextView>
+
+            <Button
+                android:id="@+id/saveNmapResults"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/nmapSaveButtonText"
+                android:visibility="invisible" />
+        </LinearLayout>
+    </ScrollView>
+
 </TableLayout>

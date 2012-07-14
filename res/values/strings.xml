@@ -18,9 +18,9 @@
     <string name="domainTextFieldHint">ex: local.domain.com</string>
     <string name="portTextField">Port number</string>
     <string name="DialogTitle">Enter the following credentials</string>
-    <string name="DialogAddNewUserButton">Add new server</string>
+    <string name="DialogAddNewUserButton">Add new user</string>
     <string name="DialogCancelButton">Cancel</string>
-    <string name="loginscreenname">SSH Accounts list (tap and hold)</string>
+    <string name="LoginScreenName">SSH Accounts list</string>
     <string name="ModifyUserInfo">Modify User Info</string>
     <string name="DeleteUser">Delete User</string>
     <string name="msgProgressDialog">Please wait while the connection is being established…</string>
@@ -64,7 +64,7 @@
     <string name="wrongPassword">The password you entered is incorrect</string>
     <string name="passwordChanged">Password changed successfully</string>
     <string name="wrongConfPass">Passwords do not match</string>
-    <string name="addUserHint">This is just a sample server account.</string>
+    <string name="addUserHint">This is just a sample user account.\nPress the Menu button and add a user account of your own.</string>
     <string name="ServerInfoDialog">Server\'s general information</string>
     <string name="uptimeText">It has been up for: </string>
     <string name="GetServerInfoOptionMenu">Server\'s info</string>
@@ -127,8 +127,8 @@
     along with Cura.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</string>
 	
     <string name="license_information">License Information</string>
-    <string name="loginText">CURA lets you manage your server \n from your Android mobile \n using basic UNIX tools</string>
-    <string name="selectUser">Select server</string>
-    <string name="newUser">New server</string>
-    <string name="modifyUser">Edit servers</string>
+    <string name="loginText">CURA let\'s you manage your server \n from your Android mobile \n using basic UNIX tools</string>
+    <string name="selectUser">Select user</string>
+    <string name="newUser">New user</string>
+    <string name="modifyUser">Modify users</string>
 </resources>

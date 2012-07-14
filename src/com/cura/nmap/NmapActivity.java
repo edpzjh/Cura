@@ -46,7 +46,10 @@ import java.util.Date;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.NotificationManager;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.AsyncTask;
@@ -54,6 +57,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -65,6 +69,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cura.CuraActivity;
+import com.cura.LoginScreenActivity;
 import com.cura.R;
 import com.cura.User;
 
@@ -77,6 +83,7 @@ public class NmapActivity extends Activity {
 	private Spinner mCommandSpinner, mOutputSpinner;
 	private File NmapDir;
 	private FileWriter target;
+	private NotificationManager mNotificationManager;
 
 	/*
 	 * --- program variables - these need to be backed up for configuration
@@ -116,6 +123,7 @@ public class NmapActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.nmap);
+		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		Bundle extras = getIntent().getExtras();
 		user = (User) extras.get("user");
 		mResults = (TextView) findViewById(R.id.results);
@@ -857,5 +865,51 @@ public class NmapActivity extends Activity {
 	protected void onStop() {
 		super.onStop();
 		finish();
+	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+			// if the back button is pressed when the user is in this (Cura
+			// Activity)
+			new AlertDialog.Builder(this).setTitle("Logout Confirmation")
+					// confirm logout
+					.setMessage(R.string.logoutConfirmationDialog)
+					.setPositiveButton("Yes",
+							new DialogInterface.OnClickListener() {
+
+								public void onClick(DialogInterface dialog,
+										int which) {
+									try {
+										// close connection
+										// conn.close();
+										Log.d("Connection", "connection closed");
+									} catch (Exception e) {
+										Log.d("Connection", e.toString());
+									}
+									Intent closeAllActivities = new Intent(
+											NmapActivity.this,
+											LoginScreenActivity.class);
+									// just close everything
+									closeAllActivities
+											.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+									NmapActivity.this
+											.startActivity(closeAllActivities);
+								
+									mNotificationManager.cancelAll();
+									// stopService(new Intent(CuraActivity.this,
+									// ConnectionService.class));
+								}
+							}).setNegativeButton("No",
+					// if No is selected, dismiss the dialog
+							new DialogInterface.OnClickListener() {
+
+								public void onClick(DialogInterface dialog,
+										int which) {
+									dialog.dismiss();
+								}
+							}).show();
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 }

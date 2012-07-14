@@ -29,6 +29,7 @@ import java.util.Date;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -40,6 +41,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -47,11 +49,13 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cura.LoginScreenActivity;
 import com.cura.R;
 import com.cura.ScreenCapture;
 import com.cura.User;
 import com.cura.Connection.CommunicationInterface;
 import com.cura.Connection.ConnectionService;
+import com.cura.nmap.NmapActivity;
 
 public class ServerStatsActivity extends Activity {
 
@@ -79,13 +83,14 @@ public class ServerStatsActivity extends Activity {
 
 	private CommunicationInterface conn;
 
-	TextView hostname, listeningIP, kernelVersion, distribution, uptime,
+	private TextView hostname, listeningIP, kernelVersion, distribution, uptime,
 			lastBoot, currentUsers, loadAverages, memoryOutput,
 			filesystemsOuput, processStatusOutput;
 	// these are the textviews that will appear before the actual values that
 	// correspond to them
 
-	Button killProcessesButton;
+	private Button killProcessesButton;
+	private NotificationManager mNotificationManager;
 
 	private ServiceConnection connection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName arg0, IBinder service) {
@@ -107,7 +112,7 @@ public class ServerStatsActivity extends Activity {
 	public void doBindService() {
 		Intent i = new Intent(this, ConnectionService.class);
 		// connect to the SSH service (Connection)
-		bindService(i, connection, Context.BIND_AUTO_CREATE);
+		getApplicationContext().bindService(i, connection, Context.BIND_AUTO_CREATE);
 	}
 
 	public synchronized String sendAndReceive(String command) {
@@ -160,6 +165,7 @@ public class ServerStatsActivity extends Activity {
 				builder.show();
 			}
 		});
+		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 	}
 
 	@Override
@@ -337,7 +343,7 @@ public class ServerStatsActivity extends Activity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		unbindService(connection);
+		//unbindService(connection);
 	}
 
 	public void createTableLayout(String s) {
@@ -363,5 +369,51 @@ public class ServerStatsActivity extends Activity {
 			tv = (TextView) findViewById(R.id.freeMem);
 			tv.setText("Free: " + freeMem);
 		}
+	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+			// if the back button is pressed when the user is in this (Cura
+			// Activity)
+			new AlertDialog.Builder(this).setTitle("Logout Confirmation")
+					// confirm logout
+					.setMessage(R.string.logoutConfirmationDialog)
+					.setPositiveButton("Yes",
+							new DialogInterface.OnClickListener() {
+
+								public void onClick(DialogInterface dialog,
+										int which) {
+									try {
+										// close connection
+										// conn.close();
+										Log.d("Connection", "connection closed");
+									} catch (Exception e) {
+										Log.d("Connection", e.toString());
+									}
+									Intent closeAllActivities = new Intent(
+											ServerStatsActivity.this,
+											LoginScreenActivity.class);
+									// just close everything
+									closeAllActivities
+											.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+									ServerStatsActivity.this
+											.startActivity(closeAllActivities);
+								
+									mNotificationManager.cancelAll();
+									// stopService(new Intent(CuraActivity.this,
+									// ConnectionService.class));
+								}
+							}).setNegativeButton("No",
+					// if No is selected, dismiss the dialog
+							new DialogInterface.OnClickListener() {
+
+								public void onClick(DialogInterface dialog,
+										int which) {
+									dialog.dismiss();
+								}
+							}).show();
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 }

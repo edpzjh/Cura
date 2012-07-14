@@ -1,55 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:text="@string/syslogTalk" />
-
-    <Spinner
-        android:id="@+id/HeadTailSpinner"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
-
-    <Spinner
-        android:id="@+id/LogFileSpinner"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content" >
 
     <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:orientation="horizontal" >
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
 
-        <EditText
-            android:id="@+id/LinesNumber"
-            android:layout_width="50dip"
+        <TextView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:maxLength="2"
-            android:numeric="integer" />
+            android:layout_margin="5dp"
+            android:text="@string/syslogTalk" />
 
-        <CheckBox
-            android:id="@+id/EnableLineNumber"
-            android:layout_width="wrap_content"
+        <Spinner
+            android:id="@+id/HeadTailSpinner"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+
+        <Spinner
+            android:id="@+id/LogFileSpinner"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/checkBoxSysLogs" />
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal" >
+
+            <EditText
+                android:id="@+id/LinesNumber"
+                android:layout_width="50dip"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:maxLength="2"
+                android:numeric="integer" />
+
+            <CheckBox
+                android:id="@+id/EnableLineNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/checkBoxSysLogs" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/sysLogButton"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/sysLogButtonText" />
+
+        <Button
+            android:id="@+id/sysLogSaveLogsButton"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/sysLogSaveLogsButtonText" />
     </LinearLayout>
 
-    <Button
-        android:id="@+id/sysLogButton"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/sysLogButtonText" />
-
-    <Button android:layout_width="fill_parent"
-	    android:layout_height="wrap_content"
-	    android:id="@+id/sysLogSaveLogsButton"
-	    android:text="@string/sysLogSaveLogsButtonText"/>
-</LinearLayout>
+</ScrollView>
