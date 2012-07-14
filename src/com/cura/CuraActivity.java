@@ -172,6 +172,16 @@ public class CuraActivity extends TabActivity implements OnClickListener,
 		// welcoming the user in this activity's title.
 
 		TabHost tabHost = (TabHost) findViewById(android.R.id.tabhost);
+
+		// Tab for Photos
+		TabSpec serverstats = tabHost.newTabSpec("Server Stats");
+		// setting Title and Icon for the Tab
+		serverstats.setIndicator("Stats", getResources().getDrawable(R.drawable.serverstats_tab_selector));
+		Intent photosIntent = new Intent(this, ServerStatsActivity.class);
+		photosIntent.putExtra("user", userTemp);
+		serverstats.setContent(photosIntent);
+		tabHost.addTab(serverstats);
+		
 		
 		TabSpec sysLogSpec = tabHost.newTabSpec("SysLog");
 		// setting Title and Icon for the Tab
@@ -181,15 +191,6 @@ public class CuraActivity extends TabActivity implements OnClickListener,
 		sysLogSpec.setContent(sysLogIntent);
 		tabHost.addTab(sysLogSpec);
 		
-		// Tab for Photos
-        TabSpec serverstats = tabHost.newTabSpec("Server Stats");
-        // setting Title and Icon for the Tab
-        serverstats.setIndicator("Stats", getResources().getDrawable(R.drawable.serverstats_tab_selector));
-        Intent photosIntent = new Intent(this, ServerStatsActivity.class);
-        photosIntent.putExtra("user", userTemp);
-        serverstats.setContent(photosIntent);
-        tabHost.addTab(serverstats);
-        
         
         TabSpec sysMonitorSpec = tabHost.newTabSpec("sysMonitor");
         // setting Title and Icon for the Tab
@@ -237,7 +238,7 @@ public class CuraActivity extends TabActivity implements OnClickListener,
 //		serverStatsRow.setOnTouchListener(this);
 
 		// get Server info after service binding
-		initServerInfo();
+//		initServerInfo();
 		
 		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 	}
@@ -313,10 +314,10 @@ public class CuraActivity extends TabActivity implements OnClickListener,
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		boolean result = super.onCreateOptionsMenu(menu);
-		menu.add(0, SERVER_INFO, 0, R.string.GetServerInfoOptionMenu).setIcon(
-				android.R.drawable.ic_menu_info_details);
+//		menu.add(0, SERVER_INFO, 0, R.string.GetServerInfoOptionMenu).setIcon(
+//				android.R.drawable.ic_menu_info_details);
 		// creates the options menu that includes "Server Info" and "Logout"
-		menu.add(0, LOGOUT, 0, R.string.logout).setIcon(
+		menu.add(0, LOGOUT, 10, R.string.logout).setIcon(
 				R.drawable.ic_lock_power_off);
 		return result;
 	}
@@ -363,31 +364,31 @@ public class CuraActivity extends TabActivity implements OnClickListener,
 								}
 							}).show();
 			break;
-		case SERVER_INFO:
-			// if "Server info" is selected, produce the output of Uptime and
-			// Uname, concatenate them into a paragraph and display it for the
-			// user
-			if (location.equalsIgnoreCase("")) {
-				location = getString(R.string.unableToGetLocation);
-			}
-			finalResultForDialog = uname + "\n"
-					+ getString(R.string.uptimeText) + uptime + "\n"
-					+ getString(R.string.userLocation) + location;
-			AlertDialog.Builder alert = new AlertDialog.Builder(this);
-			// build the above information into a dialog and display it
-			alert.setTitle(R.string.ServerInfoDialog);
-			final TextView infoArea = new TextView(this);
-			infoArea.setText(finalResultForDialog);
-			alert.setView(infoArea);
-			alert.setNegativeButton("Ok",
-					new DialogInterface.OnClickListener() {
-						// UPON CLICKING "CANCEL" IN THE DIALOG BOX (ALERT)
-						public void onClick(DialogInterface dialog, int which) {
-							return;
-						}
-					});
-			alert.show();
-			break;
+//		case SERVER_INFO:
+//			// if "Server info" is selected, produce the output of Uptime and
+//			// Uname, concatenate them into a paragraph and display it for the
+//			// user
+//			if (location.equalsIgnoreCase("")) {
+//				location = getString(R.string.unableToGetLocation);
+//			}
+//			finalResultForDialog = uname + "\n"
+//					+ getString(R.string.uptimeText) + uptime + "\n"
+//					+ getString(R.string.userLocation) + location;
+//			AlertDialog.Builder alert = new AlertDialog.Builder(this);
+//			// build the above information into a dialog and display it
+//			alert.setTitle(R.string.ServerInfoDialog);
+//			final TextView infoArea = new TextView(this);
+//			infoArea.setText(finalResultForDialog);
+//			alert.setView(infoArea);
+//			alert.setNegativeButton("Ok",
+//					new DialogInterface.OnClickListener() {
+//						// UPON CLICKING "CANCEL" IN THE DIALOG BOX (ALERT)
+//						public void onClick(DialogInterface dialog, int which) {
+//							return;
+//						}
+//					});
+//			alert.show();
+//			break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -481,7 +482,7 @@ public class CuraActivity extends TabActivity implements OnClickListener,
 			protected void onPreExecute() {
 				super.onPreExecute();
 				loader_message = getString(R.string.initializing);
-				showDialog(WAIT);
+//				showDialog(WAIT);
 			}
 
 			@Override
@@ -502,7 +503,7 @@ public class CuraActivity extends TabActivity implements OnClickListener,
 			@Override
 			protected void onPostExecute(String result) {
 				super.onPostExecute(result);
-				loader.dismiss();
+//				loader.dismiss();
 			}
 		}.execute();
 	}
