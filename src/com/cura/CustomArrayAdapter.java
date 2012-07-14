@@ -60,15 +60,15 @@ public class CustomArrayAdapter extends ArrayAdapter {
 				+ user[position].getDomain());
 		port.setText("Connects through port " + user[position].getPort());
 
-//		if (userAndDomain.getText().length() > 24) {
-//			int lengthDif = userAndDomain.getText().length() - 24;
-//			Animation mAnimation = new TranslateAnimation(0f,
-//					-(17f * lengthDif), 0.0f, 0.0f);
-//			mAnimation.setDuration(1000 * lengthDif);
-//			mAnimation.setRepeatCount(1/* Animation.INFINITE */);
-//			mAnimation.setRepeatMode(Animation.REVERSE);
-//			userAndDomain.setAnimation(mAnimation);
-//		}
+		if (userAndDomain.getText().length() > 24) {
+			int lengthDif = userAndDomain.getText().length() - 24;
+			Animation mAnimation = new TranslateAnimation(0f,
+					-(17f * lengthDif), 0.0f, 0.0f);
+			mAnimation.setDuration(1000 * lengthDif);
+			mAnimation.setRepeatCount(1/* Animation.INFINITE */);
+			mAnimation.setRepeatMode(Animation.REVERSE);
+			userAndDomain.setAnimation(mAnimation);
+		}
 		return rowView;
 	}
 }
