@@ -519,7 +519,7 @@ public class CuraActivity extends TabActivity implements OnClickListener,
 	    ImageView iv = (ImageView) view.findViewById(R.id.TabImageView);
 	    TextView tv = (TextView) view.findViewById(R.id.TabTextView);
 	    iv.setImageResource(resId);
-	    tv.setText(text);
-	    return view;
+		tv.setText(text);
+		return view;
 	}
 }
