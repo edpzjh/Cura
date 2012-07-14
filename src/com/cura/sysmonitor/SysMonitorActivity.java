@@ -59,7 +59,6 @@ import com.cura.R;
 import com.cura.ScreenCapture;
 import com.cura.Connection.CommunicationInterface;
 import com.cura.Connection.ConnectionService;
-import com.cura.ServerStats.ServerStatsActivity;
 
 public class SysMonitorActivity extends Activity {
 

@@ -55,7 +55,6 @@ import com.cura.ScreenCapture;
 import com.cura.User;
 import com.cura.Connection.CommunicationInterface;
 import com.cura.Connection.ConnectionService;
-import com.cura.nmap.NmapActivity;
 
 public class ServerStatsActivity extends Activity {
 

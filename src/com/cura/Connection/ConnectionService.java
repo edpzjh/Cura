@@ -24,7 +24,6 @@ package com.cura.Connection;
  * functions like executeCommand() which is used to execute a command at the terminal.
  */
 
-import android.R.bool;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;

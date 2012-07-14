@@ -69,7 +69,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.cura.CuraActivity;
 import com.cura.LoginScreenActivity;
 import com.cura.R;
 import com.cura.User;

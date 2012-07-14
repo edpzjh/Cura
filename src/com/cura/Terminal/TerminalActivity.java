@@ -64,7 +64,6 @@ import com.cura.ScreenCapture;
 import com.cura.User;
 import com.cura.Connection.CommunicationInterface;
 import com.cura.Connection.ConnectionService;
-import com.cura.ServerStats.ServerStatsActivity;
 
 public class TerminalActivity extends Activity {
 	private final int FAVORITES = 1;
