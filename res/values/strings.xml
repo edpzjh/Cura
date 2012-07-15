@@ -11,25 +11,25 @@
     <string name="executeButton">Execute</string>
     <string name="favoritesButton">Favorites</string>
     <string name="hintTerminalMessage">Enter your commands here, or press the Menu button to add a new command to your list of favorites</string>
-    <string name="no_users">Add new user</string>
+    <string name="no_users">Add new server</string>
     <string name="usernameLabel">Username</string>
     <string name="domainLabel">Domain</string>
     <string name="portLabel">Port</string>
     <string name="domainTextFieldHint">ex: local.domain.com</string>
     <string name="portTextField">Port number</string>
     <string name="DialogTitle">Enter the following credentials</string>
-    <string name="DialogAddNewUserButton">Add new user</string>
+    <string name="DialogAddNewServerButton">Add new server</string>
     <string name="DialogCancelButton">Cancel</string>
     <string name="LoginScreenName">SSH Accounts list</string>
-    <string name="ModifyUserInfo">Modify User Info</string>
-    <string name="DeleteUser">Delete User</string>
+    <string name="ModifyServerInfo">Modify server info</string>
+    <string name="DeleteServer">Delete server</string>
     <string name="msgProgressDialog">Please wait while the connection is being established…</string>
     <string name="addNewFavoriteCommand">Add new command</string>
     <string name="modifyFavoriteCommand">Modify command</string>
     <string name="deleteFavoriteCommand">Delete</string>
     <string name="enterCommandPopupMessage">Enter your command</string>
     <string name="firstTimeUseMessageTitle">This is the first time you install Cura!</string>
-    <string name="firstTimeUseMessage">Welcome to Cura, an application designed to better help you administer your systems. To begin, dismiss this dialog and press the Menu button to start adding new users!</string>
+    <string name="firstTimeUseMessage">Welcome to Cura, an application designed to better help you administer your systems. To begin, dismiss this dialog and press the Menu button to start adding new servers!</string>
     <string name="firstTimeUseOKButton">OK</string>
     <string name="firstTimeUseCancelButton">Cancel</string>
     <string name="logout">Logout</string>
@@ -64,7 +64,7 @@
     <string name="wrongPassword">The password you entered is incorrect</string>
     <string name="passwordChanged">Password changed successfully</string>
     <string name="wrongConfPass">Passwords do not match</string>
-    <string name="addUserHint">This is just a sample user account.\nPress the Menu button and add a user account of your own.</string>
+    <string name="addServerHint">This is just a sample server account.\nPress the Menu button and add a server account of your own.</string>
     <string name="ServerInfoDialog">Server\'s general information</string>
     <string name="uptimeText">It has been up for: </string>
     <string name="GetServerInfoOptionMenu">Server\'s info</string>
@@ -88,7 +88,7 @@
     <string name="clearTerminal">Clear Terminal</string>
     <string name="loader_message">Please wait while stats are being fetched from server...</string>
     <string name="syslogTalk">The Syslog module allows you to read logs directly from your server. Choose the manner in which you want to read from a file, you can either let it default to 10 lines (Head or Tail) or you can specify the number of lines.</string>
-    <string name="securityfeaturetalk">By selecting this checkbox, you are enabling a unique security feature allows you (in the case of an emergency) to have Cura\'s database completely wiped upon you sending the compromised phone a secret pattern of your choosing. (ex: send an SMS message containing "phone has been stolen!" to your Android phone to wipe Cura\'s database and receive the location of the compromised phone as an SMS to your emergency phone number or as an e-mail to your emergency e-mail address).</string>
+    <string name="securityfeaturetalk">By selecting this checkbox, you enable a security feature that allows you (in the case of an emergency) to have Cura\'s database wiped (and receive the phone\'s location back) upon you SMSing the compromised phone a secret pattern of your choosing.</string>
     <string name="securityfeatureTitle">Attention!</string>
     <string name="sysmonitorActivityTitle">Cura System Monitor</string>
     <string name="preferencescreenActivityTitle">Cura Preference Screen</string>
@@ -100,7 +100,7 @@
     <string name="savingLogs">Saving logs...</string>
     <string name="connectionTimeout">Connection timeout</string>
     <string name="connectionTimeoutMessage">Connection timeout, please check your network or internet connectivity.\n You will be redirected to Cura\'s login screen.</string>
-    <string name="userExists">User already exists!</string>
+    <string name="serverExists">Server account already exists!</string>
     <string name="nmapSaveButtonText">Save Nmap results to Cura directory</string>
     <string name="nmapResultsSaved">Results saved in Cura directory under </string>
     <string name="resultsNotSaved">Results not saved</string>
@@ -125,10 +125,10 @@
 
     You should have received a copy of the GNU General Public License
     along with Cura.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</string>
-	
     <string name="license_information">License Information</string>
-    <string name="loginText">CURA let\'s you manage your server \n from your Android mobile \n using basic UNIX tools</string>
-    <string name="selectUser">Select user</string>
-    <string name="newUser">New user</string>
-    <string name="modifyUser">Modify users</string>
+    <string name="loginText">CURA lets you manage your server \n from your Android mobile \n using basic UNIX tools</string>
+    <string name="selectServer">Select server</string>
+    <string name="newServer">New server</string>
+    <string name="modifyServer">Modify servers</string>
+
 </resources>

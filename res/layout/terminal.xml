@@ -33,37 +33,25 @@
     <FrameLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:orientation="vertical" >
 
-<!--         <LinearLayout -->
-<!--             android:layout_width="wrap_content" -->
-<!--             android:layout_height="wrap_content" -->
-<!--             android:orientation="vertical" > -->
+        <Button
+            android:id="@+id/executeButton"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_gravity="left"
+            android:background="@android:color/transparent"
+            android:text="@string/executeButton"
+            android:textColor="#FFFFFF" />
 
-            <Button
-                android:id="@+id/executeButton"
-                android:layout_width="100dp"
-                android:layout_height="50dp"
-                android:layout_gravity="left"
-                android:background="@android:color/transparent"
-                android:text="@string/executeButton"
-                android:textColor="#FFFFFF" />
-
-<!--         <LinearLayout -->
-<!--             android:layout_width="fill_parent" -->
-<!--             android:layout_height="wrap_content" -->
-<!--             android:orientation="vertical" > -->
-
-            <Button
-                android:id="@+id/favoritesButton"
-                android:layout_width="100dp"
-                android:layout_height="50dp"
-                android:layout_gravity="right"
-                android:background="@android:color/transparent"
-                android:text="@string/favoritesButton"
-                android:textColor="#FFFFFF" />
-        </FrameLayout>
-<!--         </LinearLayout> -->
-<!--     </LinearLayout> -->
+        <Button
+            android:id="@+id/favoritesButton"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_gravity="right"
+            android:background="@android:color/transparent"
+            android:text="@string/favoritesButton"
+            android:textColor="#FFFFFF" />
+    </FrameLayout>
 
 </LinearLayout>

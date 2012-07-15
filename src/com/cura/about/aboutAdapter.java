@@ -25,14 +25,14 @@ package com.cura.about;
 
 import java.util.Vector;
 
+
+import com.cura.R;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-
-import com.cura.R;
 
 @SuppressWarnings("rawtypes")
 public class aboutAdapter extends ArrayAdapter {

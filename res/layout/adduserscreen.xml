@@ -8,7 +8,7 @@
         android:layout_height="match_parent" >
 	
         <TextView
-            android:id="@+id/userExists"
+            android:id="@+id/serverExists"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -62,7 +62,7 @@
             android:id="@+id/button1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/DialogAddNewUserButton" />
+            android:text="@string/DialogAddNewServerButton" />
 
         <Button
             android:id="@+id/button2"

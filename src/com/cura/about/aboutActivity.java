@@ -98,10 +98,10 @@ public class aboutActivity extends ListActivity {
 		ab = new AboutClass("Author", "TTCO Development Team");
 		info.add(ab);
 		// VERSION NUMBER
-		ab = new AboutClass("Version", "1.4");
+		ab = new AboutClass("Version", "1.5");
 		info.add(ab);
 		// LAST UPDATE
-		ab = new AboutClass("Last Update", "20/06/2012");
+		ab = new AboutClass("Last Update", "July 14th, 2012");
 		info.add(ab);
 		// Changelog
 		ab = new AboutClass("Changelog", "See the changelog of the app");

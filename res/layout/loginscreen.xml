@@ -51,27 +51,27 @@
         android:orientation="horizontal" >
 
         <Button
-            android:id="@+id/selectUser"
+            android:id="@+id/selectServer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/selectUser" >
+            android:text="@string/selectServer" >
         </Button>
 
         <Button
-            android:id="@+id/newUser"
+            android:id="@+id/newServer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/newUser" >
+            android:text="@string/newServer" >
         </Button>
 
         <Button
-            android:id="@+id/modifyUsers"
+            android:id="@+id/modifyServers"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/modifyUser" >
+            android:text="@string/modifyServer" >
         </Button>
     </LinearLayout>
 
