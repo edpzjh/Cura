@@ -25,7 +25,6 @@ package com.cura.Terminal;
  * this using a thread that can be ran/paused/etc...
  */
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 
