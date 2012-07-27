@@ -86,13 +86,6 @@ public class AccountsListActivity extends ListActivity {
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		rv = new regexValidator();
 		user = getUser();
-		// create the listView
-
-		if (user.length == 1
-				&& user[0].getUsername().equalsIgnoreCase("username")
-				&& user[0].getDomain().equalsIgnoreCase("domain")) {
-			showDialog(DIALOG_YES_NO_LONG_MESSAGE);
-		}
 
 		array = new CustomArrayAdapter(this, user);
 		setListAdapter(array);
@@ -170,10 +163,6 @@ public class AccountsListActivity extends ListActivity {
 		switch (id) {
 		case DIALOG_YES_NO_LONG_MESSAGE:
 			return new AlertDialog.Builder(AccountsListActivity.this)
-					// this is the screen that shows up with the user installs
-					// Cura
-					// for the very first time
-					// .setIconAttribute(android.R.attr.alertDialogIcon)
 					.setTitle(R.string.firstTimeUseMessageTitle)
 					.setMessage(R.string.firstTimeUseMessage)
 					.setPositiveButton(R.string.firstTimeUseOKButton,
@@ -208,9 +197,9 @@ public class AccountsListActivity extends ListActivity {
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		// add to buttons to context menu "Modify user Info", "Delete User"
-		menu.add(0, MODIFY_USER, 0, R.string.ModifyUserInfo).setIcon(
+		menu.add(0, MODIFY_USER, 0, R.string.ModifyServerInfo).setIcon(
 				R.drawable.ic_menu_edit);
-		menu.add(0, DELETE_USER, 0, R.string.DeleteUser).setIcon(
+		menu.add(0, DELETE_USER, 0, R.string.DeleteServer).setIcon(
 				R.drawable.ic_menu_delete);
 	}
 
@@ -237,7 +226,7 @@ public class AccountsListActivity extends ListActivity {
 
 			Button modifyUserInfo = (Button) myDialog
 					.findViewById(R.id.button1);
-			modifyUserInfo.setText(R.string.ModifyUserInfo);
+			modifyUserInfo.setText(R.string.ModifyServerInfo);
 			Button cancelButton = (Button) myDialog.findViewById(R.id.button2);
 
 			final EditText usernameInput = (EditText) myDialog
@@ -345,5 +334,5 @@ public class AccountsListActivity extends ListActivity {
 		super.onDestroy();
 		unregisterReceiver(databaseBR);
 	}
-	
+
 }

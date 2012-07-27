@@ -61,6 +61,7 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TableLayout.LayoutParams;
 import android.widget.TextView;
@@ -78,14 +79,15 @@ public class LoginScreenActivity extends Activity implements
 	private final int ADD_USER = 1;
 	private final int SETTINGS = 2;
 	private final int ABOUT = 3;
-	CustomArrayAdapter array;
-	BroadcastReceiver br;
-	Intent goToMainActivity;
-	Button selectServer, newServer, modifyServers;
-	User user[];
-	User userTemp;
-	DbHelper dbHelper;
-	SQLiteDatabase db;
+	private CustomArrayAdapter array;
+	private BroadcastReceiver br;
+	private Intent goToMainActivity;
+	private Button selectServer, newServer, modifyServers;
+	private LinearLayout buttonsLayout;
+	private User user[];
+	private User userTemp;
+	private DbHelper dbHelper;
+	private SQLiteDatabase db;
 	int position;
 	private Vibrator vibrator;
 	private SharedPreferences prefs;
@@ -97,6 +99,8 @@ public class LoginScreenActivity extends Activity implements
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 		setContentView(com.cura.R.layout.loginscreen);
+
+		((TextView) findViewById(R.id.connecting)).setVisibility(View.GONE);
 
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		rv = new regexValidator();
@@ -140,6 +144,8 @@ public class LoginScreenActivity extends Activity implements
 							.setImageResource(R.drawable.serveroffline);
 					((TextView) findViewById(R.id.connecting))
 							.setVisibility(View.GONE);
+					buttonsLayout.setVisibility(View.VISIBLE);
+
 					stopService(new Intent(LoginScreenActivity.this,
 							ConnectionService.class));
 				}
@@ -151,7 +157,7 @@ public class LoginScreenActivity extends Activity implements
 		intentFilter.addAction(notConnected);
 		registerReceiver(br, intentFilter);
 		vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-
+		buttonsLayout = (LinearLayout) findViewById(R.id.ButtonsLayout);
 	}
 
 	@Override
@@ -251,13 +257,8 @@ public class LoginScreenActivity extends Activity implements
 														.setImageResource(R.drawable.serverconnecting);
 												((TextView) findViewById(R.id.connecting))
 														.setVisibility(View.VISIBLE);
-												// loader_message =
-												// "Connecting, please wait...";
-												// showDialog(WAIT);
-												// show this dialog to signify
-												// that the user
-												// is being connected to their
-												// server
+												buttonsLayout
+														.setVisibility(View.GONE);
 											}
 
 											@Override
@@ -352,7 +353,14 @@ public class LoginScreenActivity extends Activity implements
 			addUser();
 			break;
 		case R.id.modifyServers:
-			startActivity(new Intent(this, AccountsListActivity.class));
+			user = getUser();
+			if (user.length == 1
+					&& user[0].getUsername().equalsIgnoreCase("username")
+					&& user[0].getDomain().equalsIgnoreCase("domain"))
+				Toast.makeText(this, getString(R.string.noServersFound),
+						Toast.LENGTH_LONG).show();
+			else
+				startActivity(new Intent(this, AccountsListActivity.class));
 			break;
 		}
 	}

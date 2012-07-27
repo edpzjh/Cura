@@ -132,9 +132,6 @@ public class NmapActivity extends Activity {
 		mStart = (Button) findViewById(R.id.Start);
 		saveResults = (Button) findViewById(R.id.saveNmapResults);
 		NmapDir = new File("/sdcard/Cura/Nmap");
-		// mHelp = (Button) findViewById(R.id.Help);
-		// mShare = (Button) findViewById(R.id.Share);
-		// mExit = (Button) findViewById(R.id.Exit);
 
 		try {
 			int curVersion = getPackageManager().getPackageInfo("com.cura", 0).versionCode;
@@ -144,11 +141,7 @@ public class NmapActivity extends Activity {
 			Log.d(tag, e.toString());
 		}
 
-		if (!installationVerified && vTask == null
-		/*
-		 * || vTask.getStatus() == AsyncTask.Status.FINISHED ||
-		 * vTask.getStatus() == AsyncTask.Status.RUNNING
-		 */) {
+		if (!installationVerified && vTask == null) {
 			vTask = new verifyInstallation().execute();
 		}
 
@@ -217,8 +210,6 @@ public class NmapActivity extends Activity {
 		mStart.setOnClickListener(new View.OnClickListener() {
 
 			public void onClick(View v) {
-				// scanType = mCommandSpinner.getSelectedItemPosition() +
-				// SCANTYPE_NMAP;
 
 				mResults.setText("");
 				saveResults.setVisibility(Button.INVISIBLE);
@@ -270,45 +261,6 @@ public class NmapActivity extends Activity {
 				}
 			}
 		});
-		// mHelp.setOnClickListener(new View.OnClickListener() {
-		// // when the help menu is brought up and something is selected from
-		// // it
-		// public void onClick(View v) {
-		// // scanType = mCommandSpinner.getSelectedItemPosition() +
-		// // SCANTYPE_NMAP;
-		// mResults.setText("");
-		// if (sTask == null
-		// || sTask.getStatus() == AsyncTask.Status.FINISHED
-		// || sTask.getStatus() == AsyncTask.Status.RUNNING) {
-		// sTask = new scan().execute("-h");
-		// } else {
-		// if (!sTask.cancel(false)) {
-		// h.sendEmptyMessage(THREAD_ERROR);
-		// }
-		// }
-		// }
-		// });
-		//
-		// mShare.setOnClickListener(new View.OnClickListener() {
-		//
-		// public void onClick(View v) {
-		// final Intent emailIntent = new Intent(
-		// android.content.Intent.ACTION_SEND);
-		// emailIntent.setType("plain/text");
-		// emailIntent.putExtra(android.content.Intent.EXTRA_SUBJECT,
-		// "Nmap Scan Results");
-		// emailIntent.putExtra(android.content.Intent.EXTRA_TEXT,
-		// mResults.getText().toString());
-		// NmapActivity.this.startActivity(emailIntent);
-		// }
-		// });
-		//
-		// mExit.setOnClickListener(new View.OnClickListener() {
-		//
-		// public void onClick(View v) {
-		// NmapActivity.this.finish();
-		// }
-		// });
 	}
 
 	@Override
@@ -336,8 +288,6 @@ public class NmapActivity extends Activity {
 			NmapActivity.this.startActivity(emailIntent);
 			break;
 		case HELP:
-			// scanType = mCommandSpinner.getSelectedItemPosition() +
-			// SCANTYPE_NMAP;
 			mResults.setText("");
 			saveResults.setVisibility(Button.INVISIBLE);
 			if (sTask == null || sTask.getStatus() == AsyncTask.Status.FINISHED
@@ -516,9 +466,6 @@ public class NmapActivity extends Activity {
 				"nmap-mac-prefixes" };
 
 		protected void onPreExecute() {
-			// pd = new ProgressDialog(NmapActivity.this);
-			// pd.setMessage(progressMessage);
-			// pd.show();
 
 			File su = new File("/system/bin/su");
 			canGetRoot = su.exists();
@@ -808,10 +755,6 @@ public class NmapActivity extends Activity {
 					msg1.what = RUN_ERROR;
 					h.sendMessage(msg1);
 				}
-				// removed 0.3.6 this was annoying once I added the
-				// nmap/xml/gnmap selection
-				// alert.setMessage("Scan Complete!");
-				// alert.show();
 				break;
 			case THREAD_ERROR:
 				alert.setMessage("Unable to cancel task.");
@@ -865,7 +808,7 @@ public class NmapActivity extends Activity {
 		super.onStop();
 		finish();
 	}
-	
+
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if ((keyCode == KeyEvent.KEYCODE_BACK)) {
@@ -894,10 +837,8 @@ public class NmapActivity extends Activity {
 											.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 									NmapActivity.this
 											.startActivity(closeAllActivities);
-								
+
 									mNotificationManager.cancelAll();
-									// stopService(new Intent(CuraActivity.this,
-									// ConnectionService.class));
 								}
 							}).setNegativeButton("No",
 					// if No is selected, dismiss the dialog

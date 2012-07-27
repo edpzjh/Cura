@@ -25,7 +25,6 @@ package com.cura.about;
 
 import java.util.Vector;
 
-
 import com.cura.R;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -51,18 +50,17 @@ public class aboutAdapter extends ArrayAdapter {
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View rowView = inflater.inflate(R.layout.about, parent, false);
-		if(aboutVector.get(position).getTitle().compareTo("separator")==0){
+		if (aboutVector.get(position).getTitle().compareTo("separator") == 0) {
 			rowView = inflater.inflate(R.layout.seperator, null);
 
 			rowView.setOnClickListener(null);
 			rowView.setOnLongClickListener(null);
 			rowView.setLongClickable(false);
 
-            final TextView sectionView = (TextView) rowView.findViewById(R.id.list_item_section_text);
-            sectionView.setText(aboutVector.get(position).getSubtitle());
-        }
-		else
-		{
+			final TextView sectionView = (TextView) rowView
+					.findViewById(R.id.list_item_section_text);
+			sectionView.setText(aboutVector.get(position).getSubtitle());
+		} else {
 			TextView title = (TextView) rowView.findViewById(R.id.label);
 			TextView subTitle = (TextView) rowView.findViewById(R.id.label2);
 			title.setText(aboutVector.get(position).getTitle());

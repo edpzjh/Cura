@@ -130,5 +130,6 @@
     <string name="selectServer">Select server</string>
     <string name="newServer">New server</string>
     <string name="modifyServer">Modify servers</string>
+    <string name="noServersFound">No servers found to be modified</string>
 
 </resources>

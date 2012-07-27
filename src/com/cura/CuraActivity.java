@@ -176,70 +176,52 @@ public class CuraActivity extends TabActivity implements OnClickListener,
 		// Tab for Photos
 		TabSpec serverstats = tabHost.newTabSpec("Server Stats");
 		// setting Title and Icon for the Tab
-		serverstats.setIndicator("Stats", getResources().getDrawable(R.drawable.serverstats_tab_selector));
+		serverstats
+				.setIndicator(
+						"Stats",
+						getResources().getDrawable(
+								R.drawable.serverstats_tab_selector));
 		Intent photosIntent = new Intent(this, ServerStatsActivity.class);
 		photosIntent.putExtra("user", userTemp);
 		serverstats.setContent(photosIntent);
 		tabHost.addTab(serverstats);
-		
-		
+
 		TabSpec sysLogSpec = tabHost.newTabSpec("SysLog");
 		// setting Title and Icon for the Tab
-		sysLogSpec.setIndicator("SysLog", getResources().getDrawable(R.drawable.syslog_tab_selector));
+		sysLogSpec.setIndicator("SysLog",
+				getResources().getDrawable(R.drawable.syslog_tab_selector));
 		Intent sysLogIntent = new Intent(this, SysLogActivity.class);
 		sysLogIntent.putExtra("user", userTemp);
 		sysLogSpec.setContent(sysLogIntent);
 		tabHost.addTab(sysLogSpec);
-		
-        
-        TabSpec sysMonitorSpec = tabHost.newTabSpec("sysMonitor");
-        // setting Title and Icon for the Tab
-        sysMonitorSpec.setIndicator("SysMonitor", getResources().getDrawable(R.drawable.sysmonitor_tab_selector));
-        Intent sysMonitorIntent = new Intent(this, SysMonitorActivity.class);
-        sysMonitorIntent.putExtra("user", userTemp);
-        sysMonitorSpec.setContent(sysMonitorIntent);
-        tabHost.addTab(sysMonitorSpec);
-        
-        TabSpec NmapSpec = tabHost.newTabSpec("Nmap");
-        // setting Title and Icon for the Tab
-        NmapSpec.setIndicator("Nmap", getResources().getDrawable(R.drawable.nmap_tab_selector));
-        Intent nmapIntent = new Intent(this, NmapActivity.class);
-        nmapIntent.putExtra("user", userTemp);
-        NmapSpec.setContent(nmapIntent);
-        tabHost.addTab(NmapSpec);
-        
-        TabSpec TerminalSpec = tabHost.newTabSpec("Terminal");
-        // setting Title and Icon for the Tab
-        TerminalSpec.setIndicator("Terminal", getResources().getDrawable(R.drawable.terminal_tab_selector));
-        Intent terminalIntent = new Intent(this, TerminalActivity.class);
-        terminalIntent.putExtra("user", userTemp);
-        TerminalSpec.setContent(terminalIntent);
-        tabHost.addTab(TerminalSpec);
-		
-		// SETTING CLICK-LISTENERS FOR ALL OF THE BUTTONS
-//		terminalRow = (TableRow) findViewById(R.id.TerminalRow);
-//		terminalRow.setOnClickListener(this);
-//		terminalRow.setOnTouchListener(this);
-//
-//		sysMonitorRow = (TableRow) findViewById(R.id.SysMonitorRow);
-//		sysMonitorRow.setOnClickListener(this);
-//		sysMonitorRow.setOnTouchListener(this);
-//
-//		sysLogRow = (TableRow) findViewById(R.id.SysLogRow);
-//		sysLogRow.setOnClickListener(this);
-//		sysLogRow.setOnTouchListener(this);
-//
-//		nmapRow = (TableRow) findViewById(R.id.NMapRow);
-//		nmapRow.setOnClickListener(this);
-//		nmapRow.setOnTouchListener(this);
-//
-//		serverStatsRow = (TableRow) findViewById(R.id.ServerStatsRow);
-//		serverStatsRow.setOnClickListener(this);
-//		serverStatsRow.setOnTouchListener(this);
 
-		// get Server info after service binding
-//		initServerInfo();
-		
+		TabSpec sysMonitorSpec = tabHost.newTabSpec("sysMonitor");
+		// setting Title and Icon for the Tab
+		sysMonitorSpec.setIndicator("SysMonitor",
+				getResources().getDrawable(R.drawable.sysmonitor_tab_selector));
+		Intent sysMonitorIntent = new Intent(this, SysMonitorActivity.class);
+		sysMonitorIntent.putExtra("user", userTemp);
+		sysMonitorSpec.setContent(sysMonitorIntent);
+		tabHost.addTab(sysMonitorSpec);
+
+		TabSpec NmapSpec = tabHost.newTabSpec("Nmap");
+		// setting Title and Icon for the Tab
+		NmapSpec.setIndicator("Nmap",
+				getResources().getDrawable(R.drawable.nmap_tab_selector));
+		Intent nmapIntent = new Intent(this, NmapActivity.class);
+		nmapIntent.putExtra("user", userTemp);
+		NmapSpec.setContent(nmapIntent);
+		tabHost.addTab(NmapSpec);
+
+		TabSpec TerminalSpec = tabHost.newTabSpec("Terminal");
+		// setting Title and Icon for the Tab
+		TerminalSpec.setIndicator("Terminal",
+				getResources().getDrawable(R.drawable.terminal_tab_selector));
+		Intent terminalIntent = new Intent(this, TerminalActivity.class);
+		terminalIntent.putExtra("user", userTemp);
+		TerminalSpec.setContent(terminalIntent);
+		tabHost.addTab(TerminalSpec);
+
 		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 	}
 
@@ -258,65 +240,9 @@ public class CuraActivity extends TabActivity implements OnClickListener,
 		return super.onCreateDialog(id);
 	}
 
-//	public void onClick(View v) {
-//		switch (v.getId()) {
-//		case R.id.TerminalRow:
-//			// when the row entitled "Terminal" is clicked, take the user to the
-//			// terminal activity.
-//			// terminalRow.setBackgroundColor(R.drawable.moduleselectedhighlight);
-//			Intent terminalIntent = new Intent(this, TerminalActivity.class);
-//			terminalIntent.putExtra("user", userTemp);
-//
-//			// send userTemp (the current user)'s name along with the intent so
-//			// that the name can be displayed there as well
-//			startActivity(terminalIntent);
-//			break;
-//		case R.id.SysMonitorRow:
-//			// when the row entitled "SysMonitor" is clicked, take the user the
-//			// SysMonitor activity.
-//			Intent sysMonitorIntent = new Intent(this, SysMonitorActivity.class);
-//			startActivity(sysMonitorIntent);
-//			break;
-//		case R.id.SysLogRow:
-//			// when the row entitled "SysLog" is clicked, take the user to
-//			// the SysLog activity
-//			Intent sysLogIntent = new Intent(this, SysLogActivity.class);
-//			sysLogIntent.putExtra("user", userTemp);
-//			startActivity(sysLogIntent);
-//			break;
-//		case R.id.NMapRow:
-//			// when the row entitled "Nmap" is clicked, take the user
-//			// to the Nmap activity
-//			// if ((userTemp.getUsername()).compareTo("root") == 0) {
-//			// if the user is root, allow them to access this activity
-//			// if they are not, don't allow them
-//			Intent nmapIntent = new Intent(this, NmapActivity.class);
-//			nmapIntent.putExtra("user", userTemp);
-//			startActivity(nmapIntent);
-//			// } else {
-//			// Toast.makeText(
-//			// CuraActivity.this,
-//			// "Error! You are not allowed to access the Nmap module if you do not have root privileges over this server.",
-//			// Toast.LENGTH_LONG).show();
-//			// }
-//			break;
-//		case R.id.ServerStatsRow:
-//			// when the row entitled "Server Stats" is clicked, take the user
-//			// the Server Stats activity.
-//			Intent serverStatsIntent = new Intent(this,
-//					ServerStatsActivity.class);
-//			serverStatsIntent.putExtra("user", userTemp);
-//			startActivity(serverStatsIntent);
-//			break;
-//		}
-//	}
-
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		boolean result = super.onCreateOptionsMenu(menu);
-//		menu.add(0, SERVER_INFO, 0, R.string.GetServerInfoOptionMenu).setIcon(
-//				android.R.drawable.ic_menu_info_details);
-		// creates the options menu that includes "Server Info" and "Logout"
 		menu.add(0, LOGOUT, 10, R.string.logout).setIcon(
 				R.drawable.ic_lock_power_off);
 		return result;
@@ -364,31 +290,6 @@ public class CuraActivity extends TabActivity implements OnClickListener,
 								}
 							}).show();
 			break;
-//		case SERVER_INFO:
-//			// if "Server info" is selected, produce the output of Uptime and
-//			// Uname, concatenate them into a paragraph and display it for the
-//			// user
-//			if (location.equalsIgnoreCase("")) {
-//				location = getString(R.string.unableToGetLocation);
-//			}
-//			finalResultForDialog = uname + "\n"
-//					+ getString(R.string.uptimeText) + uptime + "\n"
-//					+ getString(R.string.userLocation) + location;
-//			AlertDialog.Builder alert = new AlertDialog.Builder(this);
-//			// build the above information into a dialog and display it
-//			alert.setTitle(R.string.ServerInfoDialog);
-//			final TextView infoArea = new TextView(this);
-//			infoArea.setText(finalResultForDialog);
-//			alert.setView(infoArea);
-//			alert.setNegativeButton("Ok",
-//					new DialogInterface.OnClickListener() {
-//						// UPON CLICKING "CANCEL" IN THE DIALOG BOX (ALERT)
-//						public void onClick(DialogInterface dialog, int which) {
-//							return;
-//						}
-//					});
-//			alert.show();
-//			break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -396,9 +297,8 @@ public class CuraActivity extends TabActivity implements OnClickListener,
 	@Override
 	protected void onResume() {
 		super.onResume();
-		//doBindService();
 	}
-	
+
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
@@ -435,10 +335,8 @@ public class CuraActivity extends TabActivity implements OnClickListener,
 											.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 									CuraActivity.this
 											.startActivity(closeAllActivities);
-								
+
 									mNotificationManager.cancelAll();
-									// stopService(new Intent(CuraActivity.this,
-									// ConnectionService.class));
 								}
 							}).setNegativeButton("No",
 					// if No is selected, dismiss the dialog
@@ -482,7 +380,6 @@ public class CuraActivity extends TabActivity implements OnClickListener,
 			protected void onPreExecute() {
 				super.onPreExecute();
 				loader_message = getString(R.string.initializing);
-//				showDialog(WAIT);
 			}
 
 			@Override
@@ -492,7 +389,7 @@ public class CuraActivity extends TabActivity implements OnClickListener,
 						uptime = getUptime();
 						uname = getUname();
 						location = getLocation();
-						
+
 						// just a safe-hold value
 						connectionTrigger = false;
 					}
@@ -503,7 +400,6 @@ public class CuraActivity extends TabActivity implements OnClickListener,
 			@Override
 			protected void onPostExecute(String result) {
 				super.onPostExecute(result);
-//				loader.dismiss();
 			}
 		}.execute();
 	}
@@ -511,14 +407,14 @@ public class CuraActivity extends TabActivity implements OnClickListener,
 	@Override
 	public void onClick(View arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
 	private View prepareTabView(String text, int resId) {
-	    View view = LayoutInflater.from(this).inflate(R.layout.tablayout, null);
-	    ImageView iv = (ImageView) view.findViewById(R.id.TabImageView);
-	    TextView tv = (TextView) view.findViewById(R.id.TabTextView);
-	    iv.setImageResource(resId);
+		View view = LayoutInflater.from(this).inflate(R.layout.tablayout, null);
+		ImageView iv = (ImageView) view.findViewById(R.id.TabImageView);
+		TextView tv = (TextView) view.findViewById(R.id.TabTextView);
+		iv.setImageResource(resId);
 		tv.setText(text);
 		return view;
 	}

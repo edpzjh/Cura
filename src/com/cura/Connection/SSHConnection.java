@@ -37,7 +37,7 @@ public class SSHConnection extends AsyncTask<User, String, String> {
 	private final String notConnected = "cura.not.connected";
 	String result;
 	Terminal terminal;
-	
+
 	@Override
 	protected String doInBackground(User... user) {
 		// TODO Auto-generated method stub
@@ -68,7 +68,7 @@ public class SSHConnection extends AsyncTask<User, String, String> {
 	}
 
 	public void closeConnection() {
-		if(terminal!=null)
-		terminal.close();
+		if (terminal != null)
+			terminal.close();
 	}
 }

@@ -5,74 +5,86 @@
     android:gravity="center"
     android:orientation="vertical" >
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginBottom="20dip"
-        android:src="@drawable/curalogo" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="20dip"
-        android:gravity="center"
-        android:text="@string/loginText"
-        android:textSize="14dip"
-        android:textStyle="bold|italic"
-        android:typeface="serif" />
-
-    <ImageView
-        android:id="@+id/server"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginBottom="20dip"
-        android:src="@drawable/serveroffline" />
-
-    <TextView
-        android:id="@+id/connecting"
+    <ScrollView
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="20dip"
-        android:gravity="center"
-        android:text="Connecting..."
-        android:textColor="#7AC65D"
-        android:textSize="14dip"
-        android:textStyle="bold|italic"
-        android:typeface="serif"
-        android:visibility="invisible" />
+        android:layout_height="wrap_content" >
 
-    <LinearLayout
-        android:id="@+id/loginButtonsLayout"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal" >
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:orientation="vertical" >
 
-        <Button
-            android:id="@+id/selectServer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/selectServer" >
-        </Button>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="20dip"
+                android:src="@drawable/curalogo" />
 
-        <Button
-            android:id="@+id/newServer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/newServer" >
-        </Button>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dip"
+                android:gravity="center"
+                android:text="@string/loginText"
+                android:textSize="14dip"
+                android:textStyle="bold|italic"
+                android:typeface="serif" />
 
-        <Button
-            android:id="@+id/modifyServers"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/modifyServer" >
-        </Button>
-    </LinearLayout>
+            <ImageView
+                android:id="@+id/server"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="20dip"
+                android:src="@drawable/serveroffline" />
+
+            <TextView
+                android:id="@+id/connecting"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Connecting..."
+                android:textColor="#7AC65D"
+                android:textSize="14dip"
+                android:textStyle="bold|italic"
+                android:typeface="serif"
+                android:visibility="invisible" />
+            <!-- android:layout_marginBottom="20dip" -->
+
+            <LinearLayout
+                android:id="@+id/ButtonsLayout"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal" >
+
+                <Button
+                    android:id="@+id/selectServer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/selectServer" >
+                </Button>
+
+                <Button
+                    android:id="@+id/newServer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/newServer" >
+                </Button>
+
+                <Button
+                    android:id="@+id/modifyServers"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/modifyServer" >
+                </Button>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>

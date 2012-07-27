@@ -130,7 +130,8 @@ public class SysMonitorActivity extends Activity {
 	public void doBindService() {
 		Intent i = new Intent(this, ConnectionService.class);
 		// connect to the SSH service (Connection)
-		getApplicationContext().bindService(i, connection, Context.BIND_AUTO_CREATE);
+		getApplicationContext().bindService(i, connection,
+				Context.BIND_AUTO_CREATE);
 	}
 
 	@Override
@@ -179,7 +180,7 @@ public class SysMonitorActivity extends Activity {
 		// add these values to the graph
 		timeSeriesCPU = new TimeSeries("CPU");
 		timeSeriesRAM = new TimeSeries("RAM");
-		
+
 		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
 	}
@@ -292,7 +293,7 @@ public class SysMonitorActivity extends Activity {
 		// unbind and set state to false
 		state = false;
 		mThread = null;
-		//unbindService(connection);
+		// unbindService(connection);
 		finish();
 	}
 
@@ -301,6 +302,7 @@ public class SysMonitorActivity extends Activity {
 		super.onResume();
 		doBindService();
 	}
+
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if ((keyCode == KeyEvent.KEYCODE_BACK)) {
@@ -329,7 +331,7 @@ public class SysMonitorActivity extends Activity {
 											.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 									SysMonitorActivity.this
 											.startActivity(closeAllActivities);
-								
+
 									mNotificationManager.cancelAll();
 									// stopService(new Intent(CuraActivity.this,
 									// ConnectionService.class));
