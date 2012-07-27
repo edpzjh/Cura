@@ -90,12 +90,9 @@ public class Terminal extends Thread {
 
 			System.gc();
 
-		} catch (IOException i) {
-			Log.d("terminal", i.toString());
-		} catch (JSchException e) {
-			// TODO Auto-generated catch block
-			Log.d("terminal", e.toString());
-		}
+		} catch (Exception i) {
+			return "";
+		} 
 		return result;
 	}
 

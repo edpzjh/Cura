@@ -365,15 +365,11 @@ public class TerminalActivity extends Activity {
 		// close database
 		db.close();
 		dbHelper.close();
-		startActivity(getIntent());
-		finish();
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
-		// unbindService(connection);
-		// finish();
 	}
 
 	@Override
