@@ -45,7 +45,9 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -73,7 +75,7 @@ public class ServerStatsActivity extends Activity {
 			filesystemsoutputResult, processstatusoutputResult;
 	private String[] processIDs;
 	private String processIDsingular;
-	private String totalMem, freeMem, usedMem; 
+	private String totalMem, freeMem, usedMem;
 	// these values will hold the result of their corresponding commands
 
 	private User userTemp;
@@ -82,9 +84,9 @@ public class ServerStatsActivity extends Activity {
 
 	private CommunicationInterface conn;
 
-	private TextView hostname, listeningIP, kernelVersion, distribution, uptime,
-			lastBoot, currentUsers, loadAverages, memoryOutput,
-			filesystemsOuput, processStatusOutput;
+	private TextView hostname, listeningIP, kernelVersion, uptime, lastBoot,
+			currentUsers, loadAverages, memoryOutput, filesystemsOuput,
+			processStatusOutput;
 	// these are the textviews that will appear before the actual values that
 	// correspond to them
 
@@ -111,7 +113,8 @@ public class ServerStatsActivity extends Activity {
 	public void doBindService() {
 		Intent i = new Intent(this, ConnectionService.class);
 		// connect to the SSH service (Connection)
-		getApplicationContext().bindService(i, connection, Context.BIND_AUTO_CREATE);
+		getApplicationContext().bindService(i, connection,
+				Context.BIND_AUTO_CREATE);
 	}
 
 	public synchronized String sendAndReceive(String command) {
@@ -250,8 +253,10 @@ public class ServerStatsActivity extends Activity {
 
 			@Override
 			protected void onPreExecute() {
+				super.onPreExecute();
 				loader_message = getString(R.string.loader_message);
 				showDialog(WAIT);
+				System.gc();
 				// show that loading dialog while the stats are being fetched
 				hostname.setText("Hostname: ");
 				listeningIP.setText("Listening IP: ");
@@ -265,7 +270,6 @@ public class ServerStatsActivity extends Activity {
 				processStatusOutput.setText("");
 				// all of what the above does is that it sets the TextViews
 				// defined at the top to have the correct values
-				super.onPreExecute();
 			}
 
 			@Override
@@ -294,7 +298,6 @@ public class ServerStatsActivity extends Activity {
 						filesystemsoutputResult = sendAndReceive("df -h");
 						processstatusoutputResult = sendAndReceive("ps axo pid,user,pmem,pcpu,comm | { IFS= read -r header; echo \"$header\"; sort -k 3,3nr; } | head -7");
 						processIDsingular = sendAndReceive("ps axo pid,user,pmem,pcpu,comm | { IFS= read -r header; sort -k 3,3nr; } | head -7 | awk '{print $5}'");
-
 						return null;
 					}
 				}
@@ -302,6 +305,7 @@ public class ServerStatsActivity extends Activity {
 
 			@Override
 			protected void onPostExecute(Void result) {
+				super.onPostExecute(result);
 				loader.cancel();
 				// finish loading, append all of the results to their
 				// corresponding places
@@ -315,11 +319,11 @@ public class ServerStatsActivity extends Activity {
 				currentUsers.append(usersResultsForAppending);
 				loadAverages.append(loadaveragesResult);
 				// memoryOutput.append(memoryoutputResult);
-				createTableLayout(memoryoutputResult);
+				createChartLayout(memoryoutputResult);
 				filesystemsOuput.append(filesystemsoutputResult);
 				processStatusOutput.append(processstatusoutputResult);
 				processIDs = processIDsingular.split("\n");
-				super.onPostExecute(result);
+				Log.d("account id", "wselet post");
 			}
 		}.execute();
 	}
@@ -333,7 +337,6 @@ public class ServerStatsActivity extends Activity {
 		lastBoot = (TextView) findViewById(R.id.lastboot);
 		currentUsers = (TextView) findViewById(R.id.currentusers);
 		loadAverages = (TextView) findViewById(R.id.loadaverages);
-		memoryOutput = (TextView) findViewById(R.id.memoryoutput);
 		filesystemsOuput = (TextView) findViewById(R.id.filesystemsoutput);
 		processStatusOutput = (TextView) findViewById(R.id.processstatusoutput);
 		killProcessesButton = (Button) findViewById(R.id.killprocessbutton);
@@ -342,25 +345,37 @@ public class ServerStatsActivity extends Activity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		//unbindService(connection);
+		// unbindService(connection);
 	}
 
-	public void createTableLayout(String s) {
+	public void createChartLayout(String s) {
 		// this table layout is for the result of the memory information section
 		// (free, used, total, etc..); all placed in a table kind of layout
-		try{
+		// try {
 		String data[] = s.split("--");
-		TextView tv = (TextView) findViewById(R.id.totalMem);
-		tv.setText("Total: " + data[4].replaceAll("\\s", ""));
-		tv = (TextView) findViewById(R.id.usedMem);
-		tv.setText("Used: " + data[5].replaceAll("\\s", ""));
-		tv = (TextView) findViewById(R.id.freeMem);
-		tv.setText("Free: " + data[6].replaceAll("\\s", ""));
-		totalMem = data[4].replaceAll("\\s", "");
-		usedMem = data[5].replaceAll("\\s", "");
-		freeMem = data[6].replaceAll("\\s", "");
-		}catch(ArrayIndexOutOfBoundsException e)
-		{
+		try {
+			totalMem = String.format("%.2f GB",
+					Double.parseDouble(data[4].replaceAll("\\s", ""))
+							/ (1024 * 1024));
+			usedMem = String.format("%.2f GB",
+					Double.parseDouble(data[5].replaceAll("\\s", ""))
+							/ (1024 * 1024));
+			freeMem = String.format("%.2f GB",
+					Double.parseDouble(data[6].replaceAll("\\s", ""))
+							/ (1024 * 1024));
+			TextView tv = (TextView) findViewById(R.id.totalMem);
+			tv.setText("Total: " + totalMem);
+			tv = (TextView) findViewById(R.id.usedMem);
+			tv.setText("Used: " + usedMem);
+			tv = (TextView) findViewById(R.id.freeMem);
+			tv.setText("Free: " + freeMem);
+			LinearLayout memoryPieChartView = (LinearLayout) (findViewById(R.id.memoryPieChartView));
+			memoryPieChartView.removeAllViews();
+			memoryPieChartView.addView(
+					new MemoryStatsPieChart().execute(this, data),
+					new LayoutParams(300, 300));
+			Log.d("account id", "wselet pie");
+		} catch (Exception e) {
 			TextView tv = (TextView) findViewById(R.id.totalMem);
 			tv.setText("Total: " + totalMem);
 			tv = (TextView) findViewById(R.id.usedMem);
@@ -369,7 +384,7 @@ public class ServerStatsActivity extends Activity {
 			tv.setText("Free: " + freeMem);
 		}
 	}
-	
+
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if ((keyCode == KeyEvent.KEYCODE_BACK)) {
@@ -398,7 +413,7 @@ public class ServerStatsActivity extends Activity {
 											.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 									ServerStatsActivity.this
 											.startActivity(closeAllActivities);
-								
+
 									mNotificationManager.cancelAll();
 									// stopService(new Intent(CuraActivity.this,
 									// ConnectionService.class));
