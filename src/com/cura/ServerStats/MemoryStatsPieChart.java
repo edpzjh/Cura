@@ -20,7 +20,8 @@
 package com.cura.ServerStats;
 
 /*
- * Description:  
+ * Description:  This is the class responsible for generating the pie chart seen in the Server Stats module under the "Memory 
+ * Usage" section. It produces a chart displaying Used, Free and Total amount of memory on the server.
  */
 
 import org.achartengine.ChartFactory;

@@ -19,6 +19,12 @@
 
 package com.cura.notification;
 
+/*
+ * Description: While still logged into a server through Cura, the user will be notified whenever a new user has just logged into 
+ * that very server. The settings for this feature are in the Settings of course, and the refresh intervals for checking for new 
+ * log-ons is 30 seconds, 3, 5 and 10 minutes.
+ */
+
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;

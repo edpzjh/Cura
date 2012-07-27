@@ -108,7 +108,8 @@ public class SysLogActivity extends Activity implements
 
 	public void doBindService() {
 		Intent i = new Intent(this, ConnectionService.class);
-		getApplicationContext().bindService(i, connection, Context.BIND_AUTO_CREATE);
+		getApplicationContext().bindService(i, connection,
+				Context.BIND_AUTO_CREATE);
 	}
 
 	@Override
@@ -315,9 +316,9 @@ public class SysLogActivity extends Activity implements
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		//unbindService(connection);
+		// unbindService(connection);
 	}
-	
+
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if ((keyCode == KeyEvent.KEYCODE_BACK)) {
@@ -346,7 +347,7 @@ public class SysLogActivity extends Activity implements
 											.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 									SysLogActivity.this
 											.startActivity(closeAllActivities);
-								
+
 									mNotificationManager.cancelAll();
 									// stopService(new Intent(CuraActivity.this,
 									// ConnectionService.class));
