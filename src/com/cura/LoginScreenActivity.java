@@ -20,8 +20,9 @@
 package com.cura;
 
 /*
- * Description: This activity includes the splash screen that will show up upon entering Cura. The picture displayed there
- * lasts for 1.5 seconds.
+ * Description: This is the login screen and this is Cura's main first screen where the user will be dropped to upon accessing the 
+ * application. Here is where we offer the user the ability to select a server account from the ones that they've added, add new ones or
+ * modify existing server accounts. Also offered in this screen (through the menu) is the Settings tab and the About tab.
  */
 
 import org.jasypt.util.password.BasicPasswordEncryptor;
@@ -101,7 +102,10 @@ public class LoginScreenActivity extends Activity implements
 		setContentView(com.cura.R.layout.loginscreen);
 
 		((TextView) findViewById(R.id.connecting)).setVisibility(View.GONE);
-
+		// this "Connecting..." textview is shown whenever the user has selected
+		// a server and chose to connect, it is invisible in the beginning but
+		// it is still accounted for in XML (hidden) so it has to be hidden in
+		// code as well
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		rv = new regexValidator();
 
@@ -155,6 +159,8 @@ public class LoginScreenActivity extends Activity implements
 		IntentFilter intentFilter = new IntentFilter();
 		intentFilter.addAction(connected);
 		intentFilter.addAction(notConnected);
+		// this intent filter listens to when the user is actually connected to
+		// the server and sends a message through the broadcast receiver
 		registerReceiver(br, intentFilter);
 		vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 		buttonsLayout = (LinearLayout) findViewById(R.id.ButtonsLayout);
@@ -164,6 +170,8 @@ public class LoginScreenActivity extends Activity implements
 	protected void onStart() {
 		// TODO Auto-generated method stub
 		super.onStart();
+		// here it is received and the user is then dropped into their main
+		// CuraActivity where they can go about their business
 		if (isConnected) {
 			goToMainActivity = new Intent(LoginScreenActivity.this,
 					CuraActivity.class);
@@ -313,7 +321,11 @@ public class LoginScreenActivity extends Activity implements
 						final AlertDialog alert = passwordAlert.create();
 						alert.show();
 						passField.addTextChangedListener(new TextWatcher() {
-
+							// this TextWatcher watches for changes in text at
+							// the password prompt, if there are no characters
+							// entered yet, do not enable the "OK" button which
+							// allows the user to login, else display that
+							// button
 							public void onTextChanged(CharSequence s,
 									int start, int before, int count) {
 								// TODO Auto-generated method stub
@@ -354,6 +366,8 @@ public class LoginScreenActivity extends Activity implements
 			break;
 		case R.id.modifyServers:
 			user = getUser();
+			// if the Modify Servers button is tapped and there are no servers,
+			// display that message
 			if (user.length == 1
 					&& user[0].getUsername().equalsIgnoreCase("username")
 					&& user[0].getDomain().equalsIgnoreCase("domain"))

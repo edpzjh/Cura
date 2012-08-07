@@ -47,6 +47,8 @@ public class aboutAdapter extends ArrayAdapter {
 
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
+		// this adapter constructs the layout of what is shown in the About
+		// activity
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View rowView = inflater.inflate(R.layout.about, parent, false);

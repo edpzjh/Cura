@@ -98,6 +98,7 @@ public class FavoriteCommands extends ListActivity {
 		commandItem = (String) getListAdapter().getItem(position);
 		Toast.makeText(this, commandItem + " selected", Toast.LENGTH_LONG)
 				.show();
+		// lets the user know which command was selected
 	}
 
 	@Override

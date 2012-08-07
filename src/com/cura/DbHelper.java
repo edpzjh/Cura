@@ -35,7 +35,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.preference.PreferenceManager;
 
 public class DbHelper extends SQLiteOpenHelper {
-	//private static final String TAG = DbHelper.class.getSimpleName();
+	// private static final String TAG = DbHelper.class.getSimpleName();
 	public static final String databaseName = "userInfo.db";
 	public static final int version = 1;
 	public static final String userTableName = "user";
@@ -45,7 +45,7 @@ public class DbHelper extends SQLiteOpenHelper {
 	public static final String C_PORT = "port";
 	public static final String C_COMMAND = "command";
 	private SharedPreferences prefs;
-	private BasicPasswordEncryptor passEncryptor ;
+	private BasicPasswordEncryptor passEncryptor;
 	private File CuraDir, SyslogDir, NmapDir;
 	Context context;
 
@@ -64,13 +64,16 @@ public class DbHelper extends SQLiteOpenHelper {
 				"create table %s (%s TEXT)", commandTableName, C_COMMAND);
 		db.execSQL(Create_User_Table);
 		db.execSQL(Create_Commands_Table);
-		
-		//Save default pass
+
+		// Save default pass
 		prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		SharedPreferences.Editor editor = prefs.edit();
 		editor.putString("myPass", passEncryptor.encryptPassword("default"));
 		editor.commit();
-		// Create Cura directory in sdcard
+
+		// create the needed directories in the SDCard under their respective
+		// names so that later on, stuff that belongs to these modules can be
+		// saved in these directories (screenshots, logs, etc...)
 		CuraDir = new File("/sdcard/Cura");
 		CuraDir.mkdir();
 		SyslogDir = new File("/sdcard/Cura/SysLog");

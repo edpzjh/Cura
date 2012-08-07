@@ -20,9 +20,9 @@
 package com.cura;
 
 /*
- * Description: This is the Login Screen, the very first activity that the user is dropped into. 
- * This is where they can begin added new user accounts as well as modify or delete them. 
- * They can also access Cura's settings from this activity's menu options.  
+ * Description: This is the accounts list activity, this activity is shown whenever the user presses the "Select Server" button at the 
+ * login screen. Here we show the user the list of server accounts that are available and from here, the user can tap one of the accounts 
+ * to get the password prompt for it and be able to access that server.
  */
 
 import android.app.AlertDialog;
@@ -86,11 +86,11 @@ public class AccountsListActivity extends ListActivity {
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		rv = new regexValidator();
 		user = getUser();
-
+		// this creates an ArrayAdapter out of all the user accounts in the
+		// database which is then fed to the view in this
+		// activity
 		array = new CustomArrayAdapter(this, user);
 		setListAdapter(array);
-
-		// enable context menu
 		registerForContextMenu(getListView());
 
 		databaseBR = new BroadcastReceiver() {
@@ -138,6 +138,8 @@ public class AccountsListActivity extends ListActivity {
 			if (c != null) {
 				if (c.moveToFirst()) {
 					do {
+						// construct a "-p number user@domain.com" string out of
+						// the user's information
 						String username = c.getString(c
 								.getColumnIndex("username"));
 						String domain = c.getString(c.getColumnIndex("domain"));

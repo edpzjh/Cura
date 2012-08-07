@@ -59,11 +59,15 @@ public class aboutActivity extends ListActivity {
 
 				switch (position) {
 				case LICENSE:
+					// shows the user the AGPLv3 license
 					Intent licenseIntent = new Intent(aboutActivity.this,
 							LicenseActivity.class);
 					startActivity(licenseIntent);
 					break;
 				case EMAIL:
+					// Below is the code that allows us to redirect the user to
+					// the Email sender activity provided through Android, where
+					// they will send us an email to the email we provided below
 					Intent emailIntent = new Intent(
 							android.content.Intent.ACTION_SEND);
 

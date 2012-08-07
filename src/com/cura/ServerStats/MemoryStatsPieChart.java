@@ -44,8 +44,13 @@ public class MemoryStatsPieChart {
 		total = Float.parseFloat(data[4].replaceAll("\\s", ""));
 		used = Float.parseFloat(data[5].replaceAll("\\s", ""));
 		free = Float.parseFloat(data[6].replaceAll("\\s", ""));
+		// the above are the values that we fetch from the command that we send
+		// in the ServerStats activity to get the output of the "free" command
+		// after it has been awked and ..had other stuff done to it
 		usedPercentage = (used * 100) / total;
 		freePercentage = (free * 100) / total;
+		// make them percentages so that they can be displayed properly in the
+		// chart
 
 		CategorySeries categorySeries = new CategorySeries("Memory Chart");
 		categorySeries.add("Free ", freePercentage);
@@ -54,6 +59,10 @@ public class MemoryStatsPieChart {
 		Log.d("account id", "" + usedPercentage);
 		renderer.setPanEnabled(false);
 		renderer.setZoomEnabled(false);
+		// -------------BUG HERE-------
+		// there's still an option here that needs to be disabled so that the
+		// image of the pie chart will not zoom in and out while the user is
+		// scrolling through the Server Stats activity
 		renderer.setInScroll(false);
 		renderer.setClickEnabled(false);
 		return ChartFactory.getPieChartView(context, categorySeries, renderer);

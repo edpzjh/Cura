@@ -52,15 +52,19 @@ public class CustomArrayAdapter extends ArrayAdapter {
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		View rowView = inflater.inflate(R.layout.accountslist, parent, false);
-
+		// get the view from XML
 		TextView userAndDomain = (TextView) rowView.findViewById(R.id.label);
+		// set the values to the view
 		TextView port = (TextView) rowView.findViewById(R.id.label2);
 		userAndDomain.setText(user[position].getUsername() + "@"
 				+ user[position].getDomain());
 		port.setText("Connects through port " + user[position].getPort());
-
+		// construct the string that is displayed below the server account
 		if (userAndDomain.getText().length() > 24) {
 			int lengthDif = userAndDomain.getText().length() - 24;
+			// if the length of the server account line exceeds the above
+			// number, activate the animation so that the user can see all the
+			// line clearly (for smaller screens like Samsung Young and such)
 			Animation mAnimation = new TranslateAnimation(0f,
 					-(17f * lengthDif), 0.0f, 0.0f);
 			mAnimation.setDuration(1000 * lengthDif);
