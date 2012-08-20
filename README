@@ -12,6 +12,8 @@ When in the hands of a sysadmin, Cura will provide:
 
 **Server Stats are general server information like its Vitals, Mounted Filesystems, Memory information, processes and so on.
 
+**Login monitoring with notifications (while you are logged in, you can get notifications about anyone else that also logged in to said server)
+
 **A security feature is implemented that allows you to have Cura's database wiped when you send the compromised phone a secret pattern of your choosing. (ex: send an SMS message containing "phone has been stolen!" to your Android phone to wipe Cura's database and receive the location of the compromised phone as an SMS to your emergency phone number or as an e-mail to your emergency e-mail address).
 
 All of the above modules include sharing and screenshotting capabilities.
