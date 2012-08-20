@@ -46,14 +46,18 @@ import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
@@ -64,6 +68,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TableLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -71,6 +76,8 @@ import android.widget.Toast;
 import com.cura.Connection.ConnectionService;
 import com.cura.about.aboutActivity;
 import com.cura.validation.regexValidator;
+import com.google.ads.AdRequest;
+import com.google.ads.AdView;
 
 public class LoginScreenActivity extends Activity implements
 		android.view.View.OnClickListener {
@@ -94,7 +101,10 @@ public class LoginScreenActivity extends Activity implements
 	private SharedPreferences prefs;
 	private regexValidator rv;
 	private boolean isConnected = false;
-
+	private AdView adView;
+	private AlertDialog alert;
+	private AsyncTask<String, String, String> task;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -164,6 +174,10 @@ public class LoginScreenActivity extends Activity implements
 		registerReceiver(br, intentFilter);
 		vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 		buttonsLayout = (LinearLayout) findViewById(R.id.ButtonsLayout);
+
+		//Ads
+		//adView = (AdView)this.findViewById(R.id.adView);
+		//adView.loadAd(new AdRequest());
 	}
 
 	@Override
@@ -186,6 +200,7 @@ public class LoginScreenActivity extends Activity implements
 		// TODO Auto-generated method stub
 		switch (arg0.getId()) {
 		case R.id.selectServer:
+			
 			final Dialog accounts = new Dialog(this);
 			accounts.setContentView(R.layout.list);
 			accounts.setTitle(R.string.selectServer);
@@ -221,7 +236,6 @@ public class LoginScreenActivity extends Activity implements
 						passwordAlert.setView(view);
 						final EditText passField = (EditText) view
 								.findViewById(R.id.passwordprompt);
-
 						CheckBox showPass = (CheckBox) view
 								.findViewById(R.id.showPassword);
 						// this is for the "Show password" checkbox that allows
@@ -254,13 +268,16 @@ public class LoginScreenActivity extends Activity implements
 											int whichButton) {
 										// UPON CLICKING "OK" IN THE DIALOG BOX
 										// (ALERT)
-										AsyncTask<String, String, String> task = new AsyncTask<String, String, String>() {
+										InputMethodManager keyboard = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+									    keyboard.hideSoftInputFromWindow(passField.getWindowToken(), 0);
+										task = new AsyncTask<String, String, String>() {
 											Intent passUserObjToService;
 
 											@Override
 											protected void onPreExecute() {
 												dialog.dismiss();
-												setProgressBarIndeterminateVisibility(true);
+												
+											    setProgressBarIndeterminateVisibility(true);
 												((ImageView) findViewById(R.id.server))
 														.setImageResource(R.drawable.serverconnecting);
 												((TextView) findViewById(R.id.connecting))
@@ -307,6 +324,8 @@ public class LoginScreenActivity extends Activity implements
 											}
 										};
 										task.execute();
+										
+
 									}
 								});
 						passwordAlert.setNegativeButton("Cancel",
@@ -318,7 +337,19 @@ public class LoginScreenActivity extends Activity implements
 										return;
 									}
 								});
-						final AlertDialog alert = passwordAlert.create();
+						passField
+								.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+
+									@Override
+									public boolean onEditorAction(
+											TextView arg0, int arg1,
+											KeyEvent arg2) {
+										// TODO Auto-generated method stub
+										alert.getButton(Dialog.BUTTON1).performClick();
+										return false;
+									}
+								});
+						alert = passwordAlert.create();
 						alert.show();
 						passField.addTextChangedListener(new TextWatcher() {
 							// this TextWatcher watches for changes in text at

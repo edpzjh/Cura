@@ -62,6 +62,7 @@ import com.cura.Terminal.TerminalActivity;
 import com.cura.nmap.NmapActivity;
 import com.cura.syslog.SysLogActivity;
 import com.cura.sysmonitor.SysMonitorActivity;
+import com.google.ads.AdView;
 
 public class CuraActivity extends TabActivity implements OnClickListener,
 		OnTouchListener {
@@ -86,6 +87,8 @@ public class CuraActivity extends TabActivity implements OnClickListener,
 	// to fetch the GET request of the server's location
 	private NotificationManager mNotificationManager;
 	boolean connectionTrigger = true;
+	private AdView adView;
+	private AlertDialog alert;
 
 	private ServiceConnection connection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName arg0, IBinder service) {
@@ -223,6 +226,10 @@ public class CuraActivity extends TabActivity implements OnClickListener,
 		tabHost.addTab(TerminalSpec);
 
 		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+		// Ads
+		// adView = (AdView)this.findViewById(R.id.adView);
+		// adView.loadAd(new AdRequest());
 	}
 
 	@Override
@@ -309,45 +316,45 @@ public class CuraActivity extends TabActivity implements OnClickListener,
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-			// if the back button is pressed when the user is in this (Cura
-			// Activity)
-			new AlertDialog.Builder(this).setTitle("Logout Confirmation")
-					// confirm logout
-					.setMessage(R.string.logoutConfirmationDialog)
-					.setPositiveButton("Yes",
-							new DialogInterface.OnClickListener() {
-
-								public void onClick(DialogInterface dialog,
-										int which) {
-									try {
-										// close connection
-										// conn.close();
-										Log.d("Connection", "connection closed");
-									} catch (Exception e) {
-										Log.d("Connection", e.toString());
-									}
-									Intent closeAllActivities = new Intent(
-											CuraActivity.this,
-											LoginScreenActivity.class);
-									// just close everything
-									closeAllActivities
-											.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-									CuraActivity.this
-											.startActivity(closeAllActivities);
-
-									mNotificationManager.cancelAll();
-								}
-							}).setNegativeButton("No",
-					// if No is selected, dismiss the dialog
-							new DialogInterface.OnClickListener() {
-
-								public void onClick(DialogInterface dialog,
-										int which) {
-									dialog.dismiss();
-								}
-							}).show();
-		}
+		// if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+		// // if the back button is pressed when the user is in this (Cura
+		// // Activity)
+		// new AlertDialog.Builder(this).setTitle("Logout Confirmation")
+		// // confirm logout
+		// .setMessage(R.string.logoutConfirmationDialog)
+		// .setPositiveButton("Yes",
+		// new DialogInterface.OnClickListener() {
+		//
+		// public void onClick(DialogInterface dialog,
+		// int which) {
+		// try {
+		// // close connection
+		// // conn.close();
+		// Log.d("Connection", "connection closed");
+		// } catch (Exception e) {
+		// Log.d("Connection", e.toString());
+		// }
+		// Intent closeAllActivities = new Intent(
+		// CuraActivity.this,
+		// LoginScreenActivity.class);
+		// // just close everything
+		// closeAllActivities
+		// .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		// CuraActivity.this
+		// .startActivity(closeAllActivities);
+		//
+		// mNotificationManager.cancelAll();
+		// }
+		// }).setNegativeButton("No",
+		// // if No is selected, dismiss the dialog
+		// new DialogInterface.OnClickListener() {
+		//
+		// public void onClick(DialogInterface dialog,
+		// int which) {
+		// dialog.dismiss();
+		// }
+		// }).show();
+		// }
 		return super.onKeyDown(keyCode, event);
 	}
 
