@@ -2,8 +2,7 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     
 	<item android:drawable="@drawable/portscanactive"
-		android:state_selected="true"
-		android:color="#7AC65D" />
+		android:state_selected="true"/>
 	<item android:drawable="@drawable/portscanidle" />
 
 </selector>
