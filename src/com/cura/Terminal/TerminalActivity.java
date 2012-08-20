@@ -53,8 +53,10 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cura.DbHelper;
@@ -134,8 +136,19 @@ public class TerminalActivity extends Activity {
 					+ ":~$ ";
 		}
 		this.setTitle("Welcome to the terminal, " + userTemp.getUsername());
-		commandLine = (EditText) findViewById(R.id.commandLine);
 		execute = (Button) findViewById(R.id.executeButton);
+		commandLine = (EditText) findViewById(R.id.commandLine);
+		commandLine.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+			
+			@Override
+			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+				if (actionId == EditorInfo.IME_ACTION_GO) {
+		            execute.performClick();
+		            return true;
+		        }
+				return false;
+			}
+		});
 		result = (EditText) findViewById(R.id.result);
 		result.append(username);
 		result.setTextColor(Color.GREEN);
@@ -375,7 +388,7 @@ public class TerminalActivity extends Activity {
 	@Override
 	protected void onDestroy() {
 		super.onStop();
-		// unbindService(connection);
+		getApplicationContext().unbindService(connection);
 	}
 
 	public boolean onDown(MotionEvent e) {
