@@ -1,4 +1,4 @@
-Cura is a mobile phone application for the Android platform (Gingerbread 2.3.3 and above). It is a bundle of remote servers-administration tools targeted mainly at sysadmins.
+Cura is a bundle of remote servers-administration tools that facilitate the easy maintenance, configuration and all-around administration of UNIX/Linux servers.
 
 When in the hands of a sysadmin, Cura will provide:
 
@@ -12,6 +12,7 @@ When in the hands of a sysadmin, Cura will provide:
 
 **Server Stats are general server information like its Vitals, Mounted Filesystems, Memory information, processes and so on.
 
-**Added to which, a security feature will be implemented that allows users to have Cura's database completely wiped upon them sending the compromised phone a secret pattern of their choosing. (ex: send an SMS message containing "phone has been stolen!" to your Android phone to wipe Cura's database and receive the location of the compromised phone as an SMS to your emergency phone number or as an e-mail to your emergency e-mail address).
+**A security feature is implemented that allows you to have Cura's database wiped when you send the compromised phone a secret pattern of your choosing. (ex: send an SMS message 
+containing "phone has been stolen!" to your Android phone to wipe Cura's database and receive the location of the compromised phone as an SMS to your emergency phone number or as an e-mail to your emergency e-mail address).
 
-Cura is multi-lingual and for now, it supports English, Arabic, German and Greek.
+All of the above modules include sharing and screenshotting capabilities.
