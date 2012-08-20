@@ -51,6 +51,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cura.CuraActivity;
 import com.cura.LoginScreenActivity;
 import com.cura.R;
 import com.cura.ScreenCapture;
@@ -173,7 +174,7 @@ public class ServerStatsActivity extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		menu.add(0, REFRESH, 0, R.string.refresh).setIcon(
-				R.drawable.ic_menu_rotate);
+				R.drawable.ic_menu_refresh);
 		// this menu includes the "Refresh" option, which refreshes all of the
 		// page's information
 		menu.add(0, SCREENCAPTURE, 0, R.string.menuSnapshot).setIcon(
@@ -345,7 +346,7 @@ public class ServerStatsActivity extends Activity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		// unbindService(connection);
+		getApplicationContext().unbindService(connection);
 	}
 
 	public void createChartLayout(String s) {

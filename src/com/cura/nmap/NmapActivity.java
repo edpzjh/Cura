@@ -771,7 +771,7 @@ public class NmapActivity extends Activity {
 	protected void onDestroy() {
 		// TODO Auto-generated method stub
 		super.onDestroy();
-
+		
 		if (vTask != null)
 			vTask.cancel(true);
 		if (sTask != null)

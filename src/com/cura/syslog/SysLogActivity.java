@@ -316,7 +316,7 @@ public class SysLogActivity extends Activity implements
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		// unbindService(connection);
+		getApplicationContext().unbindService(connection);
 	}
 
 	@Override

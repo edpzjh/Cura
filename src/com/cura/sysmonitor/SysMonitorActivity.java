@@ -284,7 +284,7 @@ public class SysMonitorActivity extends Activity {
 			}.execute();
 			break;
 		}
-		return false;
+		return super.onOptionsItemSelected(item);
 	}
 
 	@Override
@@ -293,7 +293,7 @@ public class SysMonitorActivity extends Activity {
 		// unbind and set state to false
 		state = false;
 		mThread = null;
-		// unbindService(connection);
+		getApplicationContext().unbindService(connection);
 		finish();
 	}
 

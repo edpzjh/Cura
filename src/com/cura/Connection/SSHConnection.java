@@ -51,7 +51,6 @@ public class SSHConnection extends AsyncTask<User, String, String> {
 		}
 		return result;
 	}
-
 	@Override
 	protected void onPostExecute(String result) {
 		// TODO Auto-generated method stub

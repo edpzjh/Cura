@@ -24,6 +24,7 @@ package com.cura.Connection;
  * functions like executeCommand() which is used to execute a command at the terminal.
  */
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -88,6 +89,7 @@ public class ConnectionService extends Service {
 		super.onCreate();
 	}
 
+	@SuppressLint("NewApi")
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		super.onStartCommand(intent, flags, startId);
