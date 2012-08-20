@@ -25,7 +25,9 @@
         android:layout_height="40dp"
         android:layout_gravity="center"
         android:background="@drawable/edittext_border"
-        android:textColor="@android:color/white" >
+        android:textColor="@android:color/white"
+        android:imeOptions="actionGo"
+        android:inputType="text"  >
 
         <requestFocus />
     </EditText>
