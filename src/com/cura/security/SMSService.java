@@ -50,6 +50,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.cura.DbHelper;
+import com.cura.R;
 import com.cura.security.MyLocation.LocationResult;
 
 public class SMSService extends Service implements
@@ -91,9 +92,16 @@ public class SMSService extends Service implements
 		LocationResult locationResult = new LocationResult() {
 			@Override
 			public void gotLocation(Location location) {
+				try{
 				latitude = location.getLatitude();
 				longitude = location.getLongitude();
 				Log.d("Location", latitude + " - " + longitude);
+				}catch(Exception e)
+				{
+					latitude = 0;
+					longitude = 0;
+					Toast.makeText(SMSService.this, R.string.unableToLocate, Toast.LENGTH_LONG).show();
+				}
 			}
 		};
 		MyLocation myLocation = new MyLocation();

@@ -57,7 +57,7 @@ public class regexValidator {
 
 	public boolean validateUsername(String username) {
 		if (username.compareTo("") == 0
-				|| !username.matches("^[a-z0-9_-]{3,15}$")) {
+				|| !username.matches("^[a-z0-9_.-]{3,15}$")) {
 			return false;
 		}
 		return true;

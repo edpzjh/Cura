@@ -49,6 +49,7 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.cura.validation.regexValidator;
 
@@ -209,7 +210,7 @@ public class AccountsListActivity extends ListActivity {
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
 				.getMenuInfo();
-		int userIDint = (int) info.id;
+		final int userIDint = (int) info.id;
 		final String usernameCode = user[userIDint].getUsername();
 		final String domainCode = user[userIDint].getDomain();
 
@@ -247,8 +248,13 @@ public class AccountsListActivity extends ListActivity {
 					// update user info
 					String usern = usernameInput.getText().toString();
 					String domain = domainInput.getText().toString();
-					int port = Integer.parseInt(portInput.getText().toString());
-
+					int port;
+					try{
+						port = Integer.parseInt(portInput.getText().toString());
+					}catch(Exception e){
+						port = user[userIDint].getPort();
+						Toast.makeText(AccountsListActivity.this, R.string.portErrorModify, Toast.LENGTH_LONG).show();
+					}
 					ContentValues values = new ContentValues();
 
 					values.put(dbHelper.C_USERNAME, usern);

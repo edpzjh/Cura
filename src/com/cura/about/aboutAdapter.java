@@ -35,40 +35,39 @@ import android.widget.TextView;
 
 @SuppressWarnings("rawtypes")
 public class aboutAdapter extends ArrayAdapter {
-	Context context;
-	Vector<AboutClass> aboutVector;
+ Context context;
+ Vector<AboutClass> aboutVector;
 
-	@SuppressWarnings("unchecked")
-	public aboutAdapter(Context context, Vector aboutV) {
-		super(context, R.layout.about, aboutV);
-		this.context = context;
-		aboutVector = aboutV;
-	}
+ @SuppressWarnings("unchecked")
+ public aboutAdapter(Context context, Vector aboutV) {
+  super(context, R.layout.about, aboutV);
+  this.context = context;
+  aboutVector = aboutV;
+ }
 
-	@Override
-	public View getView(final int position, View convertView, ViewGroup parent) {
-		// this adapter constructs the layout of what is shown in the About
-		// activity
-		LayoutInflater inflater = (LayoutInflater) context
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View rowView = inflater.inflate(R.layout.about, parent, false);
-		if (aboutVector.get(position).getTitle().compareTo("separator") == 0) {
-			rowView = inflater.inflate(R.layout.seperator, null);
+ @Override
+ public View getView(final int position, View convertView, ViewGroup parent) {
+  // this adapter constructs the layout of what is shown in the About
+  // activity
+  LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+  View rowView = inflater.inflate(R.layout.about, parent, false);
+  if(aboutVector.get(position).getTitle().compareTo("separator") == 0) {
+   rowView = inflater.inflate(R.layout.seperator, null);
 
-			rowView.setOnClickListener(null);
-			rowView.setOnLongClickListener(null);
-			rowView.setLongClickable(false);
+   rowView.setOnClickListener(null);
+   rowView.setOnLongClickListener(null);
+   rowView.setLongClickable(false);
 
-			final TextView sectionView = (TextView) rowView
-					.findViewById(R.id.list_item_section_text);
-			sectionView.setText(aboutVector.get(position).getSubtitle());
-		} else {
-			TextView title = (TextView) rowView.findViewById(R.id.label);
-			TextView subTitle = (TextView) rowView.findViewById(R.id.label2);
-			title.setText(aboutVector.get(position).getTitle());
-			subTitle.setText(aboutVector.get(position).getSubtitle());
-		}
+   final TextView sectionView = (TextView) rowView.findViewById(R.id.list_item_section_text);
+   sectionView.setText(aboutVector.get(position).getSubtitle());
+  }
+  else {
+   TextView title = (TextView) rowView.findViewById(R.id.label);
+   TextView subTitle = (TextView) rowView.findViewById(R.id.label2);
+   title.setText(aboutVector.get(position).getTitle());
+   subTitle.setText(aboutVector.get(position).getSubtitle());
+  }
 
-		return rowView;
-	}
+  return rowView;
+ }
 }

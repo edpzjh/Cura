@@ -131,5 +131,8 @@
     <string name="newServer">New server</string>
     <string name="modifyServer">Modify servers</string>
     <string name="noServersFound">No servers found to be modified</string>
+    <string name="portError">The port entered is too long, port set to \'22\'</string>
+    <string name="portErrorModify">The port entered is too long</string>
+    <string name="unableToLocate">Unable to find location, please try again</string>
 
 </resources>
