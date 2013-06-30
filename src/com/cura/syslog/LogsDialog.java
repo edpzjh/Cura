@@ -35,33 +35,28 @@ import android.widget.TextView;
 import com.cura.R;
 
 public class LogsDialog extends Activity implements OnClickListener {
-	private Button close;
-	private TextView t;
-	private String Logs;
+ private Button close;
+ private TextView t;
+ private String Logs;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.logsdialog);
-		close = (Button) findViewById(R.id.closeLogsDialog);
-		close.setOnClickListener(this);
-		Bundle extra = getIntent().getExtras();
-		if (extra != null)
-			// grab the contents that were sent along with the intent that lead
-			// to this activity
-			Logs = extra.getString("LogsResult");
-		t = (TextView) findViewById(R.id.logsView);
-		// set the text to the display
-		t.setText(Logs);
-	}
+ @Override
+ protected void onCreate(Bundle savedInstanceState) {
+  super.onCreate(savedInstanceState);
+  setContentView(R.layout.logsdialog);
+  close = (Button) findViewById(R.id.closeLogsDialog);
+  close.setOnClickListener(this);
+  Bundle extra = getIntent().getExtras();
+  if(extra != null)
+   Logs = extra.getString("LogsResult");
+  t = (TextView) findViewById(R.id.logsView);
+  t.setText(Logs);
+ }
 
-	public void onClick(View v) {
-		switch (v.getId()) {
-		case R.id.closeLogsDialog:
-			// close
-			this.finish();
-			break;
-		}
-	}
+ public void onClick(View v) {
+  switch (v.getId()) {
+  case R.id.closeLogsDialog:
+   this.finish();
+   break;
+  }
+ }
 }

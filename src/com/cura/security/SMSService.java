@@ -53,232 +53,166 @@ import com.cura.DbHelper;
 import com.cura.R;
 import com.cura.security.MyLocation.LocationResult;
 
-public class SMSService extends Service implements
-		OnSharedPreferenceChangeListener {
+public class SMSService extends Service implements OnSharedPreferenceChangeListener {
 
-	private final String SMS_RECEIVED = "android.provider.Telephony.SMS_RECEIVED";
-	String pattern;
-	String alternativePhoneNo;
-	String alternativeEmail;
-	String messageBody;
-	// to be fetched from the settings below (textfield and whatnot)
-	SmsMessage[] messages;
-	DbHelper dbHelper;
-	SQLiteDatabase db;
-	BroadcastReceiver internet;
-	BroadcastReceiver sms;
-	TelephonyManager telMgr;
-	// variables for GPS
-	LocationManager locMgr;
-	LocationListener locListener;
-	double latitude;
-	double longitude;
-	long time;
-	String securityMessageBody = "Click the link below to see the location of your device \n"
-			+ "http://maps.google.com/maps?q="
-			+ latitude
-			+ ","
-			+ longitude
-			+ "&t=k";
+ private final String SMS_RECEIVED = "android.provider.Telephony.SMS_RECEIVED";
+ String pattern;
+ String alternativePhoneNo;
+ String alternativeEmail;
+ String messageBody;
+ SmsMessage[] messages;
+ DbHelper dbHelper;
+ SQLiteDatabase db;
+ BroadcastReceiver internet;
+ BroadcastReceiver sms;
+ TelephonyManager telMgr;
+ LocationManager locMgr;
+ LocationListener locListener;
+ double latitude;
+ double longitude;
+ long time;
+ String securityMessageBody = "Click the link below to see the location of your device \n" + "http://maps.google.com/maps?q=" + latitude + ","
+   + longitude + "&t=k";
 
-	// this is the message that's going to be sent
-
-	@Override
-	public void onCreate() {
-		// TODO Auto-generated method stub
-		super.onCreate();
-		enableGps();
-		// enable the GPS if it has not already been enabled
-		LocationResult locationResult = new LocationResult() {
-			@Override
-			public void gotLocation(Location location) {
-				try{
-				latitude = location.getLatitude();
-				longitude = location.getLongitude();
-				Log.d("Location", latitude + " - " + longitude);
-				}catch(Exception e)
-				{
-					latitude = 0;
-					longitude = 0;
-					Toast.makeText(SMSService.this, R.string.unableToLocate, Toast.LENGTH_LONG).show();
-				}
-			}
-		};
-		MyLocation myLocation = new MyLocation();
-		myLocation.getLocation(this, locationResult);
-
+ @Override
+ public void onCreate() {
+  super.onCreate();
+  enableGps();
+  LocationResult locationResult = new LocationResult() {
+   @Override
+   public void gotLocation(Location location) {
+	try {
+	 latitude = location.getLatitude();
+	 longitude = location.getLongitude();
+	 Log.d("Location", latitude + " - " + longitude);
 	}
-
-	@Override
-	public void onStart(Intent intent, int startId) {
-		super.onStart(intent, startId);
-		SharedPreferences prefs = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		// register preference change listener
-		prefs.registerOnSharedPreferenceChangeListener(this);
-		// and set remembered preferences
-		pattern = prefs.getString("securityPattern", "");
-		alternativePhoneNo = prefs.getString("alternativePhoneNo", "");
-		alternativeEmail = prefs.getString("alternativeEmail", "");
-		// fetch the settings from the preferences screen
-		telMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-
-		sms = new BroadcastReceiver() {
-
-			@Override
-			public void onReceive(Context context, Intent intent) {
-				// when the SMS is received by the phone
-				dbHelper = new DbHelper(context);
-				db = dbHelper.getWritableDatabase();
-				// prepare the cursor to access the database
-				Bundle bundle = intent.getExtras();
-
-				if (bundle != null) {
-					Object[] pdus = (Object[]) bundle.get("pdus");
-					messages = new SmsMessage[pdus.length];
-					for (int i = 0; i < pdus.length; i++) {
-						messages[i] = SmsMessage
-								.createFromPdu((byte[]) pdus[i]);
-						// get the text from the received SMS
-					}
-					messageBody = messages[0].getMessageBody();
-					// save it
-				}
-				if (pattern.compareTo(messages[0].getMessageBody()) == 0) {
-					// compare it to what we have stored in the DB as
-					// "emergency pattern"
-					db.delete(DbHelper.userTableName, "", null);
-					// send broadcast message to notify login screen to refresh
-					Intent i = new Intent();
-					i.setAction("database.delete");
-					sendBroadcast(i);
-					// if it matches, delete the table userTable and show the
-					// message that it has been deleted
-					Log.d("SMSservice", "received");
-					Toast.makeText(context,
-							"Cura's database has been deleted!",
-							Toast.LENGTH_LONG).show();
-
-					if (telMgr.getSimState() == TelephonyManager.SIM_STATE_READY
-							&& latitude != 0.0 && longitude != 0.0) {
-						// if there is a SIM card available in the phone at the
-						// time of this happening, send the following message to
-						// the alternative phone number
-						sendSMS(alternativePhoneNo,
-								"Click the link below to see the location of your device \n"
-										+ "http://maps.google.com/maps?q="
-										+ latitude + "," + longitude + "&t=k");
-						// show the user that this action has been taken
-						Toast.makeText(
-								context,
-								"A message has been sent to the owner of this device informing them of your location.",
-								Toast.LENGTH_LONG).show();
-					}
-					// internet broadcast receiver
-					internet = new BroadcastReceiver() {
-
-						@Override
-						public void onReceive(Context context, Intent intent) {
-							// TODO Auto-generated method stub
-							boolean connectivity = intent.getBooleanExtra(
-									// waits for a wifi connection to be
-									// availabe to send the email, just in case
-									// that there was no wifi connection at the
-									// time of the SMS being received
-									ConnectivityManager.EXTRA_NO_CONNECTIVITY,
-									false);
-							if (!connectivity) {
-								sendEmail();
-							}
-						}
-
-					};
-				}
-				// close database connection
-				db.close();
-				dbHelper.close();
-				// registering Internet broadcast receiver
-				IntentFilter NETintentFilter = new IntentFilter();
-				NETintentFilter
-						.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-				registerReceiver(internet, NETintentFilter);
-			}
-
-		};
-		// Registering sms broadcast receiver
-		IntentFilter SMSintentFilter = new IntentFilter();
-		SMSintentFilter.addAction(SMS_RECEIVED);
-		registerReceiver(sms, SMSintentFilter);
+	catch (Exception e) {
+	 latitude = 0;
+	 longitude = 0;
+	 Toast.makeText(SMSService.this, R.string.unableToLocate, Toast.LENGTH_LONG).show();
 	}
+   }
+  };
+  MyLocation myLocation = new MyLocation();
+  myLocation.getLocation(this, locationResult);
 
-	@Override
-	public IBinder onBind(Intent arg0) {
-		// TODO Auto-generated method stub
-		return null;
+ }
+
+ @Override
+ public void onStart(Intent intent, int startId) {
+  super.onStart(intent, startId);
+  SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+  prefs.registerOnSharedPreferenceChangeListener(this);
+  pattern = prefs.getString("securityPattern", "");
+  alternativePhoneNo = prefs.getString("alternativePhoneNo", "");
+  alternativeEmail = prefs.getString("alternativeEmail", "");
+  telMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+
+  sms = new BroadcastReceiver() {
+
+   @Override
+   public void onReceive(Context context, Intent intent) {
+	dbHelper = new DbHelper(context);
+	db = dbHelper.getWritableDatabase();
+	Bundle bundle = intent.getExtras();
+
+	if(bundle != null) {
+	 Object[] pdus = (Object[]) bundle.get("pdus");
+	 messages = new SmsMessage[pdus.length];
+	 for (int i = 0; i < pdus.length; i++) {
+	  messages[i] = SmsMessage.createFromPdu((byte[]) pdus[i]);
+	 }
+	 messageBody = messages[0].getMessageBody();
 	}
+	if(pattern.compareTo(messages[0].getMessageBody()) == 0) {
+	 db.delete(DbHelper.userTableName, "", null);
+	 Intent i = new Intent();
+	 i.setAction("database.delete");
+	 sendBroadcast(i);
+	 Log.d("SMSservice", "received");
+	 Toast.makeText(context, "Cura's database has been deleted!", Toast.LENGTH_LONG).show();
 
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
-			String key) {
-		pattern = sharedPreferences.getString("securityPattern", "");
+	 if(telMgr.getSimState() == TelephonyManager.SIM_STATE_READY && latitude != 0.0 && longitude != 0.0) {
+	  sendSMS(alternativePhoneNo, "Click the link below to see the location of your device \n" + "http://maps.google.com/maps?q=" + latitude + ","
+		+ longitude + "&t=k");
+	  Toast.makeText(context, "A message has been sent to the owner of this device informing them of your location.", Toast.LENGTH_LONG).show();
+	 }
+	 internet = new BroadcastReceiver() {
+
+	  @Override
+	  public void onReceive(Context context, Intent intent) {
+	   boolean connectivity = intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);
+	   if(!connectivity) {
+		sendEmail();
+	   }
+	  }
+
+	 };
 	}
+	db.close();
+	dbHelper.close();
+	IntentFilter NETintentFilter = new IntentFilter();
+	NETintentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+	registerReceiver(internet, NETintentFilter);
+   }
 
-	private void sendSMS(String phoneNumber, String message) {
-		SmsManager sms = SmsManager.getDefault();
-		sms.sendTextMessage(phoneNumber, null, message, null, null);
-	}
+  };
+  IntentFilter SMSintentFilter = new IntentFilter();
+  SMSintentFilter.addAction(SMS_RECEIVED);
+  registerReceiver(sms, SMSintentFilter);
+ }
 
-	private void sendEmail() {
-		Log.d("Email", "wait to send email");
-		// send email
-		try {
-			GMailSender sender = new GMailSender("cura.app@gmail.com",
-					"CURAapplication1+2+3+");
-			// construct a sender object with the username and password of the
-			// application's e-mail address
-			sender.sendMail("Cura: Device location",
-					"Click the link below to see the location of your device \n"
-							+ "http://maps.google.com/maps?q=" + latitude + ","
-							+ longitude + "&t=k", "cura.app@gmail.com",
-					alternativeEmail);
-			// send the above email with the longitude and latitude filled from
-			// previous functions, have them all inside the link to Google Maps,
-			// and along with the sender of the e-mail (us)
-			Log.d("Email", "email has been sent");
-		} catch (Exception e) {
-			Log.e("SendMail", e.getMessage(), e);
-		}
-	}
+ @Override
+ public IBinder onBind(Intent arg0) {
+  return null;
+ }
 
-	private void getFirstLocation() {
-		Location location = locMgr
-				.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-		if (location != null) {
-			latitude = location.getLatitude();
-			longitude = location.getLongitude();
-		}
-	}
+ public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+  pattern = sharedPreferences.getString("securityPattern", "");
+ }
 
-	public void enableGps() {
-		String provider = Settings.Secure.getString(getContentResolver(),
-				Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+ private void sendSMS(String phoneNumber, String message) {
+  SmsManager sms = SmsManager.getDefault();
+  sms.sendTextMessage(phoneNumber, null, message, null, null);
+ }
 
-		if (!provider.contains("gps")) {
-			// if gps is disabled
-			final Intent poke = new Intent();
-			poke.setClassName("com.android.settings",
-					"com.android.settings.widget.SettingsAppWidgetProvider");
-			// enable it
-			poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
-			poke.setData(Uri.parse("3"));
-			sendBroadcast(poke);
-		}
-	}
+ private void sendEmail() {
+  Log.d("Email", "wait to send email");
+  try {
+   GMailSender sender = new GMailSender("cura.app@gmail.com", "CURAapplication1+2+3+");
+   sender.sendMail("Cura: Device location", "Click the link below to see the location of your device \n" + "http://maps.google.com/maps?q="
+	 + latitude + "," + longitude + "&t=k", "cura.app@gmail.com", alternativeEmail);
+   Log.d("Email", "email has been sent");
+  }
+  catch (Exception e) {
+   Log.e("SendMail", e.getMessage(), e);
+  }
+ }
 
-	@Override
-	public void onDestroy() {
-		// TODO Auto-generated method stub
-		super.onDestroy();
-		unregisterReceiver(sms);
+ private void getFirstLocation() {
+  Location location = locMgr.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+  if(location != null) {
+   latitude = location.getLatitude();
+   longitude = location.getLongitude();
+  }
+ }
 
-	}
+ public void enableGps() {
+  String provider = Settings.Secure.getString(getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+
+  if(!provider.contains("gps")) {
+   final Intent poke = new Intent();
+   poke.setClassName("com.android.settings", "com.android.settings.widget.SettingsAppWidgetProvider");
+   poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
+   poke.setData(Uri.parse("3"));
+   sendBroadcast(poke);
+  }
+ }
+
+ @Override
+ public void onDestroy() {
+  super.onDestroy();
+  unregisterReceiver(sms);
+
+ }
 }

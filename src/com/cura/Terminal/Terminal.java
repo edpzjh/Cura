@@ -41,66 +41,63 @@ import com.jcraft.jsch.Session;
 
 public class Terminal extends Thread {
 
-	private JSch jsch;
-	private Session session;
-	private Channel channel;
+ private JSch jsch;
+ private Session session;
+ private Channel channel;
 
-	private String username;
-	private String host;
-	private String password;
-	private int port;
-	private StringWriter writer;
-	private InputStream in;
-	private String result = "";
-	int i = 0;
+ private String username;
+ private String host;
+ private String password;
+ private int port;
+ private StringWriter writer;
+ private InputStream in;
+ private String result = "";
+ int i = 0;
 
-	public Terminal(final User user) throws JSchException {
-		// TODO Auto-generated method stub
-		writer = new StringWriter();
-		username = user.getUsername();
-		host = user.getDomain();
-		password = user.getPassword();
-		port = user.getPort();
-		jsch = new JSch();
-		// the JSch object that we use to establish SSH connectivity
-		session = jsch.getSession(username, host, port);
-		session.setPassword(password);
-		session.setConfig("StrictHostKeyChecking", "no");
-		session.connect();
-		Log.i("Terminal", "connected");
-		channel = session.openChannel("exec");
+ public Terminal(final User user) throws JSchException {
+  writer = new StringWriter();
+  username = user.getUsername();
+  host = user.getDomain();
+  password = user.getPassword();
+  port = user.getPort();
+  jsch = new JSch();
+  session = jsch.getSession(username, host, port);
+  session.setPassword(password);
+  session.setConfig("StrictHostKeyChecking", "no");
+  session.connect();
+  Log.i("Terminal", "connected");
+  channel = session.openChannel("exec");
 
-	}
+ }
 
-	public synchronized String ExecuteCommand(String command) {
+ public synchronized String ExecuteCommand(String command) {
 
-		try {
-			channel = session.openChannel("exec");
-			((ChannelExec) channel).setCommand(command);
-			channel.connect();
+  try {
+   channel = session.openChannel("exec");
+   ((ChannelExec) channel).setCommand(command);
+   channel.connect();
 
-			// get output from server
-			in = channel.getInputStream();
+   in = channel.getInputStream();
 
-			// convert output to string
-			writer.getBuffer().setLength(0);
-			IOUtils.copy(in, writer);
-			result = writer.toString();
+   writer.getBuffer().setLength(0);
+   IOUtils.copy(in, writer);
+   result = writer.toString();
 
-			System.gc();
+   System.gc();
 
-		} catch (Exception i) {
-			return "";
-		} 
-		return result;
-	}
+  }
+  catch (Exception i) {
+   return "";
+  }
+  return result;
+ }
 
-	public void close() {
-		channel.disconnect();
-		session.disconnect();
-	}
+ public void close() {
+  channel.disconnect();
+  session.disconnect();
+ }
 
-	public boolean connected() {
-		return session.isConnected();
-	}
+ public boolean connected() {
+  return session.isConnected();
+ }
 }

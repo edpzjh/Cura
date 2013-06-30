@@ -21,7 +21,7 @@
     <string name="DialogAddNewServerButton">Add new server</string>
     <string name="DialogCancelButton">Cancel</string>
     <string name="LoginScreenName">SSH Accounts list</string>
-    <string name="ModifyServerInfo">Modify server info</string>
+    <string name="ModifyServerInfo">Edit Servers</string>
     <string name="DeleteServer">Delete server</string>
     <string name="msgProgressDialog">Please wait while the connection is being established…</string>
     <string name="addNewFavoriteCommand">Add new command</string>
@@ -34,7 +34,7 @@
     <string name="firstTimeUseCancelButton">Cancel</string>
     <string name="logout">Logout</string>
     <string name="logoutConfirmationDialog">Do you want to logout from this account ?</string>
-    <string name="sysLogButtonText">Get Logs</string>
+    <string name="sysLogButtonText">GET LOGS</string>
     <string name="checkBoxSysLogs">Enable Line Numbers</string>
     <string name="favoritesWelcome">Welcome to your favorites </string>
     <string name="credentialsWrong">Wrong username/password combination, please try again!</string>
@@ -94,14 +94,14 @@
     <string name="preferencescreenActivityTitle">Cura Preference Screen</string>
     <string name="nmapActivityTitle">Nmap Port-scanner</string>
     <string name="syslogactivityTitle">System Log Reader</string>
-    <string name="sysLogSaveLogsButtonText">Save logs to Cura directory</string>
+    <string name="sysLogSaveLogsButtonText">SAVE LOGS</string>
     <string name="logsSaved">Logs saved in Cura directory under </string>
     <string name="logsNotSaved">No logs to be saved \n(There was either a permissions issue, or the logfile does not exist on your server)</string>
     <string name="savingLogs">Saving logs...</string>
     <string name="connectionTimeout">Connection timeout</string>
     <string name="connectionTimeoutMessage">Connection timeout, please check your network or internet connectivity.\n You will be redirected to Cura\'s login screen.</string>
     <string name="serverExists">Server account already exists!</string>
-    <string name="nmapSaveButtonText">Save Nmap results to Cura directory</string>
+    <string name="nmapSaveButtonText">SAVE RESULTS</string>
     <string name="nmapResultsSaved">Results saved in Cura directory under </string>
     <string name="resultsNotSaved">Results not saved</string>
     <string name="ServerStatsTitle">Server\'s Statistics</string>
@@ -127,12 +127,13 @@
     along with Cura.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</string>
     <string name="license_information">License Information</string>
     <string name="loginText">CURA lets you manage servers \n from your Android mobile \n using basic UNIX tools</string>
-    <string name="selectServer">Select server</string>
-    <string name="newServer">New server</string>
-    <string name="modifyServer">Modify servers</string>
+    <string name="selectServer">SELECT SERVER</string>
+    <string name="newServer">NEW SERVER</string>
+    <string name="modifyServer">MODIFY SERVER</string>
     <string name="noServersFound">No servers found to be modified</string>
     <string name="portError">The port entered is too long, port set to \'22\'</string>
     <string name="portErrorModify">The port entered is too long</string>
     <string name="unableToLocate">Unable to find location, please try again</string>
+    <string name="killprocess">KILL PROCESS</string>
 
 </resources>

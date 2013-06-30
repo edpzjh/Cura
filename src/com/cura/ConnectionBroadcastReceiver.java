@@ -37,44 +37,30 @@ import android.widget.Toast;
 import com.cura.Connection.ConnectionService;
 
 public class ConnectionBroadcastReceiver extends BroadcastReceiver {
-	Vibrator vibrator;
+ Vibrator vibrator;
 
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		boolean noConnectivity = intent.getBooleanExtra(
-				ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);
-		// initialize the noConnectivity flag
-		vibrator = (Vibrator) context
-				.getSystemService(Context.VIBRATOR_SERVICE);
-		// initialize the vibrator
-		if (noConnectivity && isMyServiceRunning(context)) {
-			context.stopService(new Intent(context, ConnectionService.class));
-			// if connection is lost while the user is still inside Cura
-			Toast.makeText(context, R.string.connectionTimeoutMessage,
-					Toast.LENGTH_LONG).show();
-			// pop-up a message saying that the connection was lost
-			vibrator.vibrate(300);
-			// vibrate for this much time
-			Intent closeAllActivities = new Intent(
-					context.getApplicationContext(), LoginScreenActivity.class);
-			// close all activities
-			closeAllActivities.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-			closeAllActivities.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			context.getApplicationContext().startActivity(closeAllActivities);
-			// and logout.
-		}
-	}
+ @Override
+ public void onReceive(Context context, Intent intent) {
+  boolean noConnectivity = intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);
+  vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+  if(noConnectivity && isMyServiceRunning(context)) {
+   context.stopService(new Intent(context, ConnectionService.class));
+   Toast.makeText(context, R.string.connectionTimeoutMessage, Toast.LENGTH_LONG).show();
+   vibrator.vibrate(300);
+   Intent closeAllActivities = new Intent(context.getApplicationContext(), LoginScreenActivity.class);
+   closeAllActivities.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+   closeAllActivities.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+   context.getApplicationContext().startActivity(closeAllActivities);
+  }
+ }
 
-	private boolean isMyServiceRunning(Context context) {
-		ActivityManager manager = (ActivityManager) context
-				.getSystemService(context.ACTIVITY_SERVICE);
-		for (RunningServiceInfo service : manager
-				.getRunningServices(Integer.MAX_VALUE)) {
-			if ("com.cura.Connection.ConnectionService".equals(service.service
-					.getClassName())) {
-				return true;
-			}
-		}
-		return false;
-	}
+ private boolean isMyServiceRunning(Context context) {
+  ActivityManager manager = (ActivityManager) context.getSystemService(context.ACTIVITY_SERVICE);
+  for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+   if("com.cura.Connection.ConnectionService".equals(service.service.getClassName())) {
+	return true;
+   }
+  }
+  return false;
+ }
 }

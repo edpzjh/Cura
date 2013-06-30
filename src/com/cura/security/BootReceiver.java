@@ -32,20 +32,15 @@ import android.util.Log;
 
 public class BootReceiver extends BroadcastReceiver {
 
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		Log.d("Boot", "Service Started");
-		SharedPreferences prefs = PreferenceManager
-				.getDefaultSharedPreferences(context);
-		// fetch the shared preferences
-		Intent i = new Intent();
-		// start the intent
-		i.setAction("com.cura.security.SMSService");
-		// set the action to be SMSService page
-		if (prefs.getBoolean("enableSMS", false))
-			// if the SMS broadcast receiver is not enabled, enable it
-			context.startService(i);
-		else
-			Log.d("Boot", "Service not Started");
-	}
+ @Override
+ public void onReceive(Context context, Intent intent) {
+  Log.d("Boot", "Service Started");
+  SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+  Intent i = new Intent();
+  i.setAction("com.cura.security.SMSService");
+  if(prefs.getBoolean("enableSMS", false))
+   context.startService(i);
+  else
+   Log.d("Boot", "Service not Started");
+ }
 }

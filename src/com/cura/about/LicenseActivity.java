@@ -31,11 +31,10 @@ import android.os.Bundle;
 
 public class LicenseActivity extends Activity {
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
-		super.onCreate(savedInstanceState);
-		this.setContentView(R.layout.licenselayout);
-		this.setTitle(R.string.license_information);
-	}
+ @Override
+ protected void onCreate(Bundle savedInstanceState) {
+  super.onCreate(savedInstanceState);
+  this.setContentView(R.layout.licenselayout);
+  this.setTitle(R.string.license_information);
+ }
 }

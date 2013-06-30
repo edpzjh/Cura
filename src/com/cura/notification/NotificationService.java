@@ -40,58 +40,57 @@ import com.cura.Connection.SSHConnection;
 
 public class NotificationService extends Service {
 
-	private CommunicationInterface conn;
-	SSHConnection sshconnection;
+ private CommunicationInterface conn;
+ SSHConnection sshconnection;
 
-	private ServiceConnection connection = new ServiceConnection() {
-		public void onServiceConnected(ComponentName arg0, IBinder service) {
-			conn = CommunicationInterface.Stub.asInterface(service);
-		}
+ private ServiceConnection connection = new ServiceConnection() {
+  public void onServiceConnected(ComponentName arg0, IBinder service) {
+   conn = CommunicationInterface.Stub.asInterface(service);
+  }
 
-		public void onServiceDisconnected(ComponentName name) {
-			// TODO Auto-generated method stub
-			conn = null;
-		}
-	};
+  public void onServiceDisconnected(ComponentName name) {
+   conn = null;
+  }
+ };
 
-	public String sendAndReceive(String command) {
-		String result = "";
+ public String sendAndReceive(String command) {
+  String result = "";
 
-		try {
-			result = conn.executeCommand(command);
-		} catch (RemoteException e) {
-			Log.d("SysLog", e.toString());
-		}
-		return result;
-	}
+  try {
+   result = conn.executeCommand(command);
+  }
+  catch (RemoteException e) {
+   Log.d("SysLog", e.toString());
+  }
+  return result;
+ }
 
-	public void doBindService() {
-		Intent i = new Intent(this, ConnectionService.class);
-		bindService(i, connection, Context.BIND_AUTO_CREATE);
-	}
+ public void doBindService() {
+  Intent i = new Intent(this, ConnectionService.class);
+  bindService(i, connection, Context.BIND_AUTO_CREATE);
+ }
 
-	private final NotificationInterface.Stub mBinder = new NotificationInterface.Stub() {
-		public synchronized String executeCommand(String command)
-				throws RemoteException {
-			String result = "";
-			try {
-				result = sshconnection.messageSender(command);
-			} catch (Exception e) {
-				Log.d("ConnectionService", e.toString());
-			}
-			return result;
-		}
-	};
+ private final NotificationInterface.Stub mBinder = new NotificationInterface.Stub() {
+  public synchronized String executeCommand(String command) throws RemoteException {
+   String result = "";
+   try {
+	result = sshconnection.messageSender(command);
+   }
+   catch (Exception e) {
+	Log.d("ConnectionService", e.toString());
+   }
+   return result;
+  }
+ };
 
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-	}
+ @Override
+ public void onDestroy() {
+  super.onDestroy();
+ }
 
-	@Override
-	public IBinder onBind(Intent intent) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+ @Override
+ public IBinder onBind(Intent intent) {
+  return null;
+ }
 
 }

@@ -33,41 +33,39 @@ import com.jcraft.jsch.JSchException;
 
 public class SSHConnection extends AsyncTask<User, String, String> {
 
-	private final String connected = "cura.connected";
-	private final String notConnected = "cura.not.connected";
-	String result;
-	Terminal terminal;
+ private final String connected = "cura.connected";
+ private final String notConnected = "cura.not.connected";
+ String result;
+ Terminal terminal;
 
-	@Override
-	protected String doInBackground(User... user) {
-		// TODO Auto-generated method stub
-		try {
-			terminal = new Terminal(user[0]);
-			result = connected;
-		} catch (JSchException e) {
-			// TODO Auto-generated catch block
-			Log.d("Connection", e.toString());
-			result = notConnected;
-		}
-		return result;
-	}
-	@Override
-	protected void onPostExecute(String result) {
-		// TODO Auto-generated method stub
-		Log.d("Connection", result);
-		// just for checking in the LogCat
-	}
+ @Override
+ protected String doInBackground(User... user) {
+  try {
+   terminal = new Terminal(user[0]);
+   result = connected;
+  }
+  catch (JSchException e) {
+   Log.d("Connection", e.toString());
+   result = notConnected;
+  }
+  return result;
+ }
 
-	public synchronized String messageSender(String message) {
-		return terminal.ExecuteCommand(message);
-	}
+ @Override
+ protected void onPostExecute(String result) {
+  Log.d("Connection", result);
+ }
 
-	public boolean connected() {
-		return terminal.connected();
-	}
+ public synchronized String messageSender(String message) {
+  return terminal.ExecuteCommand(message);
+ }
 
-	public void closeConnection() {
-		if (terminal != null)
-			terminal.close();
-	}
+ public boolean connected() {
+  return terminal.connected();
+ }
+
+ public void closeConnection() {
+  if(terminal != null)
+   terminal.close();
+ }
 }

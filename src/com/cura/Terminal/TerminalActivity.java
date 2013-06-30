@@ -68,404 +68,311 @@ import com.cura.Connection.CommunicationInterface;
 import com.cura.Connection.ConnectionService;
 
 public class TerminalActivity extends Activity {
-	private final int FAVORITES = 1;
-	private final int CLEAR_EDITTEXT = 2;
-	private final int SCREENCAPTURE = 3;
+ private final int FAVORITES = 1;
+ private final int CLEAR_EDITTEXT = 2;
+ private final int SCREENCAPTURE = 3;
 
-	EditText result;
-	EditText commandLine;
-	Button execute;
-	Button favoritesButton;
+ EditText result;
+ EditText commandLine;
+ Button execute;
+ Button favoritesButton;
 
-	Terminal terminal;
-	User userTemp;
+ Terminal terminal;
+ User userTemp;
 
-	DbHelper dbHelper;
-	SQLiteDatabase db;
+ DbHelper dbHelper;
+ SQLiteDatabase db;
 
-	String favoriteCommands[];
-	String username;
+ String favoriteCommands[];
+ String username;
 
-	private GestureDetector gd;
-	private NotificationManager mNotificationManager;
-	private CommunicationInterface conn;
+ private GestureDetector gd;
+ private NotificationManager mNotificationManager;
+ private CommunicationInterface conn;
 
-	private ServiceConnection connection = new ServiceConnection() {
-		public void onServiceConnected(ComponentName arg0, IBinder service) {
-			// TODO Auto-generated method stub
-			conn = CommunicationInterface.Stub.asInterface(service);
-			// connect to the service and prepare the terminal to start
-			// receiving new commands
-			sendAndReceive();
-		}
+ private ServiceConnection connection = new ServiceConnection() {
+  public void onServiceConnected(ComponentName arg0, IBinder service) {
+   conn = CommunicationInterface.Stub.asInterface(service);
+   sendAndReceive();
+  }
 
-		public void onServiceDisconnected(ComponentName name) {
-			// TODO Auto-generated method stub
-			conn = null;
-			// when the service is disconnected, show this message
-			Toast.makeText(TerminalActivity.this, "Service Disconnected",
-					Toast.LENGTH_LONG);
-		}
-	};
+  public void onServiceDisconnected(ComponentName name) {
+   conn = null;
+   Toast.makeText(TerminalActivity.this, "Service Disconnected", Toast.LENGTH_LONG);
+  }
+ };
 
-	public void doBindService() {
-		Intent i = new Intent(this, ConnectionService.class);
-		getApplicationContext().bindService(i, connection,
-				Context.BIND_AUTO_CREATE);
-		// function for binding to the Connection service
+ public void doBindService() {
+  Intent i = new Intent(this, ConnectionService.class);
+  getApplicationContext().bindService(i, connection, Context.BIND_AUTO_CREATE);
+ }
+
+ public void onCreate(Bundle savedInstanceState) {
+  super.onCreate(savedInstanceState);
+  setContentView(R.layout.terminal);
+  doBindService();
+
+  Bundle extras = getIntent().getExtras();
+  if(extras != null) {
+   userTemp = extras.getParcelable("user");
+  }
+  if(userTemp.getUsername().compareTo("root") == 0) {
+   username = userTemp.getUsername() + "@" + userTemp.getDomain() + ":~# ";
+  }
+  else {
+   username = userTemp.getUsername() + "@" + userTemp.getDomain() + ":~$ ";
+  }
+  this.setTitle("Welcome to the terminal, " + userTemp.getUsername());
+  execute = (Button) findViewById(R.id.executeButton);
+  commandLine = (EditText) findViewById(R.id.commandLine);
+  commandLine.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+
+   @Override
+   public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+	if(actionId == EditorInfo.IME_ACTION_GO) {
+	 execute.performClick();
+	 return true;
+	}
+	return false;
+   }
+  });
+  result = (EditText) findViewById(R.id.result);
+  result.append(username);
+  result.setTextColor(Color.GREEN);
+  mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+ }
+
+ public void sendAndReceive() {
+  execute.setOnClickListener(new OnClickListener() {
+   public void onClick(View arg0) {
+	execute.setEnabled(false);
+	String command = commandLine.getText().toString();
+	result.setTextColor(Color.GREEN);
+	result.append(command + "\n");
+	String res = "";
+	try {
+	 res = conn.executeCommand(command);
+	}
+	catch (Exception e) {
+	 Log.d("Terminal", e.toString());
+	}
+	result.append(res);
+	result.append(username);
+	execute.setEnabled(true);
+	commandLine.setText("");
+   }
+  });
+
+  favoritesButton = (Button) findViewById(R.id.favoritesButton);
+
+  favoritesButton.setOnClickListener(new OnClickListener() {
+   public void onClick(View v) {
+	dbHelper = new DbHelper(TerminalActivity.this);
+	db = dbHelper.getReadableDatabase();
+
+	Cursor c = db.rawQuery("select * from commandTable", null);
+	favoriteCommands = new String[c.getCount()];
+	int counter = 0;
+
+	if(c != null) {
+	 if(c.moveToFirst()) {
+	  do {
+	   favoriteCommands[counter] = c.getString(c.getColumnIndex("command"));
+	   counter++;
+	  } while(c.moveToNext());
+	 }
+	}
+	if(counter == 0) {
+	 Toast.makeText(TerminalActivity.this, R.string.noFavoritesFound, Toast.LENGTH_SHORT).show();
+	}
+	else {
+	 AlertDialog.Builder builder = new AlertDialog.Builder(TerminalActivity.this);
+	 builder.setTitle("Pick a command");
+	 builder.setItems(favoriteCommands, new DialogInterface.OnClickListener() {
+	  public void onClick(DialogInterface dialog, int item) {
+	   commandLine.append(favoriteCommands[item]);
+	  }
+
+	 });
+	 builder.show();
+	}
+	c.close();
+	db.close();
+	dbHelper.close();
+   }
+  });
+ }
+
+ @Override
+ public boolean onCreateOptionsMenu(Menu menu) {
+  boolean result = super.onCreateOptionsMenu(menu);
+  menu.add(0, FAVORITES, 0, R.string.addNewFavoriteCommand).setIcon(android.R.drawable.ic_input_add);
+  menu.add(0, CLEAR_EDITTEXT, 0, R.string.clearTerminal).setIcon(android.R.drawable.ic_notification_clear_all);
+  menu.add(0, SCREENCAPTURE, 0, R.string.menuSnapshot).setIcon(android.R.drawable.ic_menu_camera);
+  return result;
+ }
+
+ @Override
+ public boolean onOptionsItemSelected(MenuItem item) {
+  switch (item.getItemId()) {
+  case FAVORITES:
+   AlertDialog.Builder addUser = new AlertDialog.Builder(TerminalActivity.this);
+   addUser.setMessage(R.string.addNewCommandToFavoritesprompt);
+   final EditText commandText = new EditText(this);
+   addUser.setView(commandText);
+   addUser.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+	public void onClick(DialogInterface dialog, int whichButton) {
+	 String command = commandText.getText().toString();
+	 addCommandToDatabase(command);
+	 return;
+	}
+   });
+   addUser.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+	public void onClick(DialogInterface dialog, int which) {
+
+	 return;
+	}
+   });
+   final AlertDialog alert = addUser.create();
+   alert.show();
+   commandText.addTextChangedListener(new TextWatcher() {
+	public void onTextChanged(CharSequence s, int start, int before, int count) {
+	 if(commandText.getText().length() > 0)
+	  alert.getButton(Dialog.BUTTON1).setEnabled(true);
+	 else
+	  alert.getButton(Dialog.BUTTON1).setEnabled(false);
 	}
 
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.terminal);
-		doBindService();
-
-		Bundle extras = getIntent().getExtras();
-		if (extras != null) {
-			userTemp = extras.getParcelable("user");
-			// determine who the user object is
-		}
-		if (userTemp.getUsername().compareTo("root") == 0) {
-			// according to its username, if it's root, append the result with #
-			// to signifgy root privileges
-			username = userTemp.getUsername() + "@" + userTemp.getDomain()
-					+ ":~# ";
-		} else {
-			// otherwise a $ for non-privileged user
-			username = userTemp.getUsername() + "@" + userTemp.getDomain()
-					+ ":~$ ";
-		}
-		this.setTitle("Welcome to the terminal, " + userTemp.getUsername());
-		execute = (Button) findViewById(R.id.executeButton);
-		commandLine = (EditText) findViewById(R.id.commandLine);
-		commandLine.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-			
-			@Override
-			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-				if (actionId == EditorInfo.IME_ACTION_GO) {
-		            execute.performClick();
-		            return true;
-		        }
-				return false;
-			}
-		});
-		result = (EditText) findViewById(R.id.result);
-		result.append(username);
-		result.setTextColor(Color.GREEN);
-		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
+	public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 	}
 
-	public void sendAndReceive() {
-		execute.setOnClickListener(new OnClickListener() {
-			public void onClick(View arg0) {
-				execute.setEnabled(false);
-				String command = commandLine.getText().toString();
-				result.setTextColor(Color.GREEN);
-				// set the color
-				result.append(command + "\n");
-				String res = "";
-				try {
-					res = conn.executeCommand(command);
-				} catch (Exception e) {
-					Log.d("Terminal", e.toString());
-				}
-				result.append(res);
-				result.append(username);
-				execute.setEnabled(true);
-				commandLine.setText("");
-			}
-		});
-
-		favoritesButton = (Button) findViewById(R.id.favoritesButton);
-
-		favoritesButton.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				dbHelper = new DbHelper(TerminalActivity.this);
-				db = dbHelper.getReadableDatabase();
-				// instantiate the instance of SQLite database and DBHelper
-
-				// select all commands.
-				Cursor c = db.rawQuery("select * from commandTable", null);
-				favoriteCommands = new String[c.getCount()];
-				int counter = 0;
-
-				if (c != null) {
-					// if the cursor finds something at the table
-					if (c.moveToFirst()) {
-						do {
-							favoriteCommands[counter] = c.getString(c
-									.getColumnIndex("command"));
-							// fetch all the commands and display them
-							counter++;
-						} while (c.moveToNext());
-					}
-				}
-				if (counter == 0) {
-					// if there are no commands to be displayed
-					Toast.makeText(TerminalActivity.this,
-							R.string.noFavoritesFound, Toast.LENGTH_SHORT)
-							.show();
-				} else {
-					// there are commands and they are now displayed
-					AlertDialog.Builder builder = new AlertDialog.Builder(
-							TerminalActivity.this);
-					builder.setTitle("Pick a command");
-					builder.setItems(favoriteCommands,
-							new DialogInterface.OnClickListener() {
-								public void onClick(DialogInterface dialog,
-										int item) {
-									commandLine.append(favoriteCommands[item]);
-								}
-
-							});
-					builder.show();
-				}
-				c.close();
-				db.close();
-				dbHelper.close();
-			}
-		});
+	public void afterTextChanged(Editable s) {
 	}
+   });
+   alert.getButton(Dialog.BUTTON1).setEnabled(false);
+   break;
+  case CLEAR_EDITTEXT:
+   result.setText("");
+   if(userTemp.getUsername().compareTo("root") == 0) {
+	username = userTemp.getUsername() + "@" + userTemp.getDomain() + ":~# ";
+   }
+   else {
+	username = userTemp.getUsername() + "@" + userTemp.getDomain() + ":~$ ";
+   }
+   result.append(username);
+   break;
+  case SCREENCAPTURE:
+   new AsyncTask<Void, Void, Boolean>() {
+	String title = "Terminal_Snap_";
 
-	// MENU STUFF IS IMPLEMENTED BELOW
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		boolean result = super.onCreateOptionsMenu(menu);
-		// Add a button to menu
-		menu.add(0, FAVORITES, 0, R.string.addNewFavoriteCommand).setIcon(
-				android.R.drawable.ic_input_add);
-		menu.add(0, CLEAR_EDITTEXT, 0, R.string.clearTerminal).setIcon(
-				android.R.drawable.ic_notification_clear_all);
-		menu.add(0, SCREENCAPTURE, 0, R.string.menuSnapshot).setIcon(
-				android.R.drawable.ic_menu_camera);
-		return result;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		// if "Add new command" button is pressed from the menu
-		case FAVORITES:
-			// display dialog box
-			AlertDialog.Builder addUser = new AlertDialog.Builder(
-					TerminalActivity.this);
-			addUser.setMessage(R.string.addNewCommandToFavoritesprompt);
-			final EditText commandText = new EditText(this);
-			addUser.setView(commandText);
-			addUser.setPositiveButton("Ok",
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog,
-								int whichButton) {
-							String command = commandText.getText().toString();
-							addCommandToDatabase(command);
-							return;
-						}
-					});
-			addUser.setNegativeButton("Cancel",
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int which) {
-
-							return;
-						}
-					});
-			final AlertDialog alert = addUser.create();
-			alert.show();
-			commandText.addTextChangedListener(new TextWatcher() {
-				// the user is not allowed to press OK unless there is text in
-				// the textfield
-				public void onTextChanged(CharSequence s, int start,
-						int before, int count) {
-					// TODO Auto-generated method stub
-					if (commandText.getText().length() > 0)
-						// on text changed, enable the button
-						alert.getButton(Dialog.BUTTON1).setEnabled(true);
-					else
-						// when text is empty again, disable the button
-						alert.getButton(Dialog.BUTTON1).setEnabled(false);
-				}
-
-				public void beforeTextChanged(CharSequence s, int start,
-						int count, int after) {
-					// TODO Auto-generated method stub
-
-				}
-
-				public void afterTextChanged(Editable s) {
-					// TODO Auto-generated method stub
-
-				}
-			});
-			alert.getButton(Dialog.BUTTON1).setEnabled(false);
-			break;
-		case CLEAR_EDITTEXT:
-			result.setText("");
-			if (userTemp.getUsername().compareTo("root") == 0) {
-				// according to its username, if it's root, append the result
-				// with #
-				// to signifgy root privileges
-				username = userTemp.getUsername() + "@" + userTemp.getDomain()
-						+ ":~# ";
-			} else {
-				// otherwise a $ for non-privileged user
-				username = userTemp.getUsername() + "@" + userTemp.getDomain()
-						+ ":~$ ";
-			}
-			result.append(username);
-			break;
-		case SCREENCAPTURE:
-			new AsyncTask<Void, Void, Boolean>() {
-				String title = "Terminal_Snap_";
-
-				@Override
-				protected Boolean doInBackground(Void... params) {
-					try {
-						ScreenCapture sc = new ScreenCapture();
-						Date date = new Date();
-						String dateString = date.getMonth() + "_"
-								+ date.getDay() + "_" + date.getHours() + "_"
-								+ date.getMinutes() + "_" + date.getSeconds();
-						title += dateString;
-						sc.capture(
-								getWindow().getDecorView().findViewById(
-										android.R.id.content), title,
-								getContentResolver());
-					} catch (Exception ex) {
-						return false;
-					}
-					return true;
-				}
-
-				@Override
-				protected void onPostExecute(Boolean result) {
-					if (result)
-						Toast.makeText(
-								TerminalActivity.this,
-								title
-										+ " "
-										+ getString(R.string.screenCaptureSaved),
-								Toast.LENGTH_LONG).show();
-					super.onPostExecute(result);
-				}
-			}.execute();
-			break;
-		}
-		return super.onOptionsItemSelected(item);
-	}
-
-	public void addCommandToDatabase(String command) {
-		// instantiate the instances that will connect to the database
-		DbHelper dbHelper = new DbHelper(TerminalActivity.this);
-		SQLiteDatabase db = dbHelper.getWritableDatabase();
-
-		ContentValues values = new ContentValues();
-
-		values.put(DbHelper.C_COMMAND, command);
-
-		try {
-			// insert into database a new command
-			db.insertOrThrow(DbHelper.commandTableName, null, values);
-			Toast.makeText(this, "Command added successfully!",
-					Toast.LENGTH_SHORT).show();
-			// after the command has been added
-		} catch (Exception e) {
-			Toast.makeText(this, "Command could not be added!",
-					Toast.LENGTH_SHORT).show();
-			// if the command was not added successfully
-			Log.d("SQL", e.toString());
-		}
-
-		// close database
-		db.close();
-		dbHelper.close();
+	protected Boolean doInBackground(Void... params) {
+	 try {
+	  ScreenCapture sc = new ScreenCapture();
+	  Date date = new Date();
+	  String dateString = date.getMonth() + "_" + date.getDay() + "_" + date.getHours() + "_" + date.getMinutes() + "_" + date.getSeconds();
+	  title += dateString;
+	  sc.capture(getWindow().getDecorView().findViewById(android.R.id.content), title, getContentResolver());
+	 }
+	 catch (Exception ex) {
+	  return false;
+	 }
+	 return true;
 	}
 
 	@Override
-	protected void onStop() {
-		super.onStop();
+	protected void onPostExecute(Boolean result) {
+	 if(result)
+	  Toast.makeText(TerminalActivity.this, title + " " + getString(R.string.screenCaptureSaved), Toast.LENGTH_LONG).show();
+	 super.onPostExecute(result);
 	}
+   }.execute();
+   break;
+  }
+  return super.onOptionsItemSelected(item);
+ }
 
-	@Override
-	protected void onDestroy() {
-		super.onStop();
-		getApplicationContext().unbindService(connection);
-	}
+ public void addCommandToDatabase(String command) {
+  DbHelper dbHelper = new DbHelper(TerminalActivity.this);
+  SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-	public boolean onDown(MotionEvent e) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+  ContentValues values = new ContentValues();
 
-	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-			float velocityY) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+  values.put(DbHelper.C_COMMAND, command);
 
-	public void onLongPress(MotionEvent e) {
-		// TODO Auto-generated method stub
+  try {
+   db.insertOrThrow(DbHelper.commandTableName, null, values);
+   Toast.makeText(this, "Command added successfully!", Toast.LENGTH_SHORT).show();
+  }
+  catch (Exception e) {
+   Toast.makeText(this, "Command could not be added!", Toast.LENGTH_SHORT).show();
+   Log.d("SQL", e.toString());
+  }
 
-	}
+  db.close();
+  dbHelper.close();
+ }
 
-	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
-			float distanceY) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+ @Override
+ protected void onStop() {
+  super.onStop();
+ }
 
-	public void onShowPress(MotionEvent e) {
-		// TODO Auto-generated method stub
+ @Override
+ protected void onDestroy() {
+  super.onStop();
+  getApplicationContext().unbindService(connection);
+ }
 
-	}
+ public boolean onDown(MotionEvent e) {
+  return false;
+ }
 
-	public boolean onSingleTapUp(MotionEvent e) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+ public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+  return false;
+ }
 
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-			// if the back button is pressed when the user is in this (Cura
-			// Activity)
-			new AlertDialog.Builder(this).setTitle("Logout Confirmation")
-					// confirm logout
-					.setMessage(R.string.logoutConfirmationDialog)
-					.setPositiveButton("Yes",
-							new DialogInterface.OnClickListener() {
+ public void onLongPress(MotionEvent e) {
+ }
 
-								public void onClick(DialogInterface dialog,
-										int which) {
-									try {
-										// close connection
-										// conn.close();
-										Log.d("Connection", "connection closed");
-									} catch (Exception e) {
-										Log.d("Connection", e.toString());
-									}
-									Intent closeAllActivities = new Intent(
-											TerminalActivity.this,
-											LoginScreenActivity.class);
-									// just close everything
-									closeAllActivities
-											.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-									TerminalActivity.this
-											.startActivity(closeAllActivities);
+ public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+  return false;
+ }
 
-									mNotificationManager.cancelAll();
-									// stopService(new Intent(CuraActivity.this,
-									// ConnectionService.class));
-								}
-							}).setNegativeButton("No",
-					// if No is selected, dismiss the dialog
-							new DialogInterface.OnClickListener() {
+ public void onShowPress(MotionEvent e) {
+ }
 
-								public void onClick(DialogInterface dialog,
-										int which) {
-									dialog.dismiss();
-								}
-							}).show();
-		}
-		return super.onKeyDown(keyCode, event);
-	}
+ public boolean onSingleTapUp(MotionEvent e) {
+  return false;
+ }
+
+ @Override
+ public boolean onKeyDown(int keyCode, KeyEvent event) {
+  if((keyCode == KeyEvent.KEYCODE_BACK)) {
+   new AlertDialog.Builder(this).setTitle("Logout Confirmation").setMessage(R.string.logoutConfirmationDialog)
+	 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+
+	  public void onClick(DialogInterface dialog, int which) {
+	   try {
+		Log.d("Connection", "connection closed");
+	   }
+	   catch (Exception e) {
+		Log.d("Connection", e.toString());
+	   }
+	   Intent closeAllActivities = new Intent(TerminalActivity.this, LoginScreenActivity.class);
+	   closeAllActivities.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	   TerminalActivity.this.startActivity(closeAllActivities);
+
+	   mNotificationManager.cancelAll();
+	  }
+	 }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+
+	  public void onClick(DialogInterface dialog, int which) {
+	   dialog.dismiss();
+	  }
+	 }).show();
+  }
+  return super.onKeyDown(keyCode, event);
+ }
 }

@@ -62,290 +62,227 @@ import com.cura.Connection.ConnectionService;
 
 public class SysMonitorActivity extends Activity {
 
-	private final int PAUSE = 1;
-	private final int START = 2;
-	private final int SCREENCAPTURE = 3;
+ private final int PAUSE = 1;
+ private final int START = 2;
+ private final int SCREENCAPTURE = 3;
 
-	private static TimeSeries timeSeriesCPU, timeSeriesRAM;
-	private static XYMultipleSeriesDataset dataset;
-	private static XYMultipleSeriesRenderer renderer;
-	private static XYSeriesRenderer rendererSeriesCPU, rendererSeriesRAM;
-	private static GraphicalView view;
+ private static TimeSeries timeSeriesCPU, timeSeriesRAM;
+ private static XYMultipleSeriesDataset dataset;
+ private static XYMultipleSeriesRenderer renderer;
+ private static XYSeriesRenderer rendererSeriesCPU, rendererSeriesRAM;
+ private static GraphicalView view;
 
-	private static Thread mThread;
-	private static boolean state = true;
-	private NotificationManager mNotificationManager;
-	private CommunicationInterface conn;
+ private static Thread mThread;
+ private static boolean state = true;
+ private NotificationManager mNotificationManager;
+ private CommunicationInterface conn;
 
-	private ServiceConnection connection = new ServiceConnection() {
-		public void onServiceConnected(ComponentName arg0, IBinder service) {
-			Log.d("ConnectionService", "Connected");
-			conn = CommunicationInterface.Stub.asInterface(service);
-			// bind to the Connection Service
-		}
+ private ServiceConnection connection = new ServiceConnection() {
+  public void onServiceConnected(ComponentName arg0, IBinder service) {
+   Log.d("ConnectionService", "Connected");
+   conn = CommunicationInterface.Stub.asInterface(service);
+  }
 
-		public void onServiceDisconnected(ComponentName name) {
-			// TODO Auto-generated method stub
-			conn = null;
-			// when the services is disconnected, null the conn
-			// ServiceConnection and display an error message
-			Toast.makeText(SysMonitorActivity.this, "Service Disconnected",
-					Toast.LENGTH_LONG);
-		}
-	};
+  public void onServiceDisconnected(ComponentName name) {
+   conn = null;
+   Toast.makeText(SysMonitorActivity.this, "Service Disconnected", Toast.LENGTH_LONG);
+  }
+ };
 
-	public synchronized void sendAndReceive() {
-		String resultCPU = "";
-		String resultRAM = "";
+ public synchronized void sendAndReceive() {
+  String resultCPU = "";
+  String resultRAM = "";
 
-		try {
-			resultCPU = conn
-					.executeCommand("ps aux | awk '{sum+=$3} END {print sum}'");
-			// the command that fetches the CPU usage percentage
-			Log.d("CPUValue", resultCPU);
-			resultRAM = conn
-					.executeCommand("ps aux | awk '{sum+=$4} END {print sum}'");
-			// the command that fetches the RAM usage percentage
-			Log.d("RAMValue", resultRAM);
-			if (!resultCPU.equalsIgnoreCase("")
-					&& !resultRAM.equalsIgnoreCase("")) {
-				if (Double.parseDouble(resultCPU) > 100)
-					// even if the results go over the 100 mark, floor them so
-					// that they stick to the 100% limit
-					resultCPU = "100";
-				if (Double.parseDouble(resultRAM) > 100)
-					resultRAM = "100";
-				// if results are not empty
-				timeSeriesCPU.add(new Date(), Double.parseDouble(resultCPU));
-				timeSeriesRAM.add(new Date(), Double.parseDouble(resultRAM));
-				// add them as points to our graph
-				view.repaint();
-			}
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+  try {
+   resultCPU = conn.executeCommand("ps aux | awk '{sum+=$3} END {print sum}'");
+   Log.d("CPUValue", resultCPU);
+   resultRAM = conn.executeCommand("ps aux | awk '{sum+=$4} END {print sum}'");
+   Log.d("RAMValue", resultRAM);
+   if(!resultCPU.equalsIgnoreCase("") && !resultRAM.equalsIgnoreCase("")) {
+	if(Double.parseDouble(resultCPU) > 100)
+	 resultCPU = "100";
+	if(Double.parseDouble(resultRAM) > 100)
+	 resultRAM = "100";
+	timeSeriesCPU.add(new Date(), Double.parseDouble(resultCPU));
+	timeSeriesRAM.add(new Date(), Double.parseDouble(resultRAM));
+	view.repaint();
+   }
+  }
+  catch (RemoteException e) {
+   e.printStackTrace();
+  }
+ }
+
+ public void doBindService() {
+  Intent i = new Intent(this, ConnectionService.class);
+  getApplicationContext().bindService(i, connection, Context.BIND_AUTO_CREATE);
+ }
+
+ @Override
+ public void onCreate(Bundle savedInstanceState) {
+  super.onCreate(savedInstanceState);
+  doBindService();
+
+  dataset = new XYMultipleSeriesDataset();
+
+  renderer = new XYMultipleSeriesRenderer();
+  renderer.setAxesColor(Color.BLUE);
+  renderer.setAxisTitleTextSize(16);
+  renderer.setChartTitle("System Monitor");
+  renderer.setChartTitleTextSize(25);
+  renderer.setFitLegend(false);
+  renderer.setGridColor(Color.LTGRAY);
+  renderer.setPanEnabled(true, false);
+  renderer.setPointSize(5);
+  renderer.setXTitle("Time");
+  renderer.setYTitle("Number");
+  renderer.setYAxisMax(100);
+  renderer.setYAxisMin(0);
+  renderer.setMargins(new int[] { 20, 30, 20, 30 });
+  renderer.setZoomButtonsVisible(true);
+  renderer.setBarSpacing(20);
+  renderer.setAntialiasing(true);
+  renderer.setShowGrid(true);
+
+  rendererSeriesCPU = new XYSeriesRenderer();
+  rendererSeriesCPU.setColor(Color.RED);
+  rendererSeriesCPU.setFillPoints(true);
+  rendererSeriesCPU.setPointStyle(PointStyle.CIRCLE);
+
+  rendererSeriesRAM = new XYSeriesRenderer();
+  rendererSeriesRAM.setColor(Color.GREEN);
+  rendererSeriesRAM.setFillPoints(true);
+  rendererSeriesRAM.setPointStyle(PointStyle.X);
+
+  renderer.addSeriesRenderer(rendererSeriesCPU);
+  renderer.addSeriesRenderer(rendererSeriesRAM);
+  timeSeriesCPU = new TimeSeries("CPU");
+  timeSeriesRAM = new TimeSeries("RAM");
+
+  mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+ }
+
+ public void startThread() {
+  mThread = new Thread() {
+   public void run() {
+	while(state) {
+	 try {
+	  Thread.sleep(1000);
+	  sendAndReceive();
+	 }
+	 catch (InterruptedException IE) {
+	  IE.printStackTrace();
+	 }
 	}
+   }
+  };
+  mThread.start();
+ }
 
-	public void doBindService() {
-		Intent i = new Intent(this, ConnectionService.class);
-		// connect to the SSH service (Connection)
-		getApplicationContext().bindService(i, connection,
-				Context.BIND_AUTO_CREATE);
+ @Override
+ protected void onStart() {
+  super.onStart();
+
+  startThread();
+  dataset.addSeries(timeSeriesCPU);
+  dataset.addSeries(timeSeriesRAM);
+  view = ChartFactory.getTimeChartView(this, dataset, renderer, "Consumption");
+  view.refreshDrawableState();
+  view.repaint();
+  setContentView(view);
+ }
+
+ public boolean onCreateOptionsMenu(Menu menu) {
+  boolean result = super.onCreateOptionsMenu(menu);
+  menu.add(0, PAUSE, 0, R.string.SysMonitorPause).setIcon(android.R.drawable.ic_media_pause);
+  menu.add(0, START, 0, R.string.SysMonitorStart).setIcon(android.R.drawable.ic_media_play);
+  menu.add(0, SCREENCAPTURE, 0, R.string.menuSnapshot).setIcon(android.R.drawable.ic_menu_camera);
+  return result;
+ }
+
+ public boolean onOptionsItemSelected(MenuItem item) {
+  switch (item.getItemId()) {
+  case PAUSE:
+   state = false;
+   mThread = null;
+   return true;
+  case START:
+   state = true;
+   startThread();
+   return true;
+  case SCREENCAPTURE:
+   new AsyncTask<Void, Void, Boolean>() {
+	String title = "SysMonitor_Snap_";
+
+	@Override
+	protected Boolean doInBackground(Void... params) {
+	 try {
+	  ScreenCapture sc = new ScreenCapture();
+	  Date date = new Date();
+	  String dateString = date.getMonth() + "_" + date.getDay() + "_" + date.getHours() + "_" + date.getMinutes() + "_" + date.getSeconds();
+	  title += dateString;
+	  sc.capture(getWindow().getDecorView().findViewById(android.R.id.content), title, getContentResolver());
+	 }
+	 catch (Exception ex) {
+	  return false;
+	 }
+	 return true;
 	}
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		doBindService();
-		// bind now to the Connection service
-
-		dataset = new XYMultipleSeriesDataset();
-		// this method and the methods below indicate the usage of AChartEngine
-		// library to modify the value/settings of each graph line
-
-		renderer = new XYMultipleSeriesRenderer();
-		renderer.setAxesColor(Color.BLUE);
-		renderer.setAxisTitleTextSize(16);
-		renderer.setChartTitle("System Monitor");
-		renderer.setChartTitleTextSize(25);
-		renderer.setFitLegend(false);
-		renderer.setGridColor(Color.LTGRAY);
-		renderer.setPanEnabled(true, false);
-		renderer.setPointSize(5);
-		renderer.setXTitle("Time");
-		renderer.setYTitle("Number");
-		renderer.setYAxisMax(100);
-		renderer.setYAxisMin(0);
-		renderer.setMargins(new int[] { 20, 30, 20, 30 });
-		renderer.setZoomButtonsVisible(true);
-		renderer.setBarSpacing(20);
-		renderer.setAntialiasing(true);
-		renderer.setShowGrid(true);
-
-		// the renderer for the CPU percentage
-		rendererSeriesCPU = new XYSeriesRenderer();
-		rendererSeriesCPU.setColor(Color.RED);
-		rendererSeriesCPU.setFillPoints(true);
-		rendererSeriesCPU.setPointStyle(PointStyle.CIRCLE);
-
-		// the renderer for the RAM percentage
-		rendererSeriesRAM = new XYSeriesRenderer();
-		rendererSeriesRAM.setColor(Color.GREEN);
-		rendererSeriesRAM.setFillPoints(true);
-		rendererSeriesRAM.setPointStyle(PointStyle.X);
-
-		renderer.addSeriesRenderer(rendererSeriesCPU);
-		renderer.addSeriesRenderer(rendererSeriesRAM);
-		// add these values to the graph
-		timeSeriesCPU = new TimeSeries("CPU");
-		timeSeriesRAM = new TimeSeries("RAM");
-
-		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
+	protected void onPostExecute(Boolean result) {
+	 if(result)
+	  Toast.makeText(SysMonitorActivity.this, title + " " + getString(R.string.screenCaptureSaved), Toast.LENGTH_LONG).show();
+	 super.onPostExecute(result);
 	}
+   }.execute();
+   break;
+  }
+  return super.onOptionsItemSelected(item);
+ }
 
-	public void startThread() {
-		mThread = new Thread() {
-			public void run() {
-				while (state) {
-					try {
-						// hold off for 1 second between each fetch of the
-						// CPU/RAM usage percentages
-						Thread.sleep(1000);
-						sendAndReceive();
-					} catch (InterruptedException IE) {
-						IE.printStackTrace();
-					}
-				}
-			}
-		};
-		mThread.start();
-	}
+ @Override
+ protected void onDestroy() {
+  super.onDestroy();
+  state = false;
+  mThread = null;
+  getApplicationContext().unbindService(connection);
+  finish();
+ }
 
-	@Override
-	protected void onStart() {
-		super.onStart();
+ @Override
+ protected void onResume() {
+  super.onResume();
+  doBindService();
+ }
 
-		startThread();
-		// add all of the above variables to the chart and construct it
-		dataset.addSeries(timeSeriesCPU);
-		dataset.addSeries(timeSeriesRAM);
-		view = ChartFactory.getTimeChartView(this, dataset, renderer,
-				"Consumption");
-		view.refreshDrawableState();
-		view.repaint();
-		setContentView(view);
-	}
+ @Override
+ public boolean onKeyDown(int keyCode, KeyEvent event) {
+  if((keyCode == KeyEvent.KEYCODE_BACK)) {
+   new AlertDialog.Builder(this).setTitle("Logout Confirmation").setMessage(R.string.logoutConfirmationDialog)
+	 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 
-	public boolean onCreateOptionsMenu(Menu menu) {
-		boolean result = super.onCreateOptionsMenu(menu);
-		menu.add(0, PAUSE, 0, R.string.SysMonitorPause).setIcon(
-				android.R.drawable.ic_media_pause);
-		// Pause item
-		menu.add(0, START, 0, R.string.SysMonitorStart).setIcon(
-				android.R.drawable.ic_media_play);
-		// Start item
-		menu.add(0, SCREENCAPTURE, 0, R.string.menuSnapshot).setIcon(
-				android.R.drawable.ic_menu_camera);
-		// take Snapshot item
-		return result;
-	}
+	  public void onClick(DialogInterface dialog, int which) {
+	   try {
+		Log.d("Connection", "connection closed");
+	   }
+	   catch (Exception e) {
+		Log.d("Connection", e.toString());
+	   }
+	   Intent closeAllActivities = new Intent(SysMonitorActivity.this, LoginScreenActivity.class);
+	   closeAllActivities.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	   SysMonitorActivity.this.startActivity(closeAllActivities);
 
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case PAUSE:
-			state = false;
-			mThread = null;
-			return true;
-			// when paused
-		case START:
-			state = true;
-			startThread();
-			return true;
-			// when resumed
-		case SCREENCAPTURE:
-			new AsyncTask<Void, Void, Boolean>() {
-				String title = "SysMonitor_Snap_";
+	   mNotificationManager.cancelAll();
+	  }
+	 }).setNegativeButton("No", new DialogInterface.OnClickListener() {
 
-				@Override
-				protected Boolean doInBackground(Void... params) {
-					try {
-						ScreenCapture sc = new ScreenCapture();
-						Date date = new Date();
-						String dateString = date.getMonth() + "_"
-								+ date.getDay() + "_" + date.getHours() + "_"
-								+ date.getMinutes() + "_" + date.getSeconds();
-						title += dateString;
-						// concatenate the constructed date string to the above
-						// title and you now have the name that will be used to
-						// store the image file of the snapshot
-						sc.capture(
-								getWindow().getDecorView().findViewById(
-										android.R.id.content), title,
-								getContentResolver());
-					} catch (Exception ex) {
-						return false;
-					}
-					return true;
-				}
-
-				@Override
-				protected void onPostExecute(Boolean result) {
-					if (result)
-						Toast.makeText(
-								SysMonitorActivity.this,
-								title
-										+ " "
-										+ getString(R.string.screenCaptureSaved),
-								Toast.LENGTH_LONG).show();
-					super.onPostExecute(result);
-				}
-			}.execute();
-			break;
-		}
-		return super.onOptionsItemSelected(item);
-	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		// unbind and set state to false
-		state = false;
-		mThread = null;
-		getApplicationContext().unbindService(connection);
-		finish();
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		doBindService();
-	}
-
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-			// if the back button is pressed when the user is in this (Cura
-			// Activity)
-			new AlertDialog.Builder(this).setTitle("Logout Confirmation")
-					// confirm logout
-					.setMessage(R.string.logoutConfirmationDialog)
-					.setPositiveButton("Yes",
-							new DialogInterface.OnClickListener() {
-
-								public void onClick(DialogInterface dialog,
-										int which) {
-									try {
-										// close connection
-										// conn.close();
-										Log.d("Connection", "connection closed");
-									} catch (Exception e) {
-										Log.d("Connection", e.toString());
-									}
-									Intent closeAllActivities = new Intent(
-											SysMonitorActivity.this,
-											LoginScreenActivity.class);
-									// just close everything
-									closeAllActivities
-											.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-									SysMonitorActivity.this
-											.startActivity(closeAllActivities);
-
-									mNotificationManager.cancelAll();
-									// stopService(new Intent(CuraActivity.this,
-									// ConnectionService.class));
-								}
-							}).setNegativeButton("No",
-					// if No is selected, dismiss the dialog
-							new DialogInterface.OnClickListener() {
-
-								public void onClick(DialogInterface dialog,
-										int which) {
-									dialog.dismiss();
-								}
-							}).show();
-		}
-		return super.onKeyDown(keyCode, event);
-	}
+	  public void onClick(DialogInterface dialog, int which) {
+	   dialog.dismiss();
+	  }
+	 }).show();
+  }
+  return super.onKeyDown(keyCode, event);
+ }
 }

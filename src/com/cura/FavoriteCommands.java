@@ -43,111 +43,90 @@ import com.cura.Connection.SSHConnection;
 
 public class FavoriteCommands extends ListActivity {
 
-	String favoriteCommands[];
-	// create an array of strings.
-	DbHelper dbHelper;
-	// instance of the database helper.
-	SQLiteDatabase db;
-	// instance of SQLite database.
-	User userTemp;
-	SSHConnection sshconnection;
+ String favoriteCommands[];
+ DbHelper dbHelper;
+ SQLiteDatabase db;
+ User userTemp;
+ SSHConnection sshconnection;
 
-	public void onCreate(Bundle icicle) {
-		super.onCreate(icicle);
-		setContentView(R.layout.favoritecommands);
+ public void onCreate(Bundle icicle) {
+  super.onCreate(icicle);
+  setContentView(R.layout.favoritecommands);
 
-		Bundle extras = getIntent().getExtras();
-		if (extras != null) {
-			userTemp = extras.getParcelable("user");
-			// find out who the user is
-		}
-		this.setTitle(R.string.favoritesWelcome + userTemp.getUsername());
+  Bundle extras = getIntent().getExtras();
+  if(extras != null) {
+   userTemp = extras.getParcelable("user");
+  }
+  this.setTitle(R.string.favoritesWelcome + userTemp.getUsername());
 
-		dbHelper = new DbHelper(this);
-		db = dbHelper.getReadableDatabase();
-		// instantiate the instance of SQLite database and DBHelper
+  dbHelper = new DbHelper(this);
+  db = dbHelper.getReadableDatabase();
 
-		// select all commands.
-		Cursor c = db.rawQuery("select * from commandTable", null);
+  Cursor c = db.rawQuery("select * from commandTable", null);
 
-		// create an array of commands.
-		favoriteCommands = new String[c.getCount()];
-		int counter = 0;
+  favoriteCommands = new String[c.getCount()];
+  int counter = 0;
 
-		if (c != null) {
-			if (c.moveToFirst()) {
-				do {
-					favoriteCommands[counter] = c.getString(c
-							.getColumnIndex("command"));
-					counter++;
-				} while (c.moveToNext());
-			}
-		}
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_list_item_1, favoriteCommands);
-		// display them.
-		setListAdapter(adapter);
-		// register context menu
-		registerForContextMenu(getListView());
-	}
+  if(c != null) {
+   if(c.moveToFirst()) {
+	do {
+	 favoriteCommands[counter] = c.getString(c.getColumnIndex("command"));
+	 counter++;
+	} while(c.moveToNext());
+   }
+  }
+  ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, favoriteCommands);
+  setListAdapter(adapter);
+  registerForContextMenu(getListView());
+ }
 
-	String commandItem;
+ String commandItem;
 
-	@Override
-	protected void onListItemClick(ListView l, View v, int position, long id) {
-		commandItem = (String) getListAdapter().getItem(position);
-		Toast.makeText(this, commandItem + " selected", Toast.LENGTH_LONG)
-				.show();
-		// lets the user know which command was selected
-	}
+ @Override
+ protected void onListItemClick(ListView l, View v, int position, long id) {
+  commandItem = (String) getListAdapter().getItem(position);
+  Toast.makeText(this, commandItem + " selected", Toast.LENGTH_LONG).show();
+ }
 
-	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v,
-			ContextMenuInfo menuInfo) {
-		super.onCreateContextMenu(menu, v, menuInfo);
-		// add to buttons to context menu "Modify command", "Delete command"
-		menu.add(0, Menu.FIRST + 1, 0, R.string.deleteFavoriteCommand);
-	}
+ @Override
+ public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+  super.onCreateContextMenu(menu, v, menuInfo);
+  menu.add(0, Menu.FIRST + 1, 0, R.string.deleteFavoriteCommand);
+ }
 
-	@Override
-	public boolean onContextItemSelected(MenuItem item) {
-		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
-				.getMenuInfo();
-		String command = favoriteCommands[info.position];
+ @Override
+ public boolean onContextItemSelected(MenuItem item) {
+  AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+  String command = favoriteCommands[info.position];
 
-		dbHelper = new DbHelper(FavoriteCommands.this);
-		db = dbHelper.getWritableDatabase();
+  dbHelper = new DbHelper(FavoriteCommands.this);
+  db = dbHelper.getWritableDatabase();
 
-		switch (item.getItemId()) {
-		// delete button is pressed
-		case Menu.FIRST + 1:
-			// Delete command
-			try {
+  switch (item.getItemId()) {
+  case Menu.FIRST + 1:
+   try {
 
-				String where = "command = ?";
-				String[] whereArgs = { command };
-				// prepare the query.
-				db.delete(DbHelper.commandTableName, where, whereArgs);
-				// execute it.
+	String where = "command = ?";
+	String[] whereArgs = { command };
+	db.delete(DbHelper.commandTableName, where, whereArgs);
 
-				startActivity(getIntent());
-				finish();
-			} catch (Exception e) {
-				Log.d("SQL", e.toString());
-				// so that we can know where to follow the errors (if
-				// any).
-			}
+	startActivity(getIntent());
+	finish();
+   }
+   catch (Exception e) {
+	Log.d("SQL", e.toString());
+   }
 
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
+   return true;
+  }
+  return super.onOptionsItemSelected(item);
+ }
 
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		db.close();
-		dbHelper.close();
-	}
+ @Override
+ protected void onDestroy() {
+  super.onDestroy();
+  db.close();
+  dbHelper.close();
+ }
 
 }

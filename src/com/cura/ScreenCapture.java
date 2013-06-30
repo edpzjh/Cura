@@ -35,32 +35,28 @@ import android.view.View;
 
 public class ScreenCapture {
 
-	public ScreenCapture() {
-		File snapshots = new File("/sdcard/Cura/Snapshots");
-		// create the directory on the phone's SDCard
-		if (!snapshots.exists()) {
-			// if it doesn't exist, create it
-			snapshots.mkdir();
-		}
-	}
+ public ScreenCapture() {
+  File snapshots = new File("/sdcard/Cura/Snapshots");
+  if(!snapshots.exists()) {
+   snapshots.mkdir();
+  }
+ }
 
-	public void capture(View view, String title, ContentResolver cr) {
-		View v = view;
-		v.setDrawingCacheEnabled(true);
-		Bitmap b = v.getDrawingCache();
-		File myPath = new File("/sdcard/Cura/Snapshots/" + title + ".png");
-		// construct the screenshot's filename
-		FileOutputStream fos = null;
-		try {
-			fos = new FileOutputStream(myPath);
-			b.compress(Bitmap.CompressFormat.PNG, 80, fos);
-			fos.flush();
-			fos.close();
-			MediaStore.Images.Media.insertImage(cr, b, "Screen", "screen");
-			// take the screenshot and store it.
-		} catch (Exception ex) {
-			// TODO Auto-generated catch block
-			ex.printStackTrace();
-		}
-	}
+ public void capture(View view, String title, ContentResolver cr) {
+  View v = view;
+  v.setDrawingCacheEnabled(true);
+  Bitmap b = v.getDrawingCache();
+  File myPath = new File("/sdcard/Cura/Snapshots/" + title + ".png");
+  FileOutputStream fos = null;
+  try {
+   fos = new FileOutputStream(myPath);
+   b.compress(Bitmap.CompressFormat.PNG, 80, fos);
+   fos.flush();
+   fos.close();
+   MediaStore.Images.Media.insertImage(cr, b, "Screen", "screen");
+  }
+  catch (Exception ex) {
+   ex.printStackTrace();
+  }
+ }
 }

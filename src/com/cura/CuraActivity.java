@@ -69,32 +69,25 @@ public class CuraActivity extends TabActivity implements OnClickListener, OnTouc
  private final int SERVER_INFO = 2;
  private final int WAIT = 100;
  TableRow terminalRow, sysMonitorRow, sysLogRow, nessusRow, nmapRow, serverStatsRow;
- // menu buttons
 
  User userTemp;
- // user object
  private String uname = "";
  private String uptime = "";
  private String location = "";
  private String loader_message = "";
  private String finalResultForDialog = "";
  private CommunicationInterface conn;
- // private String page = "";
  private ProgressDialog loader;
- // to fetch the GET request of the server's location
  private NotificationManager mNotificationManager;
  boolean connectionTrigger = true;
- // private AdView adView;
  private AlertDialog alert;
 
  private ServiceConnection connection = new ServiceConnection() {
   public void onServiceConnected(ComponentName arg0, IBinder service) {
-   // TODO Auto-generated method stub
    conn = CommunicationInterface.Stub.asInterface(service);
   }
 
   public void onServiceDisconnected(ComponentName name) {
-   // TODO Auto-generated method stub
    conn = null;
    Toast.makeText(CuraActivity.this, "Service Disconnected", Toast.LENGTH_LONG).show();
   }
@@ -102,12 +95,10 @@ public class CuraActivity extends TabActivity implements OnClickListener, OnTouc
 
  public synchronized String getUname() {
   String resultUNAME = "";
-  // produces the result of "uname -a"
   try {
    resultUNAME = conn.executeCommand("uname -a");
   }
   catch (RemoteException e) {
-   // TODO Auto-generated catch block
    e.printStackTrace();
   }
   return resultUNAME;
@@ -115,12 +106,10 @@ public class CuraActivity extends TabActivity implements OnClickListener, OnTouc
 
  public synchronized String getUptime() {
   String resultUPTIME = "";
-  // produces the output of "uptime"
   try {
    resultUPTIME = conn.executeCommand("uptime");
   }
   catch (RemoteException e) {
-   // TODO Auto-generated catch block
    e.printStackTrace();
   }
   return resultUPTIME;
@@ -128,13 +117,10 @@ public class CuraActivity extends TabActivity implements OnClickListener, OnTouc
 
  public synchronized String getLocation() {
   String resultLocation = "";
-  // produces the output of "geoiplookup domain" and prints the 4th and
-  // 5th column from that. This produces the locale of a given domain name
   try {
    resultLocation = conn.executeCommand("geoiplookup " + userTemp.getDomain() + " | awk '{print $4, $5}'");
   }
   catch (RemoteException e) {
-   // TODO Auto-generated catch block
    e.printStackTrace();
   }
   return resultLocation;
@@ -146,7 +132,6 @@ public class CuraActivity extends TabActivity implements OnClickListener, OnTouc
    resultHostname = conn.executeCommand("hostname");
   }
   catch (RemoteException e) {
-   // TODO Auto-generated catch block
    e.printStackTrace();
   }
   return resultHostname;
@@ -155,7 +140,6 @@ public class CuraActivity extends TabActivity implements OnClickListener, OnTouc
  public void doBindService() {
   Intent i = new Intent(this, ConnectionService.class);
   bindService(i, connection, Context.BIND_AUTO_CREATE);
-  // function needed for binding to the Connection service
  }
 
  @Override
@@ -167,17 +151,13 @@ public class CuraActivity extends TabActivity implements OnClickListener, OnTouc
   Bundle extras = getIntent().getExtras();
   if(extras != null) {
    userTemp = extras.getParcelable("user");
-   // gets the username on entry
   }
 
   this.setTitle(userTemp.getUsername() + "'s Control Box");
-  // welcoming the user in this activity's title.
 
   TabHost tabHost = (TabHost) findViewById(android.R.id.tabhost);
 
-  // Tab for Photos
   TabSpec serverstats = tabHost.newTabSpec("Server Stats");
-  // setting Title and Icon for the Tab
   serverstats.setIndicator("", getResources().getDrawable(R.drawable.serverstats_tab_selector));
   Intent photosIntent = new Intent(this, ServerStatsActivity.class);
   photosIntent.putExtra("user", userTemp);
@@ -185,7 +165,6 @@ public class CuraActivity extends TabActivity implements OnClickListener, OnTouc
   tabHost.addTab(serverstats);
 
   TabSpec sysLogSpec = tabHost.newTabSpec("SysLog");
-  // setting Title and Icon for the Tab
   sysLogSpec.setIndicator("", getResources().getDrawable(R.drawable.syslog_tab_selector));
   Intent sysLogIntent = new Intent(this, SysLogActivity.class);
   sysLogIntent.putExtra("user", userTemp);
@@ -193,15 +172,13 @@ public class CuraActivity extends TabActivity implements OnClickListener, OnTouc
   tabHost.addTab(sysLogSpec);
 
   TabSpec sysMonitorSpec = tabHost.newTabSpec("sysMonitor");
-  // setting Title and Icon for the Tab
-  sysMonitorSpec.setIndicator("",getResources().getDrawable(R.drawable.sysmonitor_tab_selector));
+  sysMonitorSpec.setIndicator("", getResources().getDrawable(R.drawable.sysmonitor_tab_selector));
   Intent sysMonitorIntent = new Intent(this, SysMonitorActivity.class);
   sysMonitorIntent.putExtra("user", userTemp);
   sysMonitorSpec.setContent(sysMonitorIntent);
   tabHost.addTab(sysMonitorSpec);
 
   TabSpec NmapSpec = tabHost.newTabSpec("Nmap");
-  // setting Title and Icon for the Tab
   NmapSpec.setIndicator("", getResources().getDrawable(R.drawable.nmap_tab_selector));
   Intent nmapIntent = new Intent(this, NmapActivity.class);
   nmapIntent.putExtra("user", userTemp);
@@ -209,7 +186,6 @@ public class CuraActivity extends TabActivity implements OnClickListener, OnTouc
   tabHost.addTab(NmapSpec);
 
   TabSpec TerminalSpec = tabHost.newTabSpec("Terminal");
-  // setting Title and Icon for the Tab
   TerminalSpec.setIndicator("", getResources().getDrawable(R.drawable.terminal_tab_selector));
   Intent terminalIntent = new Intent(this, TerminalActivity.class);
   terminalIntent.putExtra("user", userTemp);
@@ -217,10 +193,6 @@ public class CuraActivity extends TabActivity implements OnClickListener, OnTouc
   tabHost.addTab(TerminalSpec);
 
   mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-  // Ads
-  // adView = (AdView)this.findViewById(R.id.adView);
-  // adView.loadAd(new AdRequest());
  }
 
  @Override
@@ -230,9 +202,6 @@ public class CuraActivity extends TabActivity implements OnClickListener, OnTouc
    loader = new ProgressDialog(this);
    loader.setMessage(loader_message);
    loader.setCancelable(false);
-   // this shows up when the user is logged in and at the main screen;
-   // it is used to make the user wait a second while we fetch
-   // information that appears in Menu > Server Info
    return loader;
   }
   return super.onCreateDialog(id);
@@ -245,33 +214,25 @@ public class CuraActivity extends TabActivity implements OnClickListener, OnTouc
   return result;
  }
 
- // actions for the above menu list
  public boolean onOptionsItemSelected(MenuItem item) {
   switch (item.getItemId()) {
   case LOGOUT:
-   // Confirm logout for user
    new AlertDialog.Builder(this).setTitle("Logout Confirmation").setMessage(R.string.logoutConfirmationDialog)
 	 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 
 	  public void onClick(DialogInterface dialog, int which) {
 	   try {
-		// close the connection
-		// conn.close();
 		Log.d("Connection", "connection closed");
 	   }
 	   catch (Exception e) {
 		Log.d("Connection", e.toString());
 	   }
 	   Intent closeAllActivities = new Intent(CuraActivity.this, LoginScreenActivity.class);
-	   // return the user to the login screen
-	   // activity just close everything
 	   closeAllActivities.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	   CuraActivity.this.startActivity(closeAllActivities);
 	   mNotificationManager.cancelAll();
 	  }
 	 }).setNegativeButton("No", new DialogInterface.OnClickListener() {
-	  // if No is chosen, don't do anything and
-	  // dismiss the dialog
 	  public void onClick(DialogInterface dialog, int which) {
 	   dialog.dismiss();
 	  }
@@ -296,53 +257,10 @@ public class CuraActivity extends TabActivity implements OnClickListener, OnTouc
 
  @Override
  public boolean onKeyDown(int keyCode, KeyEvent event) {
-  // if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-  // // if the back button is pressed when the user is in this (Cura
-  // // Activity)
-  // new AlertDialog.Builder(this).setTitle("Logout Confirmation")
-  // // confirm logout
-  // .setMessage(R.string.logoutConfirmationDialog)
-  // .setPositiveButton("Yes",
-  // new DialogInterface.OnClickListener() {
-  //
-  // public void onClick(DialogInterface dialog,
-  // int which) {
-  // try {
-  // // close connection
-  // // conn.close();
-  // Log.d("Connection", "connection closed");
-  // } catch (Exception e) {
-  // Log.d("Connection", e.toString());
-  // }
-  // Intent closeAllActivities = new Intent(
-  // CuraActivity.this,
-  // LoginScreenActivity.class);
-  // // just close everything
-  // closeAllActivities
-  // .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-  // CuraActivity.this
-  // .startActivity(closeAllActivities);
-  //
-  // mNotificationManager.cancelAll();
-  // }
-  // }).setNegativeButton("No",
-  // // if No is selected, dismiss the dialog
-  // new DialogInterface.OnClickListener() {
-  //
-  // public void onClick(DialogInterface dialog,
-  // int which) {
-  // dialog.dismiss();
-  // }
-  // }).show();
-  // }
   return super.onKeyDown(keyCode, event);
  }
 
  public boolean onTouch(View v, MotionEvent event) {
-  // TODO Auto-generated method stub
-  // this is for when the user touches the row of one of the modules; this
-  // is for highlighting that row and removing the highlighting when the
-  // user touches away from it
   switch (event.getAction()) {
   case MotionEvent.ACTION_DOWN:
    v.setBackgroundResource(R.drawable.moduleselectedhighlight);
@@ -359,8 +277,6 @@ public class CuraActivity extends TabActivity implements OnClickListener, OnTouc
  }
 
  public void initServerInfo() {
-  // This asyncTask is for the server info that are going to be fetched
-  // upon having the user log in and arrive at the main screen
   new AsyncTask<String, String, String>() {
 
    @Override
@@ -376,8 +292,6 @@ public class CuraActivity extends TabActivity implements OnClickListener, OnTouc
 	  uptime = getUptime();
 	  uname = getUname();
 	  location = getLocation();
-
-	  // just a safe-hold value
 	  connectionTrigger = false;
 	 }
 	}
@@ -393,8 +307,6 @@ public class CuraActivity extends TabActivity implements OnClickListener, OnTouc
 
  @Override
  public void onClick(View arg0) {
-  // TODO Auto-generated method stub
-
  }
 
  private View prepareTabView(String text, int resId) {

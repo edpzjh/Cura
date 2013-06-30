@@ -4,7 +4,6 @@
     android:layout_height="wrap_content" >
 
     <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical" >
@@ -47,17 +46,32 @@
                 android:text="@string/checkBoxSysLogs" />
         </LinearLayout>
 
-        <Button
-            android:id="@+id/sysLogButton"
+        <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="@string/sysLogButtonText" />
+            android:layout_marginTop="20dip"
+            android:orientation="horizontal" >
 
-        <Button
-            android:id="@+id/sysLogSaveLogsButton"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/sysLogSaveLogsButtonText" />
+            <Button
+                android:id="@+id/sysLogButton"
+                style="@style/positive_buttons_style"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dip"
+                android:layout_marginRight="20dip"
+                android:layout_weight="1"
+                android:text="@string/sysLogButtonText" />
+
+            <Button
+                android:id="@+id/sysLogSaveLogsButton"
+                style="@style/savelogs_button_style"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dip"
+                android:layout_marginRight="20dip"
+                android:layout_weight="1"
+                android:text="@string/sysLogSaveLogsButtonText" />
+        </LinearLayout>
     </LinearLayout>
 
 </ScrollView>
