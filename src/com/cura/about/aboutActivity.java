@@ -88,9 +88,9 @@ public class aboutActivity extends ListActivity {
   info.add(ab);
   ab = new AboutClass("Author", "TTCO Development Team");
   info.add(ab);
-  ab = new AboutClass("Version", "1.5.1");
+  ab = new AboutClass("Version", "2.0");
   info.add(ab);
-  ab = new AboutClass("Last Update", "July 14th, 2012");
+  ab = new AboutClass("Last Update", "June 30, 2013");
   info.add(ab);
   ab = new AboutClass("Changelog", "See the changelog of the app");
   info.add(ab);

@@ -35,7 +35,7 @@
     <string name="logout">Logout</string>
     <string name="logoutConfirmationDialog">Do you want to logout from this account ?</string>
     <string name="sysLogButtonText">GET LOGS</string>
-    <string name="checkBoxSysLogs">Enable Line Numbers</string>
+    <string name="checkBoxSysLogs">Line Numbers:</string>
     <string name="favoritesWelcome">Welcome to your favorites </string>
     <string name="credentialsWrong">Wrong username/password combination, please try again!</string>
     <string name="LoginScreenPasswordPrompt">Please enter your password</string>
@@ -76,7 +76,7 @@
     <string name="userLocation">Location: </string>
     <string name="loginBtn">Login</string>
     <string name="cancelBtn">Cancel</string>
-    <string name="showPassword">Show password.</string>
+    <string name="showPassword">Show password</string>
     <string name="noFavoritesFound">No favorites yet!</string>
     <string name="Share">Share</string>
     <string name="Help">Help</string>
@@ -87,7 +87,7 @@
     <string name="initializing">Initializing...</string>
     <string name="clearTerminal">Clear Terminal</string>
     <string name="loader_message">Please wait while stats are being fetched from server...</string>
-    <string name="syslogTalk">The Syslog module allows you to read logs directly from your server. Choose the manner in which you want to read from a file, you can either let it default to 10 lines (Head or Tail) or you can specify the number of lines.</string>
+    <string name="syslogTalk">Read logs directly from your server (default: 10 lines)</string>
     <string name="securityfeaturetalk">By selecting this checkbox, you enable a security feature that allows you (in the case of an emergency) to have Cura\'s database wiped (and receive the phone\'s location back) upon you SMSing the compromised phone a secret pattern of your choosing.</string>
     <string name="securityfeatureTitle">Attention!</string>
     <string name="sysmonitorActivityTitle">Cura System Monitor</string>
@@ -135,5 +135,6 @@
     <string name="portErrorModify">The port entered is too long</string>
     <string name="unableToLocate">Unable to find location, please try again</string>
     <string name="killprocess">KILL PROCESS</string>
+    <string name="rateDialogString">If you enjoy using Cura, take a moment to rate it. Thank you for your support!</string>
 
 </resources>

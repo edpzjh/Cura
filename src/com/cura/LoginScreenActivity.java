@@ -27,7 +27,6 @@ package com.cura;
 
 import org.jasypt.util.password.BasicPasswordEncryptor;
 
-import com.cura.R;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -46,7 +45,6 @@ import android.os.Bundle;
 import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
@@ -56,7 +54,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -68,13 +65,13 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TableLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cura.Connection.ConnectionService;
 import com.cura.about.aboutActivity;
+import com.cura.rate.AppRater;
 import com.cura.validation.regexValidator;
 
 public class LoginScreenActivity extends Activity implements android.view.View.OnClickListener {
@@ -108,7 +105,8 @@ public class LoginScreenActivity extends Activity implements android.view.View.O
   super.onCreate(savedInstanceState);
   requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
   setContentView(com.cura.R.layout.loginscreen);
-
+  AppRater.app_launched(this);
+  // AppRater.showRateDialog(this, null);
   ((TextView) findViewById(R.id.connecting)).setVisibility(View.GONE);
   prefs = PreferenceManager.getDefaultSharedPreferences(this);
   rv = new regexValidator();

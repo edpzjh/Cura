@@ -95,9 +95,7 @@ public class SysMonitorActivity extends Activity {
 
   try {
    resultCPU = conn.executeCommand("ps aux | awk '{sum+=$3} END {print sum}'");
-   Log.d("CPUValue", resultCPU);
    resultRAM = conn.executeCommand("ps aux | awk '{sum+=$4} END {print sum}'");
-   Log.d("RAMValue", resultRAM);
    if(!resultCPU.equalsIgnoreCase("") && !resultRAM.equalsIgnoreCase("")) {
 	if(Double.parseDouble(resultCPU) > 100)
 	 resultCPU = "100";
