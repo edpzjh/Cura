@@ -53,82 +53,103 @@ import android.widget.Toast;
 
 import com.cura.security.SMSService;
 import com.cura.validation.regexValidator;
+import com.google.analytics.tracking.android.EasyTracker;
 
-public class PreferenceScreen extends PreferenceActivity implements OnPreferenceClickListener, OnSharedPreferenceChangeListener {
- private CheckBoxPreference cp;
- private regexValidator rv;
- private String email;
- private SharedPreferences sharedPreferences;
+public class PreferenceScreen extends PreferenceActivity implements
+		OnPreferenceClickListener, OnSharedPreferenceChangeListener {
+	private CheckBoxPreference cp;
+	private regexValidator rv;
+	private String email;
+	private SharedPreferences sharedPreferences;
 
- @Override
- public void onCreate(Bundle savedInstanceState) {
-  super.onCreate(savedInstanceState);
-  addPreferencesFromResource(R.xml.preferencescreen);
-  cp = (CheckBoxPreference) findPreference("enableSMS");
-  cp.setOnPreferenceClickListener(this);
-  sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-  sharedPreferences.registerOnSharedPreferenceChangeListener(this);
-  rv = new regexValidator();
- }
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		addPreferencesFromResource(R.xml.preferencescreen);
+		cp = (CheckBoxPreference) findPreference("enableSMS");
+		cp.setOnPreferenceClickListener(this);
+		sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+		sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+		rv = new regexValidator();
+	}
 
- public boolean onPreferenceClick(Preference preference) {
-  if(preference.getKey().equalsIgnoreCase("enableSMS") && cp.isChecked()) {
+	public boolean onPreferenceClick(Preference preference) {
+		if (preference.getKey().equalsIgnoreCase("enableSMS") && cp.isChecked()) {
 
-   new AlertDialog.Builder(PreferenceScreen.this).setTitle(R.string.securityfeatureTitle).setMessage(R.string.securityfeaturetalk)
-	 .setPositiveButton(R.string.firstTimeUseOKButton, new DialogInterface.OnClickListener() {
-	  public void onClick(DialogInterface dialog, int whichButton) {
+			new AlertDialog.Builder(PreferenceScreen.this)
+					.setTitle(R.string.securityfeatureTitle)
+					.setMessage(R.string.securityfeaturetalk)
+					.setPositiveButton(R.string.firstTimeUseOKButton,
+							new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog, int whichButton) {
 
-	   /* User clicked OK so do some stuff */
-	  }
-	 }).create().show();
-   enableGps();
-   startService(new Intent(this, SMSService.class));
-   Log.d("SMSservice", "Started");
-   return true;
-  }
-  if(preference.getKey().equalsIgnoreCase("enableSMS") && !cp.isChecked()) {
-   disableGps();
-   stopService(new Intent(this, SMSService.class));
-   Log.d("SMSservice", "Stopped");
-   return true;
-  }
-  return false;
- }
+									/* User clicked OK so do some stuff */
+								}
+							}).create().show();
+			enableGps();
+			startService(new Intent(this, SMSService.class));
+			Log.d("SMSservice", "Started");
+			return true;
+		}
+		if (preference.getKey().equalsIgnoreCase("enableSMS") && !cp.isChecked()) {
+			disableGps();
+			stopService(new Intent(this, SMSService.class));
+			Log.d("SMSservice", "Stopped");
+			return true;
+		}
+		return false;
+	}
 
- @SuppressWarnings("unused")
- private boolean isMyServiceRunning() {
-  ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-  for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-   if("com.cura.security.SMSSecurity".equals(service.service.getClassName())) {
-	Log.d("Running", service.service.getClassName());
-	return true;
-   }
-  }
-  return false;
- }
+	@SuppressWarnings("unused")
+	private boolean isMyServiceRunning() {
+		ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+		for (RunningServiceInfo service : manager
+				.getRunningServices(Integer.MAX_VALUE)) {
+			if ("com.cura.security.SMSSecurity"
+					.equals(service.service.getClassName())) {
+				Log.d("Running", service.service.getClassName());
+				return true;
+			}
+		}
+		return false;
+	}
 
- public void enableGps() {
-  String provider = Settings.Secure.getString(getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+	public void enableGps() {
+		String provider = Settings.Secure.getString(getContentResolver(),
+				Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
 
-  if(!provider.contains("gps")) {
-   final Intent poke = new Intent();
-   poke.setClassName("com.android.settings", "com.android.settings.widget.SettingsAppWidgetProvider");
-   poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
-   poke.setData(Uri.parse("3"));
-   sendBroadcast(poke);
-  }
- }
+		if (!provider.contains("gps")) {
+			final Intent poke = new Intent();
+			poke.setClassName("com.android.settings",
+					"com.android.settings.widget.SettingsAppWidgetProvider");
+			poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
+			poke.setData(Uri.parse("3"));
+			sendBroadcast(poke);
+		}
+	}
 
- public void disableGps() {
+	public void disableGps() {
 
- }
+	}
 
- public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
-  if(key.equals("alternativeEmail")) {
-   String value = sp.getString(key, null);
-   if(!rv.validateEmail(value)) {
-	Toast.makeText(this, R.string.emailNotValid, Toast.LENGTH_SHORT).show();
-   }
-  }
- }
+	public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
+		if (key.equals("alternativeEmail")) {
+			String value = sp.getString(key, null);
+			if (!rv.validateEmail(value)) {
+				Toast.makeText(this, R.string.emailNotValid, Toast.LENGTH_SHORT).show();
+			}
+		}
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+		EasyTracker.getInstance().activityStart(this);
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		EasyTracker.getInstance().activityStop(this);
+	}
 }

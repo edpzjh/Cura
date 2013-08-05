@@ -24,7 +24,7 @@
         <item>Grepable</item>
     </string-array>
     <string-array name="timeIntervals">
-        <item>Never</item>
+        <item>Never watch</item>
         <item>30 seconds</item>
         <item>3 minutes</item>
         <item>5 minutes</item>

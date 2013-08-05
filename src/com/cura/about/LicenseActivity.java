@@ -25,16 +25,29 @@ package com.cura.about;
  */
 
 import com.cura.R;
+import com.google.analytics.tracking.android.EasyTracker;
 
 import android.app.Activity;
 import android.os.Bundle;
 
 public class LicenseActivity extends Activity {
 
- @Override
- protected void onCreate(Bundle savedInstanceState) {
-  super.onCreate(savedInstanceState);
-  this.setContentView(R.layout.licenselayout);
-  this.setTitle(R.string.license_information);
- }
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		this.setContentView(R.layout.licenselayout);
+		this.setTitle(R.string.license_information);
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+		EasyTracker.getInstance().activityStart(this);
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		EasyTracker.getInstance().activityStop(this);
+	}
 }
