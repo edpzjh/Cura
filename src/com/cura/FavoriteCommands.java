@@ -16,7 +16,13 @@
     You should have received a copy of the GNU General Public License
     along with Cura.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.cura;
+
+/*
+ * Description: This is the Favorite Commands activity which exists in the Terminal module. Here is where the user can add
+ * new commands to their list of favorite commands and be able to select one of them and run it in the terminal.
+ */
 
 import android.app.ListActivity;
 import android.database.Cursor;
@@ -34,15 +40,13 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.cura.Connection.SSHConnection;
+import com.google.analytics.tracking.android.EasyTracker;
 
 public class FavoriteCommands extends ListActivity {
 
 	String favoriteCommands[];
-	// create an array of strings.
 	DbHelper dbHelper;
-	// instance of the database helper.
 	SQLiteDatabase db;
-	// instance of SQLite database.
 	User userTemp;
 	SSHConnection sshconnection;
 
@@ -58,33 +62,28 @@ public class FavoriteCommands extends ListActivity {
 
 		dbHelper = new DbHelper(this);
 		db = dbHelper.getReadableDatabase();
-		// instantiate the instance of SQLite database and DBHelper
 
-		// select all commands.
 		Cursor c = db.rawQuery("select * from commandTable", null);
 
-		// create an array of commands.
 		favoriteCommands = new String[c.getCount()];
 		int counter = 0;
 
 		if (c != null) {
 			if (c.moveToFirst()) {
 				do {
-					favoriteCommands[counter] = c.getString(c
-							.getColumnIndex("command"));
+					favoriteCommands[counter] = c.getString(c.getColumnIndex("command"));
 					counter++;
 				} while (c.moveToNext());
 			}
 		}
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_list_item_1, favoriteCommands);
-		// display them.
 		setListAdapter(adapter);
-		//register context menu 
 		registerForContextMenu(getListView());
 	}
-	
+
 	String commandItem;
+
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		commandItem = (String) getListAdapter().getItem(position);
@@ -95,45 +94,48 @@ public class FavoriteCommands extends ListActivity {
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-		// add to buttons to context menu "Modify command", "Delete command"
 		menu.add(0, Menu.FIRST + 1, 0, R.string.deleteFavoriteCommand);
 	}
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
-				.getMenuInfo();
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 		String command = favoriteCommands[info.position];
 
 		dbHelper = new DbHelper(FavoriteCommands.this);
 		db = dbHelper.getWritableDatabase();
 
 		switch (item.getItemId()) {
-		// delete button is pressed
 		case Menu.FIRST + 1:
-			// Delete command
 			try {
-				
+
 				String where = "command = ?";
 				String[] whereArgs = { command };
-				// prepare the query.
 				db.delete(DbHelper.commandTableName, where, whereArgs);
-				// execute it.
 
 				startActivity(getIntent());
 				finish();
-				} catch (Exception e) {
-					Log.d("SQL", e.toString());
-					// so that we can know where to follow the errors (if
-					// any).
-				}
+			} catch (Exception e) {
+				Log.d("SQL", e.toString());
+			}
 
-				return true;
+			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
-	
+
+	@Override
+	public void onStart() {
+		super.onStart();
+		EasyTracker.getInstance().activityStart(this); // Add this method.
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		EasyTracker.getInstance().activityStop(this); // Add this method.
+	}
+
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();

@@ -16,9 +16,15 @@
     You should have received a copy of the GNU General Public License
     along with Cura.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.cura.Terminal;
 
-import java.io.IOException;
+/*
+ * Description: This class describes the way that we have chosen to interact with the server after having established an
+ * SSH connection to it. We use a JSch (Java Secure channel) object to send/receive messages to/from the server and we do
+ * this using a thread that can be ran/paused/etc...
+ */
+
 import java.io.InputStream;
 import java.io.StringWriter;
 
@@ -35,68 +41,63 @@ import com.jcraft.jsch.Session;
 
 public class Terminal extends Thread {
 
-	private JSch jsch;
-	private Session session;
-	private Channel channel;
+ private JSch jsch;
+ private Session session;
+ private Channel channel;
 
-	private String username;
-	private String host;
-	private String password;
-	private int port;
-	private StringWriter writer; 
-	private InputStream in;
-	private String result = "";
-	int i = 0;
-	
+ private String username;
+ private String host;
+ private String password;
+ private int port;
+ private StringWriter writer;
+ private InputStream in;
+ private String result = "";
+ int i = 0;
 
-	public Terminal(User user) throws JSchException {
-		// TODO Auto-generated method stub
-		writer = new StringWriter();
-		jsch = new JSch();
-		username = user.getUsername();
-		host = user.getDomain();
-		this.password = user.getPassword();
-		port = user.getPort();
+ public Terminal(final User user) throws JSchException {
+  writer = new StringWriter();
+  username = user.getUsername();
+  host = user.getDomain();
+  password = user.getPassword();
+  port = user.getPort();
+  jsch = new JSch();
+  session = jsch.getSession(username, host, port);
+  session.setPassword(password);
+  session.setConfig("StrictHostKeyChecking", "no");
+  session.connect();
+  Log.i("Terminal", "connected");
+  channel = session.openChannel("exec");
 
-		session = jsch.getSession(username, host, port);
-		session.setPassword(password);
-		session.setConfig("StrictHostKeyChecking", "no");
-		session.connect();
-		Log.i("Terminal", "connected");
-		channel = session.openChannel("exec");
+ }
 
-	}
+ public synchronized String ExecuteCommand(String command) {
 
-	public synchronized String ExecuteCommand(String command) {
-		
-		try {
-			channel = session.openChannel("exec");
-			((ChannelExec) channel).setCommand(command);
-			channel.connect();
+  try {
+   channel = session.openChannel("exec");
+   ((ChannelExec) channel).setCommand(command);
+   channel.connect();
 
-			// get output from server
-			in = channel.getInputStream();
+   in = channel.getInputStream();
 
-			// convert output to string
-			writer.getBuffer().setLength(0);
-			IOUtils.copy(in, writer);
-			result = writer.toString();
-			
-			System.gc();
+   writer.getBuffer().setLength(0);
+   IOUtils.copy(in, writer);
+   result = writer.toString();
 
-		} catch (IOException i) {
-			Log.d("terminal", i.toString());
-		} catch (JSchException e) {
-			// TODO Auto-generated catch block
-			Log.d("terminal", e.toString());
-		}
-		return result;
-	}
-	public void close(){
-		session.disconnect();
-		channel.disconnect();
-	}
-	public boolean connected(){
-		return true;
-	}
+   System.gc();
+
+  }
+  catch (Exception i) {
+   return "";
+  }
+  return result;
+ }
+
+ public void close() {
+  channel.disconnect();
+  session.disconnect();
+ }
+
+ public boolean connected() {
+  return session.isConnected();
+ }
 }

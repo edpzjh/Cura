@@ -16,16 +16,25 @@
     You should have received a copy of the GNU General Public License
     along with Cura.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.cura;
 
+/*
+ * Description: This is the login screen and this is Cura's main first screen where the user will be dropped to upon accessing the 
+ * application. Here is where we offer the user the ability to select a server account from the ones that they've added, add new ones or
+ * modify existing server accounts. Also offered in this screen (through the menu) is the Settings tab and the About tab.
+ */
+
+import org.jasypt.util.password.BasicPasswordEncryptor;
+
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ListActivity;
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -33,126 +42,292 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.preference.PreferenceManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TableRow;
+import android.widget.TableLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cura.Connection.ConnectionService;
+import com.cura.about.aboutActivity;
+import com.cura.rate.AppRater;
+import com.cura.validation.regexValidator;
+import com.google.analytics.tracking.android.EasyTracker;
 
-public class LoginScreenActivity extends ListActivity {
+public class LoginScreenActivity extends Activity implements
+		android.view.View.OnClickListener {
+
 	private final String connected = "cura.connected";
 	private final String notConnected = "cura.not.connected";
-	TableRow AddUserRow;
-	DbHelper dbHelper;
-	SQLiteDatabase db;
-	User user[];
-	User userTemp;
-	CustomArrayAdapter array;
-	Intent goToMainActivity;
-	BroadcastReceiver br;
-	ProgressDialog loader;
+	private final int ADD_USER = 1;
+	private final int MODIFY_SERVER = 4;
+	private final int SETTINGS = 2;
+	private final int ABOUT = 3;
+	private CustomArrayAdapter array;
+	private BroadcastReceiver br;
+	private Intent goToMainActivity;
+	private Button selectServer, newServer, modifyServers;
+	private LinearLayout buttonsLayout;
+	private User user[];
+	private User userTemp;
+	private DbHelper dbHelper;
+	private SQLiteDatabase db;
+	int position;
+	private Vibrator vibrator;
 	private SharedPreferences prefs;
-	private static final int DIALOG_YES_NO_LONG_MESSAGE = 99;
-	private static final int SET_CURA_PASSWORD = 98;
+	private regexValidator rv;
+	private boolean isConnected = false;
+	// private AdView adView;
+	private AlertDialog alert;
+	private AsyncTask<String, String, String> task;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
-		this.setTitle(R.string.LoginScreenName);
+		requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+		setContentView(com.cura.R.layout.loginscreen);
+		AppRater.app_launched(this);
+		// AppRater.showRateDialog(this, null);
+		((TextView) findViewById(R.id.connecting)).setVisibility(View.GONE);
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		rv = new regexValidator();
 
-		user = getUser();
-		// create the listView
+		selectServer = (Button) findViewById(R.id.selectServer);
+		newServer = (Button) findViewById(R.id.newServer);
+		selectServer.setOnClickListener(this);
+		newServer.setOnClickListener(this);
 
-		if (user.length == 1 && user[0].getUsername().equalsIgnoreCase("username")
-				&& user[0].getDomain().equalsIgnoreCase("domain")) {
-			showDialog(DIALOG_YES_NO_LONG_MESSAGE);
-		}
-
-		if (prefs.getString("myPass", "").compareTo("") == 0)
-			showDialog(SET_CURA_PASSWORD);
-
-		array = new CustomArrayAdapter(this, user);
-		setListAdapter(array);
-		// enable context menu
-		registerForContextMenu(getListView());
 		br = new BroadcastReceiver() {
 
 			@Override
 			public void onReceive(Context context, Intent intent) {
-				// TODO Auto-generated method stub
 				Bundle extras = intent.getExtras();
+				setProgressBarIndeterminateVisibility(false);
 				if (extras != null) {
 					userTemp = extras.getParcelable("user");
 				}
 				if (intent.getAction().compareTo(connected) == 0) {
-					loader.cancel();
+					isConnected = true;
 					goToMainActivity = new Intent(LoginScreenActivity.this,
 							CuraActivity.class);
+					goToMainActivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 					goToMainActivity.putExtra("user", userTemp);
 					startActivity(goToMainActivity);
 				} else {
-					loader.cancel();
-					Toast.makeText(context, R.string.credentialsWrong,
-							Toast.LENGTH_LONG).show();
+					isConnected = false;
+					Toast.makeText(context, R.string.credentialsWrong, Toast.LENGTH_LONG)
+							.show();
+					((ImageView) findViewById(R.id.server))
+							.setImageResource(R.drawable.serveroffline);
+					((TextView) findViewById(R.id.connecting)).setVisibility(View.GONE);
+					buttonsLayout.setVisibility(View.VISIBLE);
+
+					stopService(new Intent(LoginScreenActivity.this,
+							ConnectionService.class));
 				}
 			}
 		};
+
 		IntentFilter intentFilter = new IntentFilter();
 		intentFilter.addAction(connected);
 		intentFilter.addAction(notConnected);
 		registerReceiver(br, intentFilter);
+		vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+		buttonsLayout = (LinearLayout) findViewById(R.id.ButtonsLayout);
 	}
 
-	// new function that fetches users info from database, used in "onCreate()"
-	// and to refresh activity
+	@Override
+	public void onClick(View arg0) {
+		switch (arg0.getId()) {
+		case R.id.selectServer:
+
+			final Dialog accounts = new Dialog(this);
+			accounts.setContentView(R.layout.list);
+			accounts.setTitle(R.string.selectServer);
+			user = getUser();
+			array = new CustomArrayAdapter(this, user);
+			ListView mlistView = new ListView(this);
+			mlistView.setOnItemClickListener(new OnItemClickListener() {
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+						long arg3) {
+					accounts.dismiss();
+					position = arg2;
+					if (user.length == 1
+							&& user[0].getUsername().equalsIgnoreCase("username")
+							&& user[0].getDomain().equalsIgnoreCase("domain")) {
+						Toast.makeText(LoginScreenActivity.this, R.string.addServerHint,
+								Toast.LENGTH_LONG).show();
+					} else {
+						AlertDialog.Builder passwordAlert = new AlertDialog.Builder(
+								LoginScreenActivity.this);
+
+						passwordAlert.setTitle("Login");
+
+						LayoutInflater li = LayoutInflater.from(LoginScreenActivity.this);
+						View view = li.inflate(R.layout.password_dialog, null);
+						passwordAlert.setView(view);
+						final EditText passField = (EditText) view
+								.findViewById(R.id.passwordprompt);
+						CheckBox showPass = (CheckBox) view.findViewById(R.id.showPassword);
+						showPass.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+							public void onCheckedChanged(CompoundButton buttonView,
+									boolean isChecked) {
+								if (isChecked)
+									passField.setTransformationMethod(null);
+								else
+									passField
+											.setTransformationMethod(PasswordTransformationMethod
+													.getInstance());
+							}
+						});
+						passwordAlert.setPositiveButton("Connect",
+								new DialogInterface.OnClickListener() {
+									public void onClick(final DialogInterface dialog,
+											int whichButton) {
+										InputMethodManager keyboard = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+										keyboard.hideSoftInputFromWindow(
+												passField.getWindowToken(), 0);
+										task = new AsyncTask<String, String, String>() {
+											Intent passUserObjToService;
+
+											@Override
+											protected void onPreExecute() {
+												dialog.dismiss();
+
+												setProgressBarIndeterminateVisibility(true);
+												((ImageView) findViewById(R.id.server))
+														.setImageResource(R.drawable.serverconnecting);
+												((TextView) findViewById(R.id.connecting))
+														.setVisibility(View.VISIBLE);
+												buttonsLayout.setVisibility(View.GONE);
+											}
+
+											@Override
+											protected String doInBackground(String... params) {
+												String pass = passField.getText().toString();
+												user[position].setPassword(pass);
+												userTemp = user[position];
+												passUserObjToService = new Intent(
+														LoginScreenActivity.this, ConnectionService.class);
+												passUserObjToService.putExtra("user", userTemp);
+												passUserObjToService.putExtra("pass", pass);
+												return null;
+											}
+
+											@Override
+											protected void onPostExecute(String result) {
+												startService(passUserObjToService);
+											}
+										};
+										task.execute();
+
+									}
+								});
+						passwordAlert.setNegativeButton("Cancel",
+								new DialogInterface.OnClickListener() {
+									public void onClick(DialogInterface dialog, int which) {
+										return;
+									}
+								});
+						passField
+								.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+
+									@Override
+									public boolean onEditorAction(TextView arg0, int arg1,
+											KeyEvent arg2) {
+										alert.getButton(Dialog.BUTTON1).performClick();
+										return false;
+									}
+								});
+						alert = passwordAlert.create();
+						alert.show();
+						passField.addTextChangedListener(new TextWatcher() {
+							public void onTextChanged(CharSequence s, int start, int before,
+									int count) {
+								String pass = passField.getText().toString();
+								if (pass.length() > 0)
+									alert.getButton(Dialog.BUTTON1).setEnabled(true);
+								else if (pass.length() == 0)
+									alert.getButton(Dialog.BUTTON1).setEnabled(false);
+							}
+
+							public void beforeTextChanged(CharSequence s, int start,
+									int count, int after) {
+							}
+
+							public void afterTextChanged(Editable s) {
+							}
+						});
+						alert.getButton(Dialog.BUTTON1).setEnabled(false);
+					}
+				}
+			});
+			mlistView.setAdapter(array);
+			accounts.addContentView(mlistView, new LayoutParams());
+			accounts.setOnCancelListener(new OnCancelListener() {
+
+				@Override
+				public void onCancel(DialogInterface arg0) {
+					accounts.dismiss();
+				}
+			});
+			accounts.show();
+			break;
+		case R.id.newServer:
+			addUser();
+			break;
+		}
+	}
+
 	public User[] getUser() {
 		dbHelper = new DbHelper(this);
 		db = dbHelper.getReadableDatabase();
 
-		// select all users.
 		Cursor c = db.rawQuery("select * from user", null);
-		// create an array of users
 		if (c.getCount() == 0) {
 			user = new User[1];
 			user[0] = new User("username", "domain", 22);
-			Log.d("HERE", "HERE");
 		} else {
 			user = new User[c.getCount()];
 
 			int counter = 0;
 
-			// get info and store them into objects
 			if (c != null) {
 				if (c.moveToFirst()) {
 					do {
-						String username = c.getString(c
-								.getColumnIndex("username"));
+						String username = c.getString(c.getColumnIndex("username"));
 						String domain = c.getString(c.getColumnIndex("domain"));
-						int port = Integer.parseInt(c.getString(c
-								.getColumnIndex("port")));
-						// fetch the user's data.
+						int port = Integer.parseInt(c.getString(c.getColumnIndex("port")));
 						user[counter] = new User(username, domain, port);
 						counter++;
 					} while (c.moveToNext());
 				}
 			}
 		}
-		// close database
+		c.close();
 		db.close();
 		dbHelper.close();
 
@@ -160,156 +335,154 @@ public class LoginScreenActivity extends ListActivity {
 	}
 
 	@Override
-	protected Dialog onCreateDialog(int id) {
-
-		return new AlertDialog.Builder(LoginScreenActivity.this)
-				// .setIconAttribute(android.R.attr.alertDialogIcon)
-				.setTitle(R.string.firstTimeUseMessageTitle)
-				.setMessage(R.string.firstTimeUseMessage)
-				.setPositiveButton(R.string.firstTimeUseOKButton,
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int whichButton) {
-
-								/* User clicked OK so do some stuff */
-							}
-						})
-				.setNegativeButton(R.string.firstTimeUseCancelButton,
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog,
-									int whichButton) {
-
-								/* User clicked Cancel so do some stuff */
-							}
-						}).create();
+	public boolean onCreateOptionsMenu(Menu menu) {
+		boolean result = super.onCreateOptionsMenu(menu);
+		menu.add(0, MODIFY_SERVER, 0, R.string.ModifyServerInfo).setIcon(
+				android.R.drawable.ic_menu_edit);
+		menu.add(0, SETTINGS, 0, R.string.preferenceSettings).setIcon(
+				R.drawable.ic_menu_preferences);
+		menu.add(0, ABOUT, 0, R.string.aboutString).setIcon(
+				android.R.drawable.ic_dialog_info);
+		return result;
 	}
 
 	@Override
-	// UPON CLICKING A USER ITEM FROM THE LIST OF USERS AVAILABLE.
-	protected void onListItemClick(ListView l, View v, final int position,
-			long id) {
-		super.onListItemClick(l, v, position, id);
-		if (user.length == 1
-				&& user[0].getUsername().equalsIgnoreCase("username")
-				&& user[0].getDomain().equalsIgnoreCase("domain")) {
-			Toast.makeText(this, R.string.addUserHint, Toast.LENGTH_LONG)
-					.show();
-		} else {
-			AlertDialog.Builder alert = new AlertDialog.Builder(this);
-			// set an alert dialog to prompt the user for their password to
-			// login.
-			alert.setTitle("Login");
-			alert.setMessage(R.string.LoginScreenPasswordPrompt);
-
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case ADD_USER:
+			addUser();
+			return true;
+		case MODIFY_SERVER:
+			user = getUser();
+			if (user.length == 1
+					&& user[0].getUsername().equalsIgnoreCase("username")
+					&& user[0].getDomain().equalsIgnoreCase("domain"))
+				Toast.makeText(this, getString(R.string.noServersFound),
+						Toast.LENGTH_LONG).show();
+			else
+				startActivity(new Intent(this, AccountsListActivity.class));
+			break;
+		case SETTINGS:
+			final AlertDialog.Builder alert = new AlertDialog.Builder(this);
+			alert.setTitle(R.string.settingsPassDialogTitle);
+			alert.setMessage(R.string.settignsScreenPasswordPrompt);
 			final EditText passField = new EditText(this);
 			passField.setTransformationMethod(PasswordTransformationMethod
 					.getInstance());
-			// make it turn into stars, as available from the API.
 			alert.setView(passField);
-			// show the alert.
-
-			alert.setPositiveButton("Ok",
+			alert.setPositiveButton(R.string.ok,
 					new DialogInterface.OnClickListener() {
-						public void onClick(final DialogInterface dialog,
-								int whichButton) {
-							// UPON CLICKING "OK" IN THE DIALOG BOX (ALERT)
-							AsyncTask<String, String, String> task = new AsyncTask<String, String, String>() {
-								Intent passUserObjToService;
-
-								@Override
-								protected void onPreExecute() {
-									dialog.dismiss();
-									loader = ProgressDialog.show(
-											LoginScreenActivity.this,
-											"Connecting...",
-											"Loading, please wait...", true);
-								}
-
-								@Override
-								protected String doInBackground(
-										String... params) {
-									String pass = passField.getText()
-											.toString();
-									user[position].setPassword(pass);
-									userTemp = user[position];
-									passUserObjToService = new Intent(
-											LoginScreenActivity.this,
-											ConnectionService.class);
-									passUserObjToService.putExtra("user",
-											userTemp);
-									passUserObjToService.putExtra("pass", pass);
-									return null;
-								}
-
-								@Override
-								protected void onPostExecute(String result) {
-									startService(passUserObjToService);
-									loader.dismiss();
-								}
-
-							};
-							task.execute();
+						public void onClick(DialogInterface dialog, int whichButton) {
+							BasicPasswordEncryptor passwordEncryptor = new BasicPasswordEncryptor();
+							String curaPass = prefs.getString("myPass", "");
+							String passfield = passField.getText().toString();
+							if (passwordEncryptor.checkPassword(passfield, curaPass))
+								startActivity(new Intent(LoginScreenActivity.this,
+										PreferenceScreen.class));
+							else
+								Toast.makeText(LoginScreenActivity.this,
+										R.string.wrongPassword, Toast.LENGTH_SHORT).show();
 							return;
 						}
 					});
-			alert.setNegativeButton("Cancel",
+			alert.setNegativeButton(R.string.cancel,
 					new DialogInterface.OnClickListener() {
-						// UPON CLICKING "CANCEL" IN THE DIALOG BOX (ALERT)
 						public void onClick(DialogInterface dialog, int which) {
 							return;
 						}
 					});
-			alert.show();
+			final AlertDialog settingsPassAlert = alert.create();
+			settingsPassAlert.show();
+			passField.addTextChangedListener(new TextWatcher() {
+
+				public void onTextChanged(CharSequence s, int start, int before,
+						int count) {
+					String pass = passField.getText().toString();
+					if (pass.length() > 0)
+						settingsPassAlert.getButton(Dialog.BUTTON1).setEnabled(true);
+					else if (pass.length() == 0)
+						settingsPassAlert.getButton(Dialog.BUTTON1).setEnabled(false);
+				}
+
+				public void beforeTextChanged(CharSequence s, int start, int count,
+						int after) {
+				}
+
+				public void afterTextChanged(Editable s) {
+				}
+			});
+			settingsPassAlert.getButton(Dialog.BUTTON_POSITIVE).setEnabled(false);
+			return true;
+		case ABOUT:
+			Intent aboutIntent = new Intent(LoginScreenActivity.this,
+					aboutActivity.class);
+			startActivity(aboutIntent);
+			return true;
 		}
+		return super.onOptionsItemSelected(item);
 	}
 
-	// MENU STUFF IS IMPLEMENTED BELOW, FIRST THE REGULAR MENU THAT APPEARS WHEN
-	// A USER CLICKS ON THE MENU BUTTON, THEN THE CONTEXT MENU WHEN A USER
-	// LONG-CLICKS ON ONE OF THE USERS IN THE LIST
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		boolean result = super.onCreateOptionsMenu(menu);
-		// Add a button to menu
-		menu.add(0, Menu.FIRST, 0, R.string.no_users).setIcon(
-				R.drawable.ic_menu_add);
-		menu.add(0, 2, 0, R.string.preferenceSettings).setIcon(
-				R.drawable.ic_menu_preferences);
-		menu.add(1, 3, 1, "Refresh").setIcon(R.drawable.ic_menu_rotate);
-		return result;
-	}
+	protected void addUser() {
+		final Dialog myDialog;
+		myDialog = new Dialog(LoginScreenActivity.this);
+		myDialog.setContentView(R.layout.adduserscreen);
+		myDialog.setTitle(R.string.DialogTitle);
+		myDialog.setCancelable(true);
+		myDialog.setCanceledOnTouchOutside(true);
 
-	// THE FIRST MENU
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		// if "Add new user" button is pressed from the menu
-		case Menu.FIRST:
-			// display dialog box
-			final Dialog myDialog;
-			myDialog = new Dialog(LoginScreenActivity.this);
-			myDialog.setContentView(R.layout.adduserscreen);
-			myDialog.setTitle(R.string.DialogTitle);
-			myDialog.setCancelable(true);
-			myDialog.setCanceledOnTouchOutside(true);
+		final Button AddUserButton = (Button) myDialog.findViewById(R.id.button1);
+		AddUserButton.setEnabled(false);
+		Button cancelButton = (Button) myDialog.findViewById(R.id.button2);
+		TextWatcher watcher = null;
+		final EditText usernameInput = (EditText) myDialog
+				.findViewById(R.id.usernameTextField);
 
-			Button AddUserButton = (Button) myDialog.findViewById(R.id.button1);
-			Button cancelButton = (Button) myDialog.findViewById(R.id.button2);
+		final EditText domainInput = (EditText) myDialog
+				.findViewById(R.id.domainTextField);
 
-			final EditText usernameInput = (EditText) myDialog
-					.findViewById(R.id.usernameTextField);
-			final EditText domainInput = (EditText) myDialog
-					.findViewById(R.id.domainTextField);
-			final EditText portInput = (EditText) myDialog
-					.findViewById(R.id.portTextField);
+		final EditText portInput = (EditText) myDialog
+				.findViewById(R.id.portTextField);
 
-			AddUserButton.setOnClickListener(new OnClickListener() {
-				public void onClick(View v) {
-					// get username, domain and port from EditText
-					String usern = usernameInput.getText().toString();
-					String domain = domainInput.getText().toString();
-					int port = Integer.parseInt(portInput.getText().toString());
+		final TextView userExists = (TextView) myDialog
+				.findViewById(R.id.serverExists);
+		watcher = new TextWatcher() {
 
-					// open database
+			public void afterTextChanged(Editable s) {
+			}
+
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+			}
+
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				String username = usernameInput.getText().toString();
+				String domain = domainInput.getText().toString();
+				String port = portInput.getText().toString();
+				if (rv.validateUsername(username) && !domain.equalsIgnoreCase("")
+						&& !port.equalsIgnoreCase(""))
+					AddUserButton.setEnabled(true);
+				else
+					AddUserButton.setEnabled(false);
+			}
+
+		};
+		usernameInput.addTextChangedListener(watcher);
+		domainInput.addTextChangedListener(watcher);
+		portInput.addTextChangedListener(watcher);
+
+		AddUserButton.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				String usern = usernameInput.getText().toString();
+				String domain = domainInput.getText().toString();
+				int port;
+				try {
+					port = Integer.parseInt(portInput.getText().toString());
+				} catch (Exception e) {
+					port = 22;
+					Toast.makeText(LoginScreenActivity.this, R.string.portError,
+							Toast.LENGTH_LONG).show();
+				}
+				if (!isFound(usern, domain)) {
 					DbHelper dbHelper = new DbHelper(LoginScreenActivity.this);
 					SQLiteDatabase db = dbHelper.getWritableDatabase();
 
@@ -320,202 +493,74 @@ public class LoginScreenActivity extends ListActivity {
 					values.put(dbHelper.C_PORT, port);
 
 					try {
-						// insert into database a new user
 						db.insertOrThrow(dbHelper.userTableName, null, values);
 					} catch (Exception e) {
 						Log.d("SQL", e.toString());
 					}
 
-					// close database
 					db.close();
 					dbHelper.close();
 
-					// CHANGED : refresh list view
-					user = getUser();
-					array = new CustomArrayAdapter(LoginScreenActivity.this,
-							user);
-					setListAdapter(array);
 					myDialog.cancel();
+				} else {
+					LoginScreenActivity.this.vibrator.vibrate(300);
+					userExists.setText(R.string.serverExists);
+					usernameInput.setText("");
+					domainInput.setText("");
 				}
-			});
-
-			cancelButton.setOnClickListener(new OnClickListener() {
-				public void onClick(View v) {
-					// close dialog box
-					myDialog.cancel();
-				}
-			});
-			myDialog.show();
-			return true;
-		case 2:
-			AlertDialog.Builder alert = new AlertDialog.Builder(this);
-			// set an alert dialog to prompt the user for their password to
-			// login.
-			alert.setTitle(R.string.settingsPassDialogTitle);
-			alert.setMessage(R.string.settignsScreenPasswordPrompt);
-
-			final EditText passField = new EditText(this);
-			passField.setTransformationMethod(PasswordTransformationMethod
-					.getInstance());
-			// make it turn into stars, as available from the API.
-			alert.setView(passField);
-			// show the alert.
-
-			alert.setPositiveButton(R.string.ok,
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog,
-								int whichButton) {
-							// UPON CLICKING "OK" IN THE DIALOG BOX (ALERT)
-							String curaPass = prefs.getString("myPass", "");
-							String passfield = passField.getText().toString();
-							if (passfield.compareTo(curaPass) == 0)
-								startActivity(new Intent(
-										LoginScreenActivity.this,
-										PreferenceScreen.class));
-							else
-								Toast.makeText(LoginScreenActivity.this,
-										R.string.wrongPassword,
-										Toast.LENGTH_SHORT).show();
-							return;
-						}
-					});
-			alert.setNegativeButton(R.string.cancel,
-					new DialogInterface.OnClickListener() {
-						// UPON CLICKING "CANCEL" IN THE DIALOG BOX (ALERT)
-						public void onClick(DialogInterface dialog, int which) {
-							return;
-						}
-					});
-			alert.show();
-			return true;
-		case 3:
-			user = getUser();
-			array = new CustomArrayAdapter(LoginScreenActivity.this, user);
-			setListAdapter(array);
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
-
-	// THE SECOND MENU
-	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v,
-			ContextMenuInfo menuInfo) {
-		super.onCreateContextMenu(menu, v, menuInfo);
-		// add to buttons to context menu "Modify user Info", "Delete User"
-		menu.add(0, Menu.FIRST + 1, 0, R.string.ModifyUserInfo).setIcon(
-				R.drawable.ic_menu_edit);
-		menu.add(0, Menu.FIRST + 2, 0, R.string.DeleteUser).setIcon(
-				R.drawable.ic_menu_delete);
-	}
-
-	@Override
-	public boolean onContextItemSelected(MenuItem item) {
-		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
-				.getMenuInfo();
-		int userIDint = (int) info.id;
-		final String usernameCode = user[userIDint].getUsername();
-		final String domainCode = user[userIDint].getDomain();
-
-		dbHelper = new DbHelper(LoginScreenActivity.this);
-		db = dbHelper.getWritableDatabase();
-
-		switch (item.getItemId()) {
-		// modify button is pressed
-		case Menu.FIRST + 1:
-			final Dialog myDialog;
-			myDialog = new Dialog(LoginScreenActivity.this);
-			myDialog.setContentView(R.layout.adduserscreen);
-			myDialog.setTitle(R.string.DialogTitle);
-			myDialog.setCancelable(true);
-			myDialog.setCanceledOnTouchOutside(true);
-
-			Button modifyUserInfo = (Button) myDialog
-					.findViewById(R.id.button1);
-			modifyUserInfo.setText(R.string.ModifyUserInfo);
-			Button cancelButton = (Button) myDialog.findViewById(R.id.button2);
-
-			final EditText usernameInput = (EditText) myDialog
-					.findViewById(R.id.usernameTextField);
-			final EditText domainInput = (EditText) myDialog
-					.findViewById(R.id.domainTextField);
-			final EditText portInput = (EditText) myDialog
-					.findViewById(R.id.portTextField);
-			// display the initial info to be replaced by the user
-			usernameInput.setText(user[userIDint].getUsername());
-			domainInput.setText(user[userIDint].getDomain());
-			portInput.setText("" + user[userIDint].getPort());
-
-			modifyUserInfo.setOnClickListener(new OnClickListener() {
-				public void onClick(View v) {
-					// update user info
-					String usern = usernameInput.getText().toString();
-					String domain = domainInput.getText().toString();
-					int port = Integer.parseInt(portInput.getText().toString());
-
-					ContentValues values = new ContentValues();
-
-					values.put(dbHelper.C_USERNAME, usern);
-					values.put(dbHelper.C_DOMAIN, domain);
-					values.put(dbHelper.C_PORT, port);
-
-					String where = "username = ? AND domain = ?";
-					String[] whereArgs = { usernameCode, domainCode };
-					try {
-						db.update(DbHelper.userTableName, values, where,
-								whereArgs);
-					} catch (Exception e) {
-						Log.d("SQL", e.toString());
-					}
-
-					// close database
-					db.close();
-					dbHelper.close();
-
-					// CHANGED : refresh list view
-					user = getUser();
-					array = new CustomArrayAdapter(LoginScreenActivity.this,
-							user);
-					setListAdapter(array);
-
-					myDialog.cancel();
-				}
-			});
-
-			cancelButton.setOnClickListener(new OnClickListener() {
-				public void onClick(View v) {
-					// close dialog box
-					myDialog.cancel();
-				}
-			});
-			myDialog.show();
-			return true;
-
-		case Menu.FIRST + 2:
-			// Delete user
-			try {
-				String table_name = "user";
-				String where = "username = ? AND domain = ?";
-				String[] whereArgs = { usernameCode, domainCode };
-				// prepare the query.
-				db.delete(table_name, where, whereArgs);
-				// execute it.
-
-			} catch (Exception e) {
-				Log.d("SQL", e.toString());
-				// so that we can know where to follow the errors (if any).
 			}
-			// close database
-			db.close();
-			dbHelper.close();
+		});
 
-			// CHANGED : refresh list view
-			user = getUser();
-			array = new CustomArrayAdapter(LoginScreenActivity.this, user);
-			setListAdapter(array);
+		cancelButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				myDialog.cancel();
+			}
+		});
+		myDialog.show();
+	}
 
-			return true;
+	public boolean isFound(String username, String domain) {
+		String userValue = "";
+		String dom = "";
+		user = getUser();
+		for (int i = 0; i < user.length; i++) {
+			userValue = user[i].getUsername();
+			dom = user[i].getDomain();
+			if (userValue.compareTo(username) == 0 && dom.compareTo(domain) == 0)
+				return true;
 		}
-		return super.onContextItemSelected(item);
+		return false;
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		if (isConnected) {
+			goToMainActivity = new Intent(LoginScreenActivity.this,
+					CuraActivity.class);
+			goToMainActivity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			goToMainActivity.putExtra("user", userTemp);
+			startActivity(goToMainActivity);
+			EasyTracker.getInstance().activityStart(this);
+		}
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		EasyTracker.getInstance().activityStop(this);
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		unregisterReceiver(br);
 	}
 }

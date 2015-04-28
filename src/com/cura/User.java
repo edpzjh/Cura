@@ -16,80 +16,84 @@
     You should have received a copy of the GNU General Public License
     along with Cura.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.cura;
+
+/*
+ * Description: This is just a User class and it's used to receive all of the user accounts' information and encapsulate 
+ * them in an object.
+ */
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 public class User implements Parcelable {
-	private String username;
-	private String domain;
-	private int port;
-	private String password;
+ private String username;
+ private String domain;
+ private int port;
+ private String password;
 
-	public User(String usern, String dom, int port) {
-		username = usern;
-		domain = dom;
-		this.port = port;
-	}
+ public User(String usern, String dom, int port) {
+  username = usern;
+  domain = dom;
+  this.port = port;
+ }
 
-	public User(Parcel in) {
-		// TODO Auto-generated constructor stub
-		username = in.readString();
-		domain = in.readString();
-		port = in.readInt();
-	}
+ public User(Parcel in) {
+  username = in.readString();
+  domain = in.readString();
+  port = in.readInt();
+ }
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
+ public void setUsername(String username) {
+  this.username = username;
+ }
 
-	public void setDomain(String domain) {
-		this.domain = domain;
-	}
+ public void setDomain(String domain) {
+  this.domain = domain;
+ }
 
-	public void setPort(int port) {
-		this.port = port;
-	}
+ public void setPort(int port) {
+  this.port = port;
+ }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+ public void setPassword(String password) {
+  this.password = password;
+ }
 
-	public String getUsername() {
-		return username;
-	}
+ public String getUsername() {
+  return username;
+ }
 
-	public String getDomain() {
-		return domain;
-	}
+ public String getDomain() {
+  return domain;
+ }
 
-	public int getPort() {
-		return port;
-	}
+ public int getPort() {
+  return port;
+ }
 
-	public String getPassword() {
-		return password;
-	}
+ public String getPassword() {
+  return password;
+ }
 
-	public int describeContents() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+ public int describeContents() {
+  return 0;
+ }
 
-	public void writeToParcel(Parcel dest, int flags) {
-		dest.writeString(username);
-		dest.writeString(domain);
-		dest.writeInt(port);
-	}
+ public void writeToParcel(Parcel dest, int flags) {
+  dest.writeString(username);
+  dest.writeString(domain);
+  dest.writeInt(port);
+ }
 
-	public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
-		public User createFromParcel(Parcel in) {
-			return new User(in);
-		}
+ public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
+  public User createFromParcel(Parcel in) {
+   return new User(in);
+  }
 
-		public User[] newArray(int size) {
-			return new User[size];
-		}
-	};
+  public User[] newArray(int size) {
+   return new User[size];
+  }
+ };
 }

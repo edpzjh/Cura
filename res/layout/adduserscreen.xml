@@ -1,58 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content" >
+	
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+	
+        <TextView
+            android:id="@+id/serverExists"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="#FF0000"
+            android:textSize="15dp" />
 
-    <TextView
-        android:id="@+id/usernameLabel"
-        android:text="@string/usernameLabel"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        <TextView
+            android:id="@+id/usernameLabel"
+            android:text="@string/usernameLabel"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <EditText
-        android:id="@+id/usernameTextField"
-        android:layout_width="188dp"
-        android:layout_height="wrap_content"/>
-		 <requestFocus />
-    <TextView
-        android:id="@+id/domainLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/domainLabel"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        <EditText
+            android:id="@+id/usernameTextField"
+            android:layout_width="188dp"
+            android:layout_height="wrap_content"
+            android:maxLines="1" />
 
-    <EditText
-        android:id="@+id/domainTextField"
-        android:layout_width="182dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="fill_horizontal"
-        android:hint="@string/domainTextFieldHint">
+        <requestFocus />
 
-       
-    </EditText>
+        <TextView
+            android:id="@+id/domainLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/domainLabel"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <TextView
-        android:id="@+id/portLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/portTextField"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        <EditText
+            android:id="@+id/domainTextField"
+            android:layout_width="182dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="fill_horizontal"
+            android:hint="@string/domainTextFieldHint"
+            android:maxLines="1" >
+        </EditText>
 
-    <EditText
-        android:id="@+id/portTextField"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="number" />
+        <TextView
+            android:id="@+id/portLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/portTextField"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <Button
-        android:id="@+id/button1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/DialogAddNewUserButton" />
+        <EditText
+            android:id="@+id/portTextField"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:maxLines="1" />
 
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/DialogCancelButton" />
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/DialogAddNewServerButton" />
 
-</TableLayout>
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/DialogCancelButton" />
+    </TableLayout>
+
+</ScrollView>

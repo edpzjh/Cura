@@ -7,65 +7,134 @@
     <string name="SysMonitorLabel">SysMonitor</string>
     <string name="NessusLabel">Nessus</string>
     <string name="NMapLabel">NMap</string>
-    <string name="SysConnectLabel">SysConnect</string>
+    <string name="MapsLabel">Server Location</string>
     <string name="executeButton">Execute</string>
     <string name="favoritesButton">Favorites</string>
     <string name="hintTerminalMessage">Enter your commands here, or press the Menu button to add a new command to your list of favorites</string>
-    <string name="no_users">Add new user</string>
+    <string name="no_users">Add new server</string>
     <string name="usernameLabel">Username</string>
     <string name="domainLabel">Domain</string>
     <string name="portLabel">Port</string>
     <string name="domainTextFieldHint">ex: local.domain.com</string>
     <string name="portTextField">Port number</string>
     <string name="DialogTitle">Enter the following credentials</string>
-    <string name="DialogAddNewUserButton">Add new user</string>
+    <string name="DialogAddNewServerButton">Add new server</string>
     <string name="DialogCancelButton">Cancel</string>
-    <string name="LoginScreenName">Welcome to Cura</string>
-    <string name="ModifyUserInfo">Modify User Info</string>
-    <string name="DeleteUser">Delete User</string>
-    <string name="msgProgressDialog">Please wait while the connection is being established&#8230;</string>
+    <string name="LoginScreenName">SSH Accounts list</string>
+    <string name="ModifyServerInfo">Edit Servers</string>
+    <string name="DeleteServer">Delete server</string>
+    <string name="msgProgressDialog">Please wait while the connection is being established…</string>
     <string name="addNewFavoriteCommand">Add new command</string>
     <string name="modifyFavoriteCommand">Modify command</string>
     <string name="deleteFavoriteCommand">Delete</string>
     <string name="enterCommandPopupMessage">Enter your command</string>
     <string name="firstTimeUseMessageTitle">This is the first time you install Cura!</string>
-    <string name="firstTimeUseMessage">Welcome to Cura, an application designed to better help you administer your systems. To begin, dismiss this dialog and press the Menu button to start adding new users!</string>
+    <string name="firstTimeUseMessage">Welcome to Cura, an application designed to better help you administer your systems. To begin, dismiss this dialog and press the Menu button to start adding new servers!</string>
     <string name="firstTimeUseOKButton">OK</string>
     <string name="firstTimeUseCancelButton">Cancel</string>
     <string name="logout">Logout</string>
     <string name="logoutConfirmationDialog">Do you want to logout from this account ?</string>
-    <string name="sysLogButtonText">Get Logs</string>
-    <string name="checkBoxSysLogs">Enable Line Numbers</string>
+    <string name="sysLogButtonText">GET LOGS</string>
+    <string name="checkBoxSysLogs">Line Numbers:</string>
     <string name="favoritesWelcome">Welcome to your favorites </string>
     <string name="credentialsWrong">Wrong username/password combination, please try again!</string>
     <string name="LoginScreenPasswordPrompt">Please enter your password</string>
     <string name="SysLogLineNumberprompt">Please enter the number of lines</string>
     <string name="SysLogNoLogsFoundprompt">No logs to be displayed here\n(There was either a permissions issue, or the logfile does not exist on your server)</string>
     <string name="addNewCommandToFavoritesprompt">Enter your command</string>
-	<string name="preferenceSettings">Settings</string>
+    <string name="preferenceSettings">Settings</string>
     <string name="languageCategory">Language</string>
     <string name="securityCategory">Security</string>
     <string name="language">Language</string>
     <string name="languagePrefsSummary">Choose your language</string>
-    <string name="security">Enable SMS security</string>
+    <string name="security">Enable security feature</string>
     <string name="securityPattern">Pattern</string>
     <string name="refresh">Refresh</string>
-    <string name="curaPassword">Cura Password</string>
-    <string name="setCuraPass">Set Cura Password</string>
-    <string name="oldPassTextView">Old Password</string>
-    <string name="newPassTextView">New Password</string>
-    <string name="confirmPassTextView">Re-type New Password</string>
+    <string name="curaPassword">Settings</string>
+    <string name="setCuraPass">Change Password</string>
+    <string name="oldPassTextView">Current password</string>
+    <string name="newPassTextView">New password</string>
+    <string name="confirmPassTextView">Confirm new password</string>
     <string name="saveFirstPassText">Save Password</string>
     <string name="setFirstPassDialogTitle">Set Cura Password</string>
-    <string name="settingsPassDialogTitle">Enter Cura Password</string>
-    <string name="settignsScreenPasswordPrompt">Please enter your Cura password</string>
+    <string name="settingsPassDialogTitle">Settings prompt</string>
+    <string name="settignsScreenPasswordPrompt">Enter Settings password\n(default: \"default\")</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="wrongPassword">The password you entered is incorrect</string>
     <string name="passwordChanged">Password changed successfully</string>
     <string name="wrongConfPass">Passwords do not match</string>
-    <string name="addUserHint">This is just a sample user account.\nPress the Menu button and add a user account of your own.</string>
+    <string name="addServerHint">This is just a sample server account.</string>
     <string name="ServerInfoDialog">Server\'s general information</string>
     <string name="uptimeText">It has been up for: </string>
     <string name="GetServerInfoOptionMenu">Server\'s info</string>
+    <string name="SysMonitorPause">Pause</string>
+    <string name="SysMonitorStart">Start</string>
+    <string name="alternativeEmail">Alternative Email</string>
+    <string name="alternativePhoneNo">Alternative Phone No.</string>
+    <string name="smsSecurityError">Please make sure that the e-mail, phone number and pattern fields are not empty...</string>
+    <string name="userLocation">Location: </string>
+    <string name="loginBtn">Login</string>
+    <string name="cancelBtn">Cancel</string>
+    <string name="showPassword">Show password</string>
+    <string name="noFavoritesFound">No favorites yet!</string>
+    <string name="Share">Share</string>
+    <string name="Help">Help</string>
+    <string name="emailNotValid">Email not valid</string>
+    <string name="ServerStatsLabel">Server Stats</string>
+    <string name="unableToGetLocation">Unable to get location</string>
+    <string name="fetchingLogs">Fetching logs...</string>
+    <string name="initializing">Initializing...</string>
+    <string name="clearTerminal">Clear Terminal</string>
+    <string name="loader_message">Please wait while stats are being fetched from server...</string>
+    <string name="syslogTalk">Read logs directly from your server (default: 10 lines)</string>
+    <string name="securityfeaturetalk">By selecting this checkbox, you enable a security feature that allows you (in the case of an emergency) to have Cura\'s database wiped (and receive the phone\'s location back) upon you SMSing the compromised phone a secret pattern of your choosing.</string>
+    <string name="securityfeatureTitle">Attention!</string>
+    <string name="sysmonitorActivityTitle">Cura System Monitor</string>
+    <string name="preferencescreenActivityTitle">Cura Preference Screen</string>
+    <string name="nmapActivityTitle">Nmap Port-scanner</string>
+    <string name="syslogactivityTitle">System Log Reader</string>
+    <string name="sysLogSaveLogsButtonText">SAVE LOGS</string>
+    <string name="logsSaved">Logs saved in Cura directory under </string>
+    <string name="logsNotSaved">No logs to be saved \n(There was either a permissions issue, or the logfile does not exist on your server)</string>
+    <string name="savingLogs">Saving logs...</string>
+    <string name="connectionTimeout">Connection timeout</string>
+    <string name="connectionTimeoutMessage">Connection timeout, please check your network or internet connectivity.\n You will be redirected to Cura\'s login screen.</string>
+    <string name="serverExists">Server account already exists!</string>
+    <string name="nmapSaveButtonText">SAVE RESULTS</string>
+    <string name="nmapResultsSaved">Results saved in Cura directory under </string>
+    <string name="resultsNotSaved">Results not saved</string>
+    <string name="ServerStatsTitle">Server\'s Statistics</string>
+    <string name="screenCaptureSaved">saved to Cura/Snapshots</string>
+    <string name="menuSnapshot">Snapshot</string>
+    <string name="aboutString">About</string>
+    <string name="notificationCategory">Notifications</string>
+    <string name="agplv3_license">Copyright© 2010, 2011 Ahmad Balaa, Oday Maleh
+
+ This file is part of Cura.
+
+	Cura is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Cura is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Cura.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</string>
+    <string name="license_information">License Information</string>
+    <string name="loginText">CURA lets you manage servers \n from your Android mobile \n using basic UNIX tools</string>
+    <string name="selectServer">SELECT SERVER</string>
+    <string name="newServer">NEW SERVER</string>
+    <string name="modifyServer">MODIFY SERVER</string>
+    <string name="noServersFound">No servers found to be modified</string>
+    <string name="portError">The port entered is too long, port set to \'22\'</string>
+    <string name="portErrorModify">The port entered is too long</string>
+    <string name="unableToLocate">Unable to find location, please try again</string>
+    <string name="killprocess">KILL PROCESS</string>
+    <string name="rateDialogString">If you enjoy using Cura, take a moment to rate it. Thank you for your support!</string>
+
 </resources>

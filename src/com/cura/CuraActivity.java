@@ -16,59 +16,84 @@
     You should have received a copy of the GNU General Public License
     along with Cura.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.cura;
 
-import java.util.Date;
+/*
+ * Description: This is the activity that the user gets dropped to after they have logged in successfully and this is where
+ * all of Cura's facilities are shown (Terminal, SysLog, SysMonitor, etc...). The options provided in this activity are
+ * Server Info and Logout. 
+ */
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.NotificationManager;
+import android.app.ProgressDialog;
+import android.app.TabActivity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.text.InputFilter.LengthFilter;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
+import android.widget.ImageView;
+import android.widget.TabHost;
+import android.widget.TabHost.TabSpec;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cura.Connection.CommunicationInterface;
 import com.cura.Connection.ConnectionService;
+import com.cura.ServerStats.ServerStatsActivity;
 import com.cura.Terminal.TerminalActivity;
-import com.cura.security.SMSService;
+import com.cura.nmap.NmapActivity;
 import com.cura.syslog.SysLogActivity;
 import com.cura.sysmonitor.SysMonitorActivity;
+import com.google.analytics.tracking.android.EasyTracker;
 
-public class CuraActivity extends Activity implements OnClickListener {
+public class CuraActivity extends TabActivity implements OnClickListener,
+		OnTouchListener {
 
+	private final int LOGOUT = 0;
+	private final int SERVER_INFO = 2;
+	private final int WAIT = 100;
 	TableRow terminalRow, sysMonitorRow, sysLogRow, nessusRow, nmapRow,
-			sysConnectRow;
-	// menu buttons
+			serverStatsRow;
 
 	User userTemp;
-	// user object
+	private String uname = "";
+	private String uptime = "";
+	private String location = "";
+	private String loader_message = "";
+	private String finalResultForDialog = "";
 	private CommunicationInterface conn;
+	private ProgressDialog loader;
+	private NotificationManager mNotificationManager;
+	boolean connectionTrigger = true;
+	private AlertDialog alert;
 
 	private ServiceConnection connection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName arg0, IBinder service) {
-			// TODO Auto-generated method stub
 			conn = CommunicationInterface.Stub.asInterface(service);
 		}
 
 		public void onServiceDisconnected(ComponentName name) {
-			// TODO Auto-generated method stub
 			conn = null;
 			Toast.makeText(CuraActivity.this, "Service Disconnected",
-					Toast.LENGTH_LONG);
+					Toast.LENGTH_LONG).show();
 		}
 	};
 
@@ -77,7 +102,6 @@ public class CuraActivity extends Activity implements OnClickListener {
 		try {
 			resultUNAME = conn.executeCommand("uname -a");
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return resultUNAME;
@@ -88,10 +112,30 @@ public class CuraActivity extends Activity implements OnClickListener {
 		try {
 			resultUPTIME = conn.executeCommand("uptime");
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return resultUPTIME;
+	}
+
+	public synchronized String getLocation() {
+		String resultLocation = "";
+		try {
+			resultLocation = conn.executeCommand("geoiplookup "
+					+ userTemp.getDomain() + " | awk '{print $4, $5}'");
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		return resultLocation;
+	}
+
+	public synchronized String getHostname() {
+		String resultHostname = "";
+		try {
+			resultHostname = conn.executeCommand("hostname");
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		return resultHostname;
 	}
 
 	public void doBindService() {
@@ -103,124 +147,194 @@ public class CuraActivity extends Activity implements OnClickListener {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+		Log.d("Cura Activity", "finished");
 		doBindService();
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
 			userTemp = extras.getParcelable("user");
 		}
+
 		this.setTitle(userTemp.getUsername() + "'s Control Box");
-		// welcoming the user in this activity's title.
 
-		// SETTING CLICK-LISTENERS FOR ALL OF THE BUTTONS
-		terminalRow = (TableRow) findViewById(R.id.TerminalRow);
-		terminalRow.setOnClickListener(this);
+		TabHost tabHost = (TabHost) findViewById(android.R.id.tabhost);
 
-		sysMonitorRow = (TableRow) findViewById(R.id.SysMonitorRow);
-		sysMonitorRow.setOnClickListener(this);
+		TabSpec serverstats = tabHost.newTabSpec("Server Stats");
+		serverstats.setIndicator("",
+				getResources().getDrawable(R.drawable.serverstats_tab_selector));
+		Intent photosIntent = new Intent(this, ServerStatsActivity.class);
+		photosIntent.putExtra("user", userTemp);
+		serverstats.setContent(photosIntent);
+		tabHost.addTab(serverstats);
 
-		sysLogRow = (TableRow) findViewById(R.id.SysLogRow);
-		sysLogRow.setOnClickListener(this);
+		TabSpec sysLogSpec = tabHost.newTabSpec("SysLog");
+		sysLogSpec.setIndicator("",
+				getResources().getDrawable(R.drawable.syslog_tab_selector));
+		Intent sysLogIntent = new Intent(this, SysLogActivity.class);
+		sysLogIntent.putExtra("user", userTemp);
+		sysLogSpec.setContent(sysLogIntent);
+		tabHost.addTab(sysLogSpec);
 
-		nessusRow = (TableRow) findViewById(R.id.NessusRow);
-		nessusRow.setOnClickListener(this);
+		TabSpec sysMonitorSpec = tabHost.newTabSpec("sysMonitor");
+		sysMonitorSpec.setIndicator("",
+				getResources().getDrawable(R.drawable.sysmonitor_tab_selector));
+		Intent sysMonitorIntent = new Intent(this, SysMonitorActivity.class);
+		sysMonitorIntent.putExtra("user", userTemp);
+		sysMonitorSpec.setContent(sysMonitorIntent);
+		tabHost.addTab(sysMonitorSpec);
 
-		nmapRow = (TableRow) findViewById(R.id.NMapRow);
-		nmapRow.setOnClickListener(this);
+		TabSpec NmapSpec = tabHost.newTabSpec("Nmap");
+		NmapSpec.setIndicator("",
+				getResources().getDrawable(R.drawable.nmap_tab_selector));
+		Intent nmapIntent = new Intent(this, NmapActivity.class);
+		nmapIntent.putExtra("user", userTemp);
+		NmapSpec.setContent(nmapIntent);
+		tabHost.addTab(NmapSpec);
 
-		sysConnectRow = (TableRow) findViewById(R.id.SysConnectRow);
-		sysConnectRow.setOnClickListener(this);
+		TabSpec TerminalSpec = tabHost.newTabSpec("Terminal");
+		TerminalSpec.setIndicator("",
+				getResources().getDrawable(R.drawable.terminal_tab_selector));
+		Intent terminalIntent = new Intent(this, TerminalActivity.class);
+		terminalIntent.putExtra("user", userTemp);
+		TerminalSpec.setContent(terminalIntent);
+		tabHost.addTab(TerminalSpec);
+
+		mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 	}
 
-	public void onClick(View v) {
-		switch (v.getId()) {
-		case R.id.TerminalRow:
-			// when the row entitled "Terminal" is clicked, take the user to the
-			// terminal activity.
-			Intent terminalIntent = new Intent(this, TerminalActivity.class);
-			terminalIntent.putExtra("user", userTemp);
-			// send userTemp (the current user)'s name along with the intent so
-			// that the name can be displayed there as well
-			startActivity(terminalIntent);
-			break;
-		case R.id.SysMonitorRow:
-			// when the row entitled "SysMonitor" is clicked, take the user to
-			// the
-			// SysMonitor activity.
-			Intent sysMonitorIntent = new Intent(this, SysMonitorActivity.class);
-			startActivity(sysMonitorIntent);
-			break;
-		case R.id.SysLogRow:
-			Intent sysLogIntent = new Intent(this, SysLogActivity.class);
-			startActivity(sysLogIntent);
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		switch (id) {
+		case WAIT:
+			loader = new ProgressDialog(this);
+			loader.setMessage(loader_message);
+			loader.setCancelable(false);
+			return loader;
 		}
+		return super.onCreateDialog(id);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		boolean result = super.onCreateOptionsMenu(menu);
-		menu.add(0, 2, 0, R.string.GetServerInfoOptionMenu).setIcon(
-				android.R.drawable.ic_menu_info_details);
-		menu.add(0, Menu.FIRST, 0, R.string.logout).setIcon(
+		menu.add(0, LOGOUT, 10, R.string.logout).setIcon(
 				R.drawable.ic_lock_power_off);
 		return result;
 	}
 
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case Menu.FIRST:
-			// Confirm logout for user
-			new AlertDialog.Builder(this)
-					.setTitle("Logout Confirmation")
+		case LOGOUT:
+			new AlertDialog.Builder(this).setTitle("Logout Confirmation")
 					.setMessage(R.string.logoutConfirmationDialog)
-					.setPositiveButton("Yes",
-							new DialogInterface.OnClickListener() {
+					.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 
-								public void onClick(DialogInterface dialog,
-										int which) {
-									try {
-										conn.close();
-										Log.d("Connection", "connection closed");
-									} catch (RemoteException e) {
-										Log.d("Connection", e.toString());
-									}
-									Intent closeAllActivities = new Intent(
-											CuraActivity.this,
-											LoginScreenActivity.class);
-									// just close everything
-									closeAllActivities
-											.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-									CuraActivity.this
-											.startActivity(closeAllActivities);
-								}
-							})
-					.setNegativeButton("No",
-							new DialogInterface.OnClickListener() {
-
-								public void onClick(DialogInterface dialog,
-										int which) {
-									dialog.dismiss();
-								}
-							}).show();
-			break;
-		case 2:
-			String finalResultForDialog = "";
-			finalResultForDialog = getUname() + "\n"
-					+ getString(R.string.uptimeText) + getUptime();
-			AlertDialog.Builder alert = new AlertDialog.Builder(this);
-			alert.setTitle(R.string.ServerInfoDialog);
-			final TextView infoArea = new TextView(this);
-			infoArea.setText(finalResultForDialog);
-			alert.setView(infoArea);
-			alert.setNegativeButton("Ok",
-					new DialogInterface.OnClickListener() {
-						// UPON CLICKING "CANCEL" IN THE DIALOG BOX (ALERT)
 						public void onClick(DialogInterface dialog, int which) {
-							return;
+							try {
+								Log.d("Connection", "connection closed");
+							} catch (Exception e) {
+								Log.d("Connection", e.toString());
+							}
+							Intent closeAllActivities = new Intent(CuraActivity.this,
+									LoginScreenActivity.class);
+							closeAllActivities.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+							CuraActivity.this.startActivity(closeAllActivities);
+							mNotificationManager.cancelAll();
 						}
-					});
-			alert.show();
+					}).setNegativeButton("No", new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.dismiss();
+						}
+					}).show();
 			break;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		stopService(new Intent(CuraActivity.this, ConnectionService.class));
+		unbindService(connection);
+		Log.d("CuraActivity", "Stop");
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		return super.onKeyDown(keyCode, event);
+	}
+
+	public boolean onTouch(View v, MotionEvent event) {
+		switch (event.getAction()) {
+		case MotionEvent.ACTION_DOWN:
+			v.setBackgroundResource(R.drawable.moduleselectedhighlight);
+			break;
+		case MotionEvent.ACTION_UP:
+			v.setBackgroundResource(0);
+			break;
+		case MotionEvent.ACTION_CANCEL:
+			v.setBackgroundResource(0);
+			break;
+		}
+
+		return false;
+	}
+
+	public void initServerInfo() {
+		new AsyncTask<String, String, String>() {
+
+			@Override
+			protected void onPreExecute() {
+				super.onPreExecute();
+				loader_message = getString(R.string.initializing);
+			}
+
+			@Override
+			protected String doInBackground(String... arg0) {
+				while (connectionTrigger) {
+					if (conn != null) {
+						uptime = getUptime();
+						uname = getUname();
+						location = getLocation();
+						connectionTrigger = false;
+					}
+				}
+				return null;
+			}
+
+			@Override
+			protected void onPostExecute(String result) {
+				super.onPostExecute(result);
+			}
+		}.execute();
+	}
+
+	@Override
+	public void onStart() {
+		super.onStart();
+		EasyTracker.getInstance().activityStart(this);
+	}
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		EasyTracker.getInstance().activityStop(this);
+	}
+
+	@Override
+	public void onClick(View arg0) {
+	}
+
+	private View prepareTabView(String text, int resId) {
+		View view = LayoutInflater.from(this).inflate(R.layout.tablayout, null);
+		ImageView iv = (ImageView) view.findViewById(R.id.TabImageView);
+		TextView tv = (TextView) view.findViewById(R.id.TabTextView);
+		iv.setImageResource(resId);
+		tv.setText(text);
+		return view;
 	}
 }

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/TableLayout01"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content" >
+
+    <LinearLayout
+        android:id="@+id/LinearLayout01"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp" >
+
+        <TextView
+            android:id="@+id/TextView03"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Target:" >
+        </TextView>
+
+        <TextView
+            android:id="@+id/Target"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:inputType="text" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/LinearLayout02"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp" >
+
+        <TextView
+            android:id="@+id/TextView02"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Arguments:" >
+        </TextView>
+
+        <EditText
+            android:id="@+id/Arguments"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:inputType="text"
+            android:lines="1" >
+        </EditText>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/LinearLayout03"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <Spinner
+            android:id="@+id/CommandSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <!--
+             <Button android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:text="Help" android:id="@+id/Help"
+			android:layout_weight="2"></Button>
+        -->
+
+        <Spinner
+            android:id="@+id/OutputSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+        </Spinner>
+
+        <Button
+            android:id="@+id/Start"
+            style="@style/positive_buttons_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dip"
+            android:layout_marginRight="20dip"
+            android:layout_weight="2"
+            android:text="START" />
+        <!--
+     		<Button android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:id="@+id/Share"
+			android:text="Share" android:layout_weight="2"></Button>
+        -->
+        <!--
+     		<Button android:layout_width="wrap_content"
+			android:layout_height="wrap_content" android:text="Exit" android:id="@+id/Exit"
+			android:layout_weight="2"></Button>
+        -->
+
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/ScrollView01"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/results"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text|textMultiLine"
+                android:scrollbars="vertical"
+                android:text="Licensed by the GNU Public License.  Source code will be made available by request." >
+            </TextView>
+
+            <Button
+                android:id="@+id/saveNmapResults"
+                style="@style/savelogs_button_style"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dip"
+                android:layout_marginLeft="50dip"
+                android:layout_marginRight="50dip"
+                android:text="@string/nmapSaveButtonText"
+                android:visibility="invisible" />
+        </LinearLayout>
+    </ScrollView>
+
+</TableLayout>

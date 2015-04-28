@@ -1,50 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    android:id="@+id/terminalLayout"
+    android:layout_width="fill_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    
-        <EditText
+    <EditText
         android:id="@+id/result"
         android:layout_width="match_parent"
-        android:layout_height="219dp"
-        android:hint="@string/hintTerminalMessage" 
-        android:textSize="10dip" 
-        android:clickable="false" 
-        android:editable="false" 
+        android:layout_height="180dp"
+        android:layout_weight="2"
         android:autoText="false"
-        android:background="@android:color/black"/>
-        <LinearLayout
-	    	android:layout_width="fill_parent"
-	    	android:layout_height="wrap_content"
-	    	android:orientation="horizontal">
-	    	
-        <Button 
-	        android:id="@+id/executeButton"
-	        android:layout_width="142dp"
-	        android:layout_height="46dp"
-	        android:background="@android:color/transparent"
-	        android:text="@string/executeButton"
-	        android:textColor="#FFFFFF" />
-	
-    	<EditText
-	        android:id="@+id/commandLine"
-	        android:layout_width="260dip"
-	        android:layout_height="match_parent"
-	        android:layout_gravity="fill_horizontal"
-	        android:background="@android:color/black"
-	        android:textColor="@android:color/white" >
-	        <requestFocus />
-	    	</EditText>
+        android:background="@android:color/black"
+        android:clickable="false"
+        android:editable="false"
+        android:focusableInTouchMode="false"
+        android:hint="@string/hintTerminalMessage"
+        android:inputType="textMultiLine"
+        android:textSize="10dip" />
 
-	    <Button
-	        android:id="@+id/favoritesButton"
-	        android:layout_width="132dp"
-	        android:layout_height="48dp"
-	        android:background="@android:color/transparent"
-	        android:text="@string/favoritesButton"
-	        android:textColor="#FFFFFF" />
-		</LinearLayout>
+    <EditText
+        android:id="@+id/commandLine"
+        android:layout_width="fill_parent"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:background="@drawable/edittext_border"
+        android:textColor="@android:color/white"
+        android:imeOptions="actionGo"
+        android:inputType="text"  >
+
+        <requestFocus />
+    </EditText>
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <Button
+            android:id="@+id/executeButton"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_gravity="left"
+            android:background="@android:color/transparent"
+            android:text="@string/executeButton"
+            android:textColor="#FFFFFF" />
+
+        <Button
+            android:id="@+id/favoritesButton"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_gravity="right"
+            android:background="@android:color/transparent"
+            android:text="@string/favoritesButton"
+            android:textColor="#FFFFFF" />
+    </FrameLayout>
 
 </LinearLayout>
